@@ -1,0 +1,258 @@
+/* Grid Background */
+.hero-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+/* Glow Effects */
+.glow-blue {
+  background: radial-gradient(circle, rgba(25,118,210,0.2) 0%, transparent 65%);
+}
+
+.glow-purple {
+  background: radial-gradient(circle, rgba(156,39,176,0.12) 0%, transparent 65%);
+}
+
+/* Marquee */
+.marquee-item::after {
+  content: '◆';
+  font-size: 7px;
+  color: #1976d2;
+}
+
+/* Section Lines */
+.section-label-line::before,
+.cta-eyebrow-line::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #1976d2;
+  border-radius: 2px;
+}
+
+/* CTA Glow */
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -80px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(25,118,210,0.22) 0%, transparent 65%);
+}
+
+.cta-section::after {
+  content: '';
+  position: absolute;
+  bottom: -70px;
+  left: 38%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(156,39,176,0.14) 0%, transparent 65%);
+}
+
+/* Animations */
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-8px); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(22px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Animation Classes */
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 5s ease-in-out infinite 1s;
+}
+
+.animate-float-delay {
+  animation: float 6s ease-in-out infinite 0.5s;
+}
+
+.animate-marquee {
+  animation: marquee 22s linear infinite;
+}
+
+.anim-1 { animation: slideUp 0.5s ease 0s both; }
+.anim-2 { animation: slideUp 0.5s ease 0.1s both; }
+.anim-3 { animation: slideUp 0.5s ease 0.18s both; }
+.anim-4 { animation: slideUp 0.5s ease 0.26s both; }
+.anim-5 { animation: slideUp 0.5s ease 0.34s both; }
+
+
+/* for login */
+.blob-a {
+  width:650px; height:650px; top:-200px; left:-200px;
+  background: radial-gradient(circle, rgba(25,118,210,0.2) 0%, transparent 65%);
+}
+.blob-b {
+  width:500px; height:500px; bottom:-160px; right:-160px;
+  background: radial-gradient(circle, rgba(156,39,176,0.14) 0%, transparent 65%);
+}
+
+/* ─── Auth Card ─── */
+
+/* Background grid */
+.bg-grid {
+  position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Auth card box-shadow */
+.auth-card {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 40px 100px rgba(0,0,0,.6),
+    0 8px 24px rgba(0,0,0,.4);
+}
+
+/* Overlay sliding transition */
+.overlay-wrap {
+  transition: transform var(--dur) var(--ease), left var(--dur) var(--ease);
+  left: 50%;
+}
+.auth-card.signup-mode .overlay-wrap { left: 0%; }
+
+/* Overlay inner grid */
+.overlay-panel::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+/* Overlay glow position */
+.overlay-glow {
+  position: absolute; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(25,118,210,0.18) 0%, transparent 65%);
+  pointer-events: none;
+  transition: all var(--dur) var(--ease);
+}
+.auth-card:not(.signup-mode) .overlay-glow { bottom: -80px; left: -80px; }
+.auth-card.signup-mode .overlay-glow { bottom: -80px; right: -80px; left: auto; }
+
+/* Tag pseudo-element line */
+.o-tag::before {
+  content: ''; display: block; width: 18px; height: 2px;
+  background: #1976d2; border-radius: 2px;
+}
+
+/* Subtle top-corner tint on form pane */
+.form-pane::before {
+  content: ''; position: absolute; top: -50px; right: -50px;
+  width: 200px; height: 200px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(25,118,210,0.05) 0%, transparent 65%);
+}
+
+/* Slide animations tied to card mode */
+.auth-card:not(.signup-mode) .pane-signin .pane-inner { animation: slideFromLeft 0.6s var(--ease) 0.05s both; }
+.auth-card.signup-mode .pane-signup .pane-inner { animation: slideFromRight 0.6s var(--ease) 0.1s both; }
+
+/* Overlay content fade-out */
+.o-content { transition: opacity .28s ease, transform .28s ease; }
+.o-content.fade-out { opacity: 0; transform: translateY(10px); pointer-events: none; }
+
+/* Password strength bar colors */
+.str-bar { flex: 1; height: 3px; border-radius: 3px; background: #dce0e5; transition: background .3s; }
+.str-bar.weak   { background: #ef4444; }
+.str-bar.fair   { background: #f59e0b; }
+.str-bar.strong { background: #22c55e; }
+
+/* Spinner */
+.spinner {
+  width:14px; height:14px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+  animation: spin 0.7s linear infinite; display: none;
+}
+
+/* Pulse dot animation */
+.pulse-dot { animation: pulseDot 2.2s ease-in-out infinite; }
+
+/* Input focus ring */
+.inp:focus { border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1); outline: none; }
+.inp::placeholder { color: rgba(99,117,136,.45); }
+
+/* Plan radio hidden */
+.plan-opt input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+.plan-opt input:checked + .plan-lbl { border-color: #1976d2; background: #e3f2fd; }
+
+/* ─── Additional Keyframes ─── */
+
+@keyframes blobDrift {
+  0%,100% { transform: translate(0,0); }
+  50%     { transform: translate(36px,28px); }
+}
+
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(18px) scale(0.98); }
+  to   { opacity:1; transform:none; }
+}
+
+@keyframes pulse2 {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50%     { box-shadow: 0 0 0 7px rgba(34,197,94,0.06); }
+}
+
+@keyframes pulseDot {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0.06); }
+}
+
+@keyframes slideFromLeft {
+  from { opacity:0; transform:translateX(-24px); }
+  to   { opacity:1; transform:none; }
+}
+
+@keyframes slideFromRight {
+  from { opacity:0; transform:translateX(24px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* Animation Classes (auth) */
+.animate-blobA    { animation: blobDrift 14s ease-in-out infinite; }
+.animate-blobB    { animation: blobDrift 10s ease-in-out infinite reverse; }
+.animate-cardIn   { animation: cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards; }
+.animate-pulse2   { animation: pulse2 2.2s ease-in-out infinite; }
+.animate-slideLeft  { animation: slideFromLeft 0.6s cubic-bezier(.76,0,.24,1) 0.05s both; }
+.animate-slideRight { animation: slideFromRight 0.6s cubic-bezier(.76,0,.24,1) 0.1s both; }
+/* ─── Overlay: Cannot-Tailwind Remnants ─── */
+
+
+/* ::before pseudo-element line — Tailwind can't generate ::before content */
+.o-tag::before {
+  content: ''; display: block; width: 18px; height: 2px;
+  background: #1976d2; border-radius: 2px;
+}
+
+/* pulse-dot: keyframe box-shadow animation — not possible in Tailwind */
+.pulse-dot { animation: pulseDot 2.2s ease-in-out infinite; }
+
+/* Avatar stack: negative margin — Tailwind v3 can't do -ml on :not(:first-child) */
+.av { margin-left: -6px; }
+.av:first-child { margin-left: 0; }

@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark &));
+
+@theme{
+  /* for colors */
+  --color-primary: #1976d2;
+  --color-primary-dark: #145da8;
+  --color-primary-light:#e3f2fd;
+  --color-secondary:#9c27b0;
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #111921;
+  --color-neutral-surface: #ffffff;
+  --color-neutral-text: #111418;
+  --color-neutral-muted: #637588;
+  --color-neutral-border: #dce0e5;
+  --color-sucess:#22c55e;
+  --color-warning:#f59e0b;
+  --color-danger:#ef4444;
+  --color-sidebar:#1e293b;
+
+  --dur:  .72s;
+  --ease: cubic-bezier(.76,0,.24,1);
+  
+  /* for Fonts */
+  
+    --font-display: 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-playfair:'Playfair Display', serif;
+     --font-dm: 'DM Sans', sans-serif;
+   /*for border radius  */
+    --radius-default: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+
+    /* Keyframes (from auth page) */
+  --animate-blobA:    blobDrift 14s ease-in-out infinite;
+  --animate-blobB:    blobDrift 10s ease-in-out infinite reverse;
+  --animate-cardIn:   cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards;
+  --animate-pulse2:   pulse2 2.2s ease-in-out infinite;
+  --animate-spin:     spin 0.7s linear infinite;
+  --animate-slideLeft:  slideFromLeft 0.6s cubic-bezier(.76,0,.24,1) 0.05s both;
+  --animate-slideRight: slideFromRight 0.6s cubic-bezier(.76,0,.24,1) 0.1s both;
+
+
+}
+
+
+
+@layer base{
+  body{
+    @apply bg-background-light dark:bg-background-dark font-display antialiased min-h-screen text-neutral-text overflow-x-hidden
+  }
+}
+
+
+@layer components{
+  .social-btn{
+    @apply flex items-center justify-center gap-1.75 py-2.5 px-3 bg-white border-[1.5px] border-neutral-border rounded-lg text-[12px] font-medium text-neutral-text cursor-pointer transition-all hover:border-primary hover:bg-primary-light;
+  }
+  .labeltext{
+    @apply  block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25;
+  }
+  .inpttext{
+    @apply w-full px-3.5 py-2.75 font-dm text-[13px] text-neutral-text  border-[1.5px] border-neutral-border rounded-lg transition-all;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+  .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  .nav-blur {
+    backdrop-filter: blur(16px);
+  }
+
+  .text-hero {
+    font-size: clamp(46px, 4.8vw, 70px);
+  }
+
+  .text-sec {
+    font-size: clamp(30px, 3.8vw, 48px);
+  }
+}
+
