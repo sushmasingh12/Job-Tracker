@@ -6,7 +6,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-neutral-text">
+            <h1 className="text-xl font-bold text-neutral-text">
               Welcome back, John!
             </h1>
             <p className="text-neutral-muted text-sm mt-1">
@@ -19,12 +19,12 @@ const Dashboard = () => {
           <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-neutral-muted">
+                <p className="text-xs font-medium text-neutral-muted">
                   Total Applications
                 </p>
-                <h3 className="text-3xl font-bold text-neutral-text mt-2">42</h3>
+                <h3 className="text-xl font-bold text-neutral-text mt-2">42</h3>
               </div>
-              <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+              <div className="p-1 bg-blue-50 text-blue-600 rounded-lg">
                 <span className="material-symbols-outlined">folder_open</span>
               </div>
             </div>
@@ -35,10 +35,10 @@ const Dashboard = () => {
           <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-neutral-muted">This Week</p>
-                <h3 className="text-3xl font-bold text-neutral-text mt-2">8</h3>
+                <p className="text-xs font-medium text-neutral-muted">This Week</p>
+                <h3 className="text-xl font-bold text-neutral-text mt-2">8</h3>
               </div>
-              <div className="p-3 bg-purple-50 text-purple-600 rounded-lg">
+              <div className="p-1 bg-purple-50 text-purple-600 rounded-lg">
                 <span className="material-symbols-outlined">calendar_today</span>
               </div>
             </div>
@@ -55,10 +55,10 @@ const Dashboard = () => {
           <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-neutral-muted">Interviews</p>
-                <h3 className="text-3xl font-bold text-neutral-text mt-2">5</h3>
+                <p className="text-xs font-medium text-neutral-muted">Interviews</p>
+                <h3 className="text-xl font-bold text-neutral-text mt-2">5</h3>
               </div>
-              <div className="p-3 bg-orange-50 text-orange-600 rounded-lg">
+              <div className="p-1 bg-orange-50 text-orange-600 rounded-lg">
                 <span className="material-symbols-outlined">
                   video_camera_front
                 </span>
@@ -71,12 +71,12 @@ const Dashboard = () => {
           <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-neutral-muted">
+                <p className="text-xs font-medium text-neutral-muted">
                   Response Rate
                 </p>
-                <h3 className="text-3xl font-bold text-neutral-text mt-2">14%</h3>
+                <h3 className="text-xl font-bold text-neutral-text mt-2">14%</h3>
               </div>
-              <div className="p-3 bg-green-50 text-green-600 rounded-lg">
+              <div className="p-1 bg-green-50 text-green-600 rounded-lg">
                 <span className="material-symbols-outlined">mark_email_read</span>
               </div>
             </div>
@@ -281,7 +281,7 @@ const Dashboard = () => {
                 <span>Oct 24</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-neutral-surface to-background-light rounded-xl border border-neutral-border p-6 shadow-sm">
+            <div className="bg-linear-to-br from-neutral-surface to-background-light rounded-xl border border-neutral-border p-6 shadow-sm">
               <h3 className="text-lg font-bold text-neutral-text mb-4">
                 Quick Actions
               </h3>

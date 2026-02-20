@@ -1,6 +1,5 @@
-// import Dashboard from "./components/Dashboard/Dashboard";
+import Dashboard from "./components/Dashboard/Dashboard";
 import Landing from "./pages/Home/Landing";
-// import Login from "./pages/Registration/Login";
 import Header from "./pages/navbar/Header";
 import Sidebar from "./pages/navbar/Sidebar";
 import './App.css'
@@ -10,6 +9,9 @@ import AuthLayout from "./pages/Registration/AuthLayout";
 import AddAplication from "./components/Dashboard/AddAplication";
 import Resume from "./components/ResumeBuilder/Resume";
 import OptimizeResume from "./components/ResumeBuilder/OptimizeResume";
+import Cover from "./components/CoverLetter/Cover";
+import ReviewCover from "./components/CoverLetter/ReviewCover";
+import Interview from "./components/InterviewPrep/Interview";
 
 
 
@@ -21,11 +23,14 @@ function App() {
     <>
     
     <Sidebar/>
-    <div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+    <div class="flex-1 ml-58 flex flex-col h-screen overflow-hidden">
     <Header/>
     {/* <Resume/> */}
     <OptimizeResume/>
     {/* <Dashboard/> */}
+    {/* <Cover/> */}
+    {/* <ReviewCover/> */}
+    {/* <Interview/> */}
     </div>
     {/* <Landing/> */}
     {/* <Login/> */}
