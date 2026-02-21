@@ -23,14 +23,14 @@ function App() {
     <>
     
     <Sidebar/>
-    <div class="flex-1 ml-58 flex flex-col h-screen overflow-hidden">
+    <div class="flex-1  lg:ml-64  flex flex-col h-screen overflow-hidden">
     <Header/>
     {/* <Resume/> */}
-    <OptimizeResume/>
+    {/* <OptimizeResume/> */}
     {/* <Dashboard/> */}
     {/* <Cover/> */}
     {/* <ReviewCover/> */}
-    {/* <Interview/> */}
+    <Interview/>
     </div>
     {/* <Landing/> */}
     {/* <Login/> */}
