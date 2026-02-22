@@ -21,7 +21,7 @@ import Landing from './pages/Home/Landing'
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-    <Route path='/Home' element={<Landing/>}/>
+    <Route path='/' element={<Landing/>}/>
     <Route path='/login' element={<SignIn/>}/>
     <Route path="/" element={<Layout />}>
       <Route path="/dashboard" element={<Dashboard />} />

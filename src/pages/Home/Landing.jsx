@@ -15,10 +15,10 @@ const Landing = () => {
         </Link>
 
         <div className="flex gap-2.5">
-          <Link className="inline-flex items-center px-5 py-2.25 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
+          <Link to="/login" className="inline-flex items-center px-5 py-2.25 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
             Sign In
           </Link>
-          <Link className="inline-flex items-center gap-1.5 px-5 py-2.25 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
+          <Link to="/login" className="inline-flex items-center gap-1.5 px-5 py-2.25 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
             Get Started →
           </Link>
         </div>
@@ -48,13 +48,13 @@ const Landing = () => {
           </p>
 
           <div className="anim-4 flex gap-3.5 items-center">
-            <a
-              href="auth.html"
+            <button
+              
               className="inline-flex items-center gap-2 px-7.5 py-3.5 text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]"
             >
               Start for free →
-            </a>
-            <a
+            </button>
+            <button
               href="#how"
               className="flex items-center gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary"
             >
@@ -74,7 +74,7 @@ const Landing = () => {
                 />
               </svg>
               Watch demo
-            </a>
+            </button>
           </div>
 
           <div className="anim-5 flex gap-9 mt-12.5 pt-8.5 border-t border-neutral-border">
