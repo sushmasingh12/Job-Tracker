@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Landing = () => {
+  const navigate = useNavigate()
+
   return (
     <div>
       {/* <!-- ── NAV ── --> */}
@@ -48,14 +50,13 @@ const Landing = () => {
           </p>
 
           <div className="anim-4 flex gap-3.5 items-center">
-            <button
-              
+            <button onClick={() => navigate("/login")}
               className="inline-flex items-center gap-2 px-7.5 py-3.5 text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]"
             >
               Start for free →
             </button>
             <button
-              href="#how"
+              
               className="flex items-center gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary"
             >
               <svg

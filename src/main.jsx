@@ -17,12 +17,14 @@ import Interview from './components/InterviewPrep/Interview'
 import OptimizeResume from './components/ResumeBuilder/OptimizeResume'
 import SignIn from './pages/Registration/SignIn'
 import Landing from './pages/Home/Landing'
+import SignUp from './pages/Registration/SignUp'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
     <Route path='/' element={<Landing/>}/>
     <Route path='/login' element={<SignIn/>}/>
+    <Route path='/signup' element={<SignUp/>}/>
     <Route path="/" element={<Layout />}>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/resume-builder" element={<OptimizeResume/>}/>
