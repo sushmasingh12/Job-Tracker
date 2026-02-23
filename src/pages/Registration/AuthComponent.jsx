@@ -17,7 +17,7 @@ export const EyeIcon = () => (
   );
   
   export const ArrowIcon = () => (
-    <svg className="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <line x1="5" y1="12" x2="19" y2="12" />
       <polyline points="12 5 19 12 12 19" />
     </svg>
@@ -42,11 +42,11 @@ export const EyeIcon = () => (
   
   export function SocialButtons() {
     return (
-      <div className="grid grid-cols-2 gap-2 mb-[18px]">
-        <button type="button" className="soc-btn flex items-center justify-center gap-[7px] py-[10px] px-3 bg-white border-[1.5px] border-neutral-border rounded-lg text-[12px] font-medium text-neutral-text cursor-pointer transition-all hover:border-primary hover:bg-primary-light">
+      <div className="grid grid-cols-2 gap-2 mb-4.5">
+        <button type="button" className="soc-btn flex items-center justify-center gap-1.75 py-2.5 px-3 bg-white border-[1.5px] border-neutral-border rounded-lg text-[12px] font-medium text-neutral-text cursor-pointer transition-all hover:border-primary hover:bg-primary-light">
           <GoogleIcon /> Google
         </button>
-        <button type="button" className="soc-btn flex items-center justify-center gap-[7px] py-[10px] px-3 bg-white border-[1.5px] border-neutral-border rounded-lg text-[12px] font-medium text-neutral-text cursor-pointer transition-all hover:border-primary hover:bg-primary-light">
+        <button type="button" className="soc-btn flex items-center justify-center gap-1.75 py-2.5 px-3 bg-white border-[1.5px] border-neutral-border rounded-lg text-[12px] font-medium text-neutral-text cursor-pointer transition-all hover:border-primary hover:bg-primary-light">
           <LinkedInIcon /> LinkedIn
         </button>
       </div>
@@ -55,7 +55,7 @@ export const EyeIcon = () => (
   
   export function Divider() {
     return (
-      <div className="flex items-center gap-[10px] mb-[18px]">
+      <div className="flex items-center gap-2.5 mb-4.5">
         <div className="flex-1 h-px bg-neutral-border" />
         <span className="text-[10px] text-neutral-muted tracking-widest uppercase">or email</span>
         <div className="flex-1 h-px bg-neutral-border" />
@@ -76,12 +76,12 @@ export const EyeIcon = () => (
           id={id}
           value={value}
           onChange={onChange}
-          className="inp w-full px-[14px] py-[11px] pr-10 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
+          className="inp w-full px-3.5 py-2.75 pr-10 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
           placeholder={placeholder}
         />
         <button
           type="button"
-          className="absolute right-[11px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
+          className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
           onClick={() => setShow((s) => !s)}
         >
           {show ? <EyeOffIcon /> : <EyeIcon />}

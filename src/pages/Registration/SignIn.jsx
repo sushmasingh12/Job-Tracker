@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {  useNavigate } from "react-router-dom";
-import { SocialButtons, Divider, PasswordInput} from "./AuthComponent";
+import { SocialButtons, Divider, EyeOffIcon,EyeIcon} from "./AuthComponent";
 
 // ─── Overlay: Sign In side (shown on right — "New here?") ────────────────────
 
@@ -70,6 +70,13 @@ function SignInOverlay({onCreateAccount}) {
 // ─── Sign In Form ─────────────────────────────────────────────────────────────
 
 function SignInForm({onCreateAccount , onSignIn}) {
+  const [email, setEmail] = useState("")
+  const [password , setPassword] = useState("")
+  const [show, setShow] = useState(false);
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSignIn();
+  }
   return (
     <div className="form-pane pane-signin bg-white px-11.5 py-10 flex flex-col justify-center overflow-hidden relative">
       <div className="pane-inner w-full max-w-85 mx-auto">
@@ -91,15 +98,15 @@ function SignInForm({onCreateAccount , onSignIn}) {
 
         
 
-        <form >
+        <form onSubmit={handleSubmit}>
           <div className="field mb-3.25 relative">
             <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25" htmlFor="si-email">
               Email
             </label>
             <input
-              type="email"
-              id="si-email"
-              className="inp w-full px-3.5 py-2.75 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="inpttext"
               placeholder="you@email.com"
             />
           </div>
@@ -109,9 +116,20 @@ function SignInForm({onCreateAccount , onSignIn}) {
             <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25" htmlFor="si-pw">
               Password
             </label>
-            <PasswordInput
-              placeholder="••••••••"
+            <input
+              type={show ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="inpttext"
+              placeholder="Enter password"
             />
+            <button
+              type="button"
+              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
+              onClick={() => setShow((s) => !s)}
+            >
+              {show ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
             <div className="flex items-center justify-between mt-1.5">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input type="checkbox" className="w-3.25 h-3.25 accent-primary cursor-pointer" />
@@ -125,7 +143,7 @@ function SignInForm({onCreateAccount , onSignIn}) {
 
           {/* Submit */}
           <button
-            onClick={onSignIn}
+            type="submit"
             className="submit-btn w-full py-3.25 font-dm text-[14px] font-medium text-white border-none rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.75 relative overflow-hidden hover:-translate-y-px active:translate-y-0"
             style={{
               background:"#1976d2",

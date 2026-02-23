@@ -1,18 +1,19 @@
-import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useReducer, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   SocialButtons,
   Divider,
-  Spinner,
+  EyeOffIcon,
   PasswordInput,
   ArrowIcon,
   getStrength,
+  EyeIcon,
 } from "./AuthComponent";
 
 // ─── Overlay: Sign Up side (shown on left — "Already a member?") ──────────────
 
-function SignUpOverlay({onSignIn}) {
+function SignUpOverlay({ onSignIn }) {
   return (
     <div
       className="overlay-wrap absolute top-0 bottom-0 w-1/2 z-50"
@@ -24,10 +25,7 @@ function SignUpOverlay({onSignIn}) {
           style={{ bottom: -80, right: -80, left: "auto" }}
         />
 
-        <div
-          
-          className="font-playfair text-[20px] font-bold text-white no-underline flex items-center gap-2 relative z-10"
-        >
+        <div className="font-playfair text-[20px] font-bold text-white no-underline flex items-center gap-2 relative z-10">
           <div className="w-2 h-2 bg-primary rounded-full" />
           JobTracker
         </div>
@@ -48,7 +46,10 @@ function SignUpOverlay({onSignIn}) {
               waiting.
             </p>
 
-            <button onClick={onSignIn} className="inline-flex items-center gap-2 py-3 px-6.5 font-dm text-[13px] font-medium text-white bg-primary border-[1.5px] border-primary rounded-lg cursor-pointer transition-all self-start hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(25,118,210,0.4)] [&>svg]:transition-transform hover:[&>svg]:translate-x-0.75">
+            <button
+              onClick={onSignIn}
+              className="inline-flex items-center gap-2 py-3 px-6.5 font-dm text-[13px] font-medium text-white bg-primary border-[1.5px] border-primary rounded-lg cursor-pointer transition-all self-start hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(25,118,210,0.4)] [&>svg]:transition-transform hover:[&>svg]:translate-x-0.75"
+            >
               Sign In
               <svg
                 viewBox="0 0 24 24"
@@ -85,9 +86,7 @@ function SignUpOverlay({onSignIn}) {
             <div className="pulse-dot w-1.75 h-1.75 rounded-full bg-success shrink-0" />
 
             <div className="text-[11px] text-white/42 leading-[1.4]">
-              <strong className="text-white/82 font-medium">
-                284 people
-              </strong>{" "}
+              <strong className="text-white/82 font-medium">284 people</strong>{" "}
               got hired this month using ApplyIQ
             </div>
           </div>
@@ -96,10 +95,49 @@ function SignUpOverlay({onSignIn}) {
     </div>
   );
 }
-
+// ─── Reducer ─────────────────────────────────────────────────────────────
+function reducer(state, action) {
+  switch (action.type) {
+    case "CHANGE":
+      return { ...state, [action.field]: action.value };
+    case "RESET":
+      return {
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirmpassword: "",
+      };
+    default:
+      return state;
+  }
+}
 // ─── Sign Up Form ─────────────────────────────────────────────────────────────
 
-function SignUpForm({onSignIn}) {
+function SignUpForm({ onSignIn }) {
+  const initialState = {
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    confirmpassword: "",
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [show, setShow] = useState(false);
+  const [showConfirmpass, setShowConfirmpass] = useState(false);
+  const handleChange = (e) => {
+    dispatch({ type: "CHANGE", field: e.target.name, value: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(state.password !== state.confirmpassword){
+      alert("passwords do not match")
+      return;
+    }
+    onSignIn()
+  }
   return (
     // form-pane::before glow → stays in App.css
     <div className="form-pane pane-signup bg-white px-11.5 py-10 flex flex-col justify-center overflow-hidden relative">
@@ -109,7 +147,10 @@ function SignUpForm({onSignIn}) {
         </h1>
         <p className="text-[13px] text-neutral-muted font-light mb-6.5">
           Already have one?{" "}
-          <span onClick={onSignIn} className="text-primary font-medium border-b border-transparent hover:border-primary transition-all cursor-pointer">
+          <span
+            onClick={onSignIn}
+            className="text-primary font-medium border-b border-transparent hover:border-primary transition-all cursor-pointer"
+          >
             Sign in →
           </span>
         </p>
@@ -117,7 +158,7 @@ function SignUpForm({onSignIn}) {
         <SocialButtons />
         <Divider />
 
-        <form>
+        <form onSubmit={handleSubmit}>
           {/* Name row */}
           <div className="grid grid-cols-2 gap-2.5 mb-3.25">
             <div className="relative">
@@ -125,12 +166,14 @@ function SignUpForm({onSignIn}) {
                 className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
                 htmlFor="su-first"
               >
-                First
+                First Name
               </label>
               <input
                 type="text"
-                id="su-first"
-                className="inp w-full px-3.5 py-2.75 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
+                name="firstname"
+                value={state.firstname}
+                onChange={handleChange}
+                className="inpttext"
                 placeholder="Alex"
               />
             </div>
@@ -139,12 +182,14 @@ function SignUpForm({onSignIn}) {
                 className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
                 htmlFor="su-last"
               >
-                Last
+                Last Name
               </label>
               <input
                 type="text"
-                id="su-last"
-                className="inp w-full px-3.5 py-2.75 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
+                name="lastname"
+                value={state.lastname}
+                onChange={handleChange}
+                className="inpttext"
                 placeholder="Morgan"
               />
             </div>
@@ -160,8 +205,10 @@ function SignUpForm({onSignIn}) {
             </label>
             <input
               type="email"
-              id="su-email"
-              className="inp w-full px-3.5 py-2.75 font-dm text-[13px] text-neutral-text bg-bg-light border-[1.5px] border-neutral-border rounded-lg transition-all"
+              name="email"
+              value={state.email}
+              onChange={handleChange}
+              className="inpttext"
               placeholder="alex@email.com"
             />
           </div>
@@ -174,7 +221,45 @@ function SignUpForm({onSignIn}) {
             >
               Password
             </label>
-            <PasswordInput placeholder="8+ characters" />
+            <input
+              type={show ? "text" : "password"}
+              name="password"
+              value={state.password}
+              onChange={handleChange}
+              className="inpttext"
+              placeholder="Enter password"
+            />
+            <button
+              type="button"
+              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
+              onClick={() => setShow((s) => !s)}
+            >
+              {show ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </div>
+          {/* Password + Strength */}
+          <div className="mb-3.25 relative">
+            <label
+              className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
+              htmlFor="su-pw"
+            >
+              Confirm Password
+            </label>
+            <input
+              type={showConfirmpass ? "text" : "password"}
+              name="confirmpassword"
+              value={state.confirmpassword}
+              onChange={handleChange}
+              className="inpttext"
+              placeholder="Confirm password"
+            />
+            <button
+              type="button"
+              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
+              onClick={() => setShowConfirmpass((s) => !s)}
+            >
+              {showConfirmpass ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
           </div>
 
           {/* Terms */}
@@ -201,7 +286,7 @@ function SignUpForm({onSignIn}) {
 
           {/* Submit */}
           <button
-            onClick={onSignIn}
+            type="submit"
             className="w-full py-3.25 font-dm text-[14px] font-medium text-white border-none rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.75 relative overflow-hidden hover:-translate-y-px active:translate-y-0"
             style={{
               background: "#1976d2",
@@ -221,10 +306,10 @@ function SignUpForm({onSignIn}) {
 // ─── Sign Up Page ─────────────────────────────────────────────────────────────
 
 export default function SignUp() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleSignUp = () => {
-    navigate("/login")
-  }
+    navigate("/login");
+  };
   return (
     <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-hidden relative">
       {/* Background */}
@@ -245,9 +330,9 @@ export default function SignUp() {
       >
         <div className="absolute inset-0 grid grid-cols-2">
           <div className="bg-white" />
-          <SignUpForm onSignIn={handleSignUp}/>
+          <SignUpForm onSignIn={handleSignUp} />
         </div>
-        <SignUpOverlay onSignIn={handleSignUp}/>
+        <SignUpOverlay onSignIn={handleSignUp} />
       </div>
     </div>
   );
