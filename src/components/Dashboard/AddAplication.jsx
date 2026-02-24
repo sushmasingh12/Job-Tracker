@@ -3,7 +3,7 @@ import React from "react";
 const AddAplication = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col text-neutral-text relative">
-      <div className="fixed inset-0 bg-neutral-text/50 z-40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-neutral-text/50 z-40  flex items-center justify-center p-4">
         <div className="bg-neutral-surface w-full max-w-200 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
           <div className="flex items-center justify-between p-6 border-b border-neutral-border sticky top-0 bg-neutral-surface z-10 rounded-t-2xl">
             <h2 className="text-xl font-bold text-neutral-text">

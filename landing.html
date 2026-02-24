@@ -1,510 +1,490 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ApplyIQ — Land Your Dream Job</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: {
-          'playfair': ['"Playfair Display"', 'serif'],
-          'dm': ['"DM Sans"', 'sans-serif'],
-        },
-        colors: {
-          primary: {
-            DEFAULT: '#1976d2',
-            dark:    '#145da8',
-            light:   '#e3f2fd',
-          },
-          secondary: '#9c27b0',
-          'bg-dark':  '#111921',
-          'sidebar':  '#1e293b',
-          'neutral': {
-            text:    '#111418',
-            muted:   '#637588',
-            border:  '#dce0e5',
-          },
-          success: '#22c55e',
-          warning: '#f59e0b',
-          danger:  '#ef4444',
-        },
-        letterSpacing: {
-          'widest2': '2px',
-          'widest3': '2.5px',
-        },
-        animation: {
-          'float':       'float 4s ease-in-out infinite',
-          'float-slow':  'float 5s ease-in-out infinite 1s',
-          'float-delay': 'float 6s ease-in-out infinite 0.5s',
-          'marquee':     'marquee 22s linear infinite',
-          'slideUp':     'slideUp 0.5s ease forwards',
-        },
-        keyframes: {
-          float: {
-            '0%,100%': { transform: 'translateY(0)' },
-            '50%':     { transform: 'translateY(-8px)' },
-          },
-          marquee: {
-            'from': { transform: 'translateX(0)' },
-            'to':   { transform: 'translateX(-50%)' },
-          },
-          slideUp: {
-            'from': { opacity: '0', transform: 'translateY(22px)' },
-            'to':   { opacity: '1', transform: 'translateY(0)' },
-          },
-        },
-      }
-    }
-  }
-</script>
-<style>
-  /* Styles that can't be done purely in Tailwind utility classes */
-  html { scroll-behavior: smooth; }
-  body { font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
-
-  /* Nav blur backdrop */
-  .nav-blur { backdrop-filter: blur(16px); }
-
-  /* Hero grid background pattern */
-  .hero-grid-bg {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-    background-size: 42px 42px;
-  }
-
-  /* Glow radials */
-  .glow-blue {
-    background: radial-gradient(circle, rgba(25,118,210,0.2) 0%, transparent 65%);
-  }
-  .glow-purple {
-    background: radial-gradient(circle, rgba(156,39,176,0.12) 0%, transparent 65%);
-  }
-  .glow-blue-lg {
-    background: radial-gradient(circle, rgba(25,118,210,0.22) 0%, transparent 65%);
-  }
-  .glow-purple-sm {
-    background: radial-gradient(circle, rgba(156,39,176,0.14) 0%, transparent 65%);
-  }
-
-  /* Marquee */
-  .marquee-item::after {
-    content: '◆'; font-size: 7px; color: #1976d2;
-  }
-
-  /* Section label line */
-  .section-label-line::before {
-    content: ''; display: block; width: 20px; height: 2px;
-    background: #1976d2; border-radius: 2px;
-  }
-  .cta-eyebrow-line::before {
-    content:''; display:block; width:18px; height:2px;
-    background:#1976d2; border-radius:2px;
-  }
-
-  /* Animation delays for hero */
-  .anim-1 { animation: slideUp 0.5s ease 0s    both; }
-  .anim-2 { animation: slideUp 0.5s ease 0.1s  both; }
-  .anim-3 { animation: slideUp 0.5s ease 0.18s both; }
-  .anim-4 { animation: slideUp 0.5s ease 0.26s both; }
-  .anim-5 { animation: slideUp 0.5s ease 0.34s both; }
-
-  @keyframes slideUp {
-    from { opacity:0; transform:translateY(22px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  @keyframes float {
-    0%,100% { transform: translateY(0); }
-    50%     { transform: translateY(-8px); }
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  .animate-float       { animation: float 4s ease-in-out infinite; }
-  .animate-float-slow  { animation: float 5s ease-in-out infinite 1s; }
-  .animate-float-delay { animation: float 6s ease-in-out infinite 0.5s; }
-  .animate-marquee     { animation: marquee 22s linear infinite; }
-
-  /* Clamp font sizes */
-  .text-hero   { font-size: clamp(46px, 4.8vw, 70px); }
-  .text-sec    { font-size: clamp(30px, 3.8vw, 48px); }
-
-  /* CTA pseudo-elements */
-  .cta-section::before {
-    content: ''; position: absolute; top: -100px; right: -80px;
-    width: 380px; height: 380px; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle, rgba(25,118,210,0.22) 0%, transparent 65%);
-  }
-  .cta-section::after {
-    content: ''; position: absolute; bottom: -70px; left: 38%;
-    width: 260px; height: 260px; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle, rgba(156,39,176,0.14) 0%, transparent 65%);
-  }
-</style>
-</head>
-<body class="bg-gray-50 text-neutral-text">
-
-<!-- ── NAV ── -->
-<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-15 py-[18px] bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]"
-     style="padding-left:60px;padding-right:60px;">
-  <a href="#" class="flex items-center gap-2 font-playfair text-[22px] font-bold tracking-tight text-neutral-text no-underline">
-    <div class="w-[9px] h-[9px] bg-primary rounded-full"></div>
-    ApplyIQ
-  </a>
-
-  <ul class="flex items-center gap-[34px] list-none">
-    <li><a href="#" class="text-sm font-normal text-neutral-muted no-underline hover:text-primary transition-colors duration-200">Features</a></li>
-    <li><a href="#" class="text-sm font-normal text-neutral-muted no-underline hover:text-primary transition-colors duration-200">How it works</a></li>
-    <li><a href="#" class="text-sm font-normal text-neutral-muted no-underline hover:text-primary transition-colors duration-200">Pricing</a></li>
-    <li><a href="#" class="text-sm font-normal text-neutral-muted no-underline hover:text-primary transition-colors duration-200">Blog</a></li>
-  </ul>
-
-  <div class="flex gap-[10px]">
-    <a href="auth.html"
-       class="inline-flex items-center px-5 py-[9px] text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
-      Sign In
-    </a>
-    <a href="auth.html"
-       class="inline-flex items-center gap-1.5 px-5 py-[9px] text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
-      Get Started →
-    </a>
-  </div>
-</nav>
-
-<!-- ── HERO ── -->
-<section class="min-h-screen grid grid-cols-2 pt-[72px] overflow-hidden">
-
-  <!-- Hero Left -->
-  <div class="flex flex-col justify-center relative z-10" style="padding:80px 56px;">
-
-    <div class="anim-1 inline-flex items-center gap-[7px] text-[11px] font-semibold tracking-[2px] uppercase text-primary bg-primary-light px-[14px] py-[6px] rounded-full w-fit mb-6">
-      <div class="w-[6px] h-[6px] bg-primary rounded-full"></div>
-      AI-Powered Job Search
-    </div>
-
-    <h1 class="anim-2 font-playfair text-hero font-black leading-[1.05] tracking-[-2px] text-neutral-text mb-[22px]">
-      Land your <em class="italic text-primary">dream job</em> with less chaos
-    </h1>
-
-    <p class="anim-3 text-[17px] font-light leading-[1.72] text-neutral-muted max-w-[420px] mb-[38px]">
-      ApplyIQ centralizes every application, generates tailored resumes and cover letters, and coaches you through every stage — so you spend less time organizing and more time winning offers.
-    </p>
-
-    <div class="anim-4 flex gap-[14px] items-center">
-      <a href="auth.html"
-         class="inline-flex items-center gap-2 px-[30px] py-[14px] text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]">
-        Start for free →
-      </a>
-      <a href="#how"
-         class="flex items-center gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>
-        </svg>
-        Watch demo
-      </a>
-    </div>
-
-    <div class="anim-5 flex gap-9 mt-[50px] pt-[34px] border-t border-neutral-border">
-      <div class="flex flex-col gap-[3px]">
-        <div class="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">4.2×</div>
-        <div class="text-xs text-neutral-muted">More interview invites</div>
+<html lang="en"><head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Job Application Detail - JobTrackr</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet" />
+    <script
+      src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1976d2",
+                        "primary-dark": "#145da8",
+                        "primary-light": "#e3f2fd",
+                        "secondary": "#9c27b0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "neutral-surface": "#ffffff",
+                        "neutral-text": "#111418",
+                        "neutral-muted": "#637588",
+                        "neutral-border": "#dce0e5",
+                        "success": "#22c55e",
+                        "warning": "#f59e0b",
+                        "danger": "#ef4444",
+                        "sidebar-bg": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            .timeline-line::before {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 24px;
+                bottom: 0;
+                width: 2px;
+                background-color: #dce0e5;
+            }
+            .timeline-item:last-child .timeline-line::before {
+                display: none;
+            }
+        }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex text-neutral-text overflow-hidden">
+    <aside
+      class="w-64 bg-sidebar-bg text-white flex flex-col fixed inset-y-0 left-0 z-50">
+      <div
+        class="h-16 flex items-center px-6 border-b border-slate-700 shrink-0">
+        <div class="flex items-center gap-2 text-primary-light">
+          <span
+            class="material-symbols-outlined text-3xl font-variation-fill">work_history</span>
+          <span
+            class="text-xl font-bold tracking-tight text-white">JobTrackr</span>
+        </div>
       </div>
-      <div class="flex flex-col gap-[3px]">
-        <div class="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">12k+</div>
-        <div class="text-xs text-neutral-muted">Offers secured</div>
+      <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
+          href="#">
+          <span
+            class="material-symbols-outlined group-hover:text-white">dashboard</span>
+          Dashboard
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg bg-primary/20 text-white"
+          href="#">
+          <span class="material-symbols-outlined">folder_open</span>
+          Applications
+          <span
+            class="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-[10px]">12</span>
+        </a>
+        <div class="pt-4 pb-2">
+          <p
+            class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">AI
+            Tools</p>
+        </div>
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
+          href="#">
+          <span
+            class="material-symbols-outlined group-hover:text-white">description</span>
+          Resume Builder
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
+          href="#">
+          <span
+            class="material-symbols-outlined group-hover:text-white">auto_fix_high</span>
+          Cover Letter
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
+          href="#">
+          <span
+            class="material-symbols-outlined group-hover:text-white">psychology</span>
+          Interview Prep
+        </a>
+      </nav>
+      <div class="border-t border-slate-700 p-4">
+        <div class="flex items-center gap-3">
+          <div
+            class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-light font-bold text-sm">JD</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-white truncate">John Doe</p>
+            <p class="text-xs text-slate-400 truncate">john@example.com</p>
+          </div>
+          <button class="text-slate-400 hover:text-white"><span
+              class="material-symbols-outlined text-xl">logout</span></button>
+        </div>
       </div>
-      <div class="flex flex-col gap-[3px]">
-        <div class="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">38%</div>
-        <div class="text-xs text-neutral-muted">Faster job search</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Hero Right -->
-  <div class="relative overflow-hidden bg-sidebar border-l border-white/[0.06]">
-    <div class="hero-grid-bg"></div>
-
-    <!-- Glow blobs -->
-    <div class="glow-blue absolute -bottom-20 -left-20 w-[420px] h-[420px] rounded-full pointer-events-none"></div>
-    <div class="glow-purple absolute -top-[60px] -right-[60px] w-[280px] h-[280px] rounded-full pointer-events-none"></div>
-
-    <!-- Main card -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[52%] w-[340px]">
-      <div class="animate-float bg-white border border-neutral-border rounded-[14px] p-[20px_22px] shadow-[0_12px_40px_rgba(17,25,33,0.22)]">
-        <div class="flex items-center justify-between mb-[14px]">
-          <div class="flex items-center gap-[10px]">
-            <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white font-playfair font-bold text-[15px]">S</div>
-            <div>
-              <div class="text-sm font-medium text-neutral-text">Stripe</div>
-              <div class="text-xs text-neutral-muted mt-[1px]">Senior Product Designer</div>
+    </aside>
+    <div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+      <header
+        class="h-20 bg-neutral-surface border-b border-neutral-border sticky top-0 z-30 px-8 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-4">
+          <button
+            class="p-2 hover:bg-background-light rounded-full transition-colors text-neutral-muted">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div>
+            <div class="flex items-center gap-3">
+              <h1
+                class="text-xl font-bold text-neutral-text leading-none">Senior
+                Product Designer</h1>
+              <span class="text-neutral-muted">at</span>
+              <span class="text-xl font-semibold text-primary">Stripe</span>
+            </div>
+            <nav
+              class="flex items-center text-xs font-medium text-neutral-muted mt-1">
+              <a class="hover:text-primary transition-colors"
+                href="#">Applications</a>
+              <span class="mx-2 text-neutral-border">/</span>
+              <span class="text-neutral-text">Details</span>
+            </nav>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <select
+              class="appearance-none bg-orange-100 text-orange-800 text-sm font-bold pl-4 pr-10 py-2 rounded-lg border-none focus:ring-2 focus:ring-orange-500 cursor-pointer">
+              <option selected>Interviewing</option>
+              <option>Applied</option>
+              <option>Offer</option>
+              <option>Rejected</option>
+            </select>
+            <span
+              class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-orange-800 pointer-events-none">expand_more</span>
+          </div>
+          <button
+            class="p-2 text-neutral-muted hover:text-primary hover:bg-background-light rounded-lg transition-colors border border-neutral-border">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button
+            class="p-2 text-neutral-muted hover:text-danger hover:bg-red-50 rounded-lg transition-colors border border-neutral-border">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+      </header>
+      <main class="flex-1 overflow-y-auto p-8">
+        <div class="max-w-7xl mx-auto flex gap-8">
+          <div class="w-[70%] space-y-6">
+            <div
+              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm overflow-hidden">
+              <div
+                class="flex border-b border-neutral-border bg-gray-50/50 px-4">
+                <button
+                  class="px-6 py-4 text-sm font-semibold border-b-2 border-primary text-primary">Overview</button>
+                <button
+                  class="px-6 py-4 text-sm font-medium text-neutral-muted hover:text-neutral-text transition-colors">Interviews</button>
+                <button
+                  class="px-6 py-4 text-sm font-medium text-neutral-muted hover:text-neutral-text transition-colors">Notes</button>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                  <div
+                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
+                    <p
+                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Location</p>
+                    <p
+                      class="text-sm font-medium text-neutral-text flex items-center gap-1.5">
+                      <span
+                        class="material-symbols-outlined text-primary text-lg">location_on</span>
+                      Remote
+                    </p>
+                  </div>
+                  <div
+                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
+                    <p
+                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Salary
+                      Range</p>
+                    <p
+                      class="text-sm font-medium text-neutral-text flex items-center gap-1.5">
+                      <span
+                        class="material-symbols-outlined text-primary text-lg">payments</span>
+                      $160k - $210k
+                    </p>
+                  </div>
+                  <div
+                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
+                    <p
+                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Job
+                      Link</p>
+                    <a
+                      class="text-sm font-medium text-primary hover:underline flex items-center gap-1.5"
+                      href="#">
+                      <span
+                        class="material-symbols-outlined text-lg">link</span>
+                      stripe.com/jobs/designer
+                    </a>
+                  </div>
+                </div>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-neutral-text">Job
+                      Description</h3>
+                    <button
+                      class="text-sm font-medium text-primary flex items-center gap-1 hover:underline">
+                      Collapse <span
+                        class="material-symbols-outlined text-lg">keyboard_arrow_up</span>
+                    </button>
+                  </div>
+                  <div
+                    class="prose prose-sm max-w-none text-neutral-muted leading-relaxed">
+                    <p>We're looking for a Senior Product Designer to join our
+                      Checkout team. You will be responsible for designing
+                      seamless payment experiences used by millions of
+                      businesses globally.</p>
+                    <p
+                      class="font-semibold text-neutral-text mt-4">Responsibilities:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                      <li>Own the end-to-end design process for core payment
+                        features.</li>
+                      <li>Collaborate with engineers and product managers to
+                        define roadmaps.</li>
+                      <li>Conduct user research and iterate based on
+                        high-fidelity prototypes.</li>
+                      <li>Contribute to the evolution of our design system.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
+              <div class="flex items-center justify-between mb-6">
+                <h3
+                  class="text-lg font-bold text-neutral-text flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-primary">event</span>
+                  Interview Timeline
+                </h3>
+                <button
+                  class="bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 transition-colors">
+                  <span class="material-symbols-outlined text-sm">add</span> ADD
+                  INTERVIEW
+                </button>
+              </div>
+              <div class="space-y-6 relative">
+                <div class="timeline-item flex gap-4 timeline-line relative">
+                  <div
+                    class="h-4 w-4 rounded-full bg-primary ring-4 ring-primary-light z-10 mt-1.5"></div>
+                  <div class="flex-1 pb-6">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <p class="text-sm font-bold text-neutral-text">Technical
+                          Portfolio Review</p>
+                        <p class="text-xs text-neutral-muted">Scheduled for Oct
+                          28, 2023 • 2:00 PM</p>
+                      </div>
+                      <span
+                        class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100 uppercase">Upcoming</span>
+                    </div>
+                    <div class="mt-2 flex items-center gap-3">
+                      <div class="flex -space-x-2">
+                        <div
+                          class="h-6 w-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">AS</div>
+                        <div
+                          class="h-6 w-6 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-[10px] font-bold">RK</div>
+                      </div>
+                      <span class="text-xs text-neutral-muted">2
+                        Interviewers</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="timeline-item flex gap-4 timeline-line relative">
+                  <div
+                    class="h-4 w-4 rounded-full bg-success z-10 mt-1.5"></div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <p class="text-sm font-bold text-neutral-text">Recruiter
+                          Screen</p>
+                        <p class="text-xs text-neutral-muted">Completed on Oct
+                          24, 2023</p>
+                      </div>
+                      <span
+                        class="text-[10px] font-bold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-100 uppercase">Passed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-neutral-text">Personal
+                  Notes</h3>
+                <div class="flex gap-2">
+                  <button
+                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
+                      class="material-symbols-outlined text-xl">format_bold</span></button>
+                  <button
+                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
+                      class="material-symbols-outlined text-xl">format_italic</span></button>
+                  <button
+                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
+                      class="material-symbols-outlined text-xl">format_list_bulleted</span></button>
+                  <button
+                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
+                      class="material-symbols-outlined text-xl">link</span></button>
+                </div>
+              </div>
+              <textarea
+                class="w-full h-32 p-4 text-sm text-neutral-text bg-background-light border-neutral-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Type your interview prep notes here..."></textarea>
             </div>
           </div>
-          <span class="px-[10px] py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-700">Interview</span>
-        </div>
-        <div class="flex gap-[14px] pt-3 border-t border-neutral-border">
-          <div class="flex items-center gap-1 text-[11px] text-neutral-muted">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Applied Feb 3
+          <div class="w-[30%] space-y-6">
+            <div
+              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
+              <h3
+                class="text-sm font-bold text-neutral-text uppercase tracking-wider mb-6">Status
+                History</h3>
+              <div class="space-y-6">
+                <div class="flex gap-3 relative">
+                  <div
+                    class="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0 z-10">
+                    <span
+                      class="material-symbols-outlined text-white text-sm">chat_bubble</span>
+                  </div>
+                  <div
+                    class="absolute left-3 top-6 bottom-0 w-[1px] h-6 bg-neutral-border -translate-x-1/2"></div>
+                  <div>
+                    <p
+                      class="text-sm font-bold text-neutral-text">Interviewing</p>
+                    <p class="text-xs text-neutral-muted">Today, 10:45 AM</p>
+                  </div>
+                </div>
+                <div class="flex gap-3 relative">
+                  <div
+                    class="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center shrink-0 z-10">
+                    <span
+                      class="material-symbols-outlined text-white text-sm">check_circle</span>
+                  </div>
+                  <div
+                    class="absolute left-3 top-6 bottom-0 w-[1px] h-6 bg-neutral-border -translate-x-1/2"></div>
+                  <div>
+                    <p class="text-sm font-medium text-neutral-text">Application
+                      Reviewed</p>
+                    <p class="text-xs text-neutral-muted">Oct 25, 2023</p>
+                  </div>
+                </div>
+                <div class="flex gap-3">
+                  <div
+                    class="h-6 w-6 rounded-full bg-gray-300 flex items-center justify-center shrink-0 z-10">
+                    <span
+                      class="material-symbols-outlined text-white text-sm">send</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-neutral-text">Applied</p>
+                    <p class="text-xs text-neutral-muted">Oct 24, 2023</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
+              <h3
+                class="text-sm font-bold text-neutral-text uppercase tracking-wider mb-6">Application
+                Materials</h3>
+              <div class="space-y-4">
+                <div
+                  class="group p-3 rounded-lg border border-neutral-border hover:border-primary transition-colors bg-white">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="h-10 w-10 rounded bg-red-50 text-danger flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined">description</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p
+                        class="text-sm font-bold text-neutral-text truncate">Resume_Custom.pdf</p>
+                      <p
+                        class="text-[10px] text-neutral-muted font-medium">Optimized
+                        for Stripe</p>
+                    </div>
+                  </div>
+                  <div class="mt-3 flex gap-2">
+                    <button
+                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-background-light hover:bg-neutral-border transition-colors flex items-center justify-center gap-1 uppercase">
+                      <span
+                        class="material-symbols-outlined text-sm">download</span>
+                      Download
+                    </button>
+                    <button
+                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center gap-1 uppercase">
+                      <span
+                        class="material-symbols-outlined text-sm">autorenew</span>
+                      Regenerate
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="group p-3 rounded-lg border border-neutral-border hover:border-primary transition-colors bg-white">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="h-10 w-10 rounded bg-blue-50 text-primary flex items-center justify-center shrink-0">
+                      <span
+                        class="material-symbols-outlined font-variation-fill">article</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p
+                        class="text-sm font-bold text-neutral-text truncate">Cover_Letter_Final.pdf</p>
+                      <p
+                        class="text-[10px] text-neutral-muted font-medium">Generated
+                        by AI</p>
+                    </div>
+                  </div>
+                  <div class="mt-3 flex gap-2">
+                    <button
+                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-background-light hover:bg-neutral-border transition-colors flex items-center justify-center gap-1 uppercase">
+                      <span
+                        class="material-symbols-outlined text-sm">download</span>
+                      Download
+                    </button>
+                    <button
+                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center gap-1 uppercase">
+                      <span
+                        class="material-symbols-outlined text-sm">autorenew</span>
+                      Regenerate
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-sidebar-bg rounded-xl p-6 text-white shadow-lg overflow-hidden relative">
+              <div class="relative z-10">
+                <h3
+                  class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">JobTrackr
+                  Insight</h3>
+                <p class="text-sm font-medium leading-relaxed">Your profile
+                  matches <span class="text-primary-light font-bold">87%</span>
+                  of the requirements for this role. Key missing skill: <span
+                    class="bg-slate-700 px-1.5 rounded text-xs">Framer
+                    AI</span></p>
+                <button
+                  class="mt-4 w-full py-2 bg-primary hover:bg-primary-dark rounded text-xs font-bold transition-colors">VIEW
+                  MATCH REPORT</button>
+              </div>
+              <span
+                class="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl text-white/5 font-variation-fill">psychology</span>
+            </div>
           </div>
-          <div class="flex items-center gap-1 text-[11px] text-neutral-muted">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Remote · SF
-          </div>
-          <div class="flex items-center gap-1 text-[11px] text-neutral-muted">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            $140–175k
-          </div>
         </div>
-      </div>
+      </main>
     </div>
 
-    <!-- Score floating card -->
-    <div class="animate-float-slow absolute bg-white border border-neutral-border rounded-xl p-[14px_18px] shadow-[0_8px_28px_rgba(17,25,33,0.18)] w-[132px]"
-         style="top:18%;right:36px;">
-      <div class="font-playfair text-[36px] font-bold text-green-500 leading-none">92</div>
-      <div class="text-[11px] text-neutral-muted mt-[3px]">Resume Match Score</div>
-    </div>
-
-    <!-- AI suggestion floating card -->
-    <div class="animate-float-delay absolute bg-white border border-neutral-border rounded-xl p-[14px_18px] shadow-[0_8px_28px_rgba(17,25,33,0.18)] w-[186px]"
-         style="bottom:22%;left:32px;">
-      <div class="text-[10px] font-semibold tracking-[0.8px] uppercase text-secondary mb-[5px] flex items-center gap-1">✦ AI Suggestion</div>
-      <div class="text-xs text-neutral-text leading-[1.5]">Add "stakeholder alignment" to boost match by 8 pts</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── MARQUEE ── -->
-<div class="border-t border-b border-white/[0.05] py-[15px] bg-sidebar overflow-hidden">
-  <div class="animate-marquee flex gap-14 whitespace-nowrap">
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Application Tracking</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">AI Resume Builder</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Cover Letter Generator</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Interview Prep</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Job Match Scores</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Follow-up Reminders</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Analytics Dashboard</div>
-    <!-- Duplicate for seamless loop -->
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Application Tracking</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">AI Resume Builder</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Cover Letter Generator</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Interview Prep</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Job Match Scores</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Follow-up Reminders</div>
-    <div class="flex items-center gap-[18px] shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">Analytics Dashboard</div>
-  </div>
-</div>
-
-<!-- ── FEATURES ── -->
-<section class="py-[100px] px-[60px] max-w-[1200px] mx-auto">
-  <div class="section-label-line flex items-center gap-[10px] text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
-    Core Features
-  </div>
-  <h2 class="font-playfair text-sec font-bold tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-[520px] mb-16">
-    Every tool you need to <em class="italic text-primary">win</em> the job search
-  </h2>
-
-  <div class="grid grid-cols-3 gap-[18px]">
-
-    <!-- Feature 1 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">Smart Application Tracker</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Visualize every application on a kanban board. Track status from Saved → Applied → Interviewing → Offer across all platforms.</div>
-    </div>
-
-    <!-- Feature 2 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">AI Resume Tailoring</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Paste a job description and get a customized resume in seconds. AI matches your skills to each role's requirements automatically.</div>
-    </div>
-
-    <!-- Feature 3 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">Cover Letter Writer</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Generate compelling, personalized cover letters that speak directly to each company's culture and specific role requirements.</div>
-    </div>
-
-    <!-- Feature 4 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">Follow-up Reminders</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Never miss the right moment. Get smart reminders for follow-ups, deadlines, and check-ins based on each company's typical timeline.</div>
-    </div>
-
-    <!-- Feature 5 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">Interview Prep Coach</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Practice with AI-generated questions tailored to the specific role and company. Get real-time feedback on every answer.</div>
-    </div>
-
-    <!-- Feature 6 -->
-    <div class="bg-white border border-neutral-border rounded-[14px] p-[34px_28px] transition-all duration-200 hover:border-primary hover:shadow-[0_8px_30px_rgba(25,118,210,0.1)] hover:-translate-y-[3px]">
-      <div class="w-11 h-11 bg-primary-light rounded-[10px] flex items-center justify-center mb-[18px]">
-        <svg class="w-5 h-5 stroke-primary" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <div class="font-playfair text-lg font-bold text-neutral-text mb-[9px] tracking-[-0.2px]">Search Analytics</div>
-      <div class="text-sm leading-[1.7] text-neutral-muted font-light">Understand your job search performance. Identify patterns, optimize your strategy, and see exactly where you're winning.</div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ── HOW IT WORKS ── -->
-<section class="bg-bg-dark py-[100px] px-[60px]" id="how">
-  <div class="max-w-[1200px] mx-auto">
-
-    <div class="section-label-line flex items-center gap-[10px] text-[11px] font-semibold tracking-[2.5px] uppercase text-blue-100/80 mb-3">
-      How It Works
-    </div>
-    <h2 class="font-playfair text-sec font-bold tracking-[-1.5px] text-white leading-[1.1] max-w-[520px] mb-16">
-      From application to <em class="italic text-blue-100">offer</em> in four steps
-    </h2>
-
-    <div class="grid grid-cols-4 gap-9">
-
-      <div class="relative">
-        <div class="font-playfair text-[52px] font-black text-white/[0.05] leading-none mb-3 tracking-[-2px]">01</div>
-        <div class="w-9 h-[3px] bg-primary rounded-full mb-4"></div>
-        <div class="font-playfair text-[17px] font-bold text-white mb-2">Import Your Profile</div>
-        <div class="text-[13px] leading-[1.7] text-white/40 font-light">Upload your existing resume or connect LinkedIn. ApplyIQ builds your comprehensive skills profile instantly.</div>
-      </div>
-
-      <div class="relative">
-        <div class="font-playfair text-[52px] font-black text-white/[0.05] leading-none mb-3 tracking-[-2px]">02</div>
-        <div class="w-9 h-[3px] bg-primary rounded-full mb-4"></div>
-        <div class="font-playfair text-[17px] font-bold text-white mb-2">Add Job Listings</div>
-        <div class="text-[13px] leading-[1.7] text-white/40 font-light">Paste a job URL or description. ApplyIQ analyzes it and shows your match score with tailored suggestions.</div>
-      </div>
-
-      <div class="relative">
-        <div class="font-playfair text-[52px] font-black text-white/[0.05] leading-none mb-3 tracking-[-2px]">03</div>
-        <div class="w-9 h-[3px] bg-primary rounded-full mb-4"></div>
-        <div class="font-playfair text-[17px] font-bold text-white mb-2">Apply with AI</div>
-        <div class="text-[13px] leading-[1.7] text-white/40 font-light">Generate a targeted resume and cover letter in one click. Review, edit, and submit — all in under 10 minutes.</div>
-      </div>
-
-      <div class="relative">
-        <div class="font-playfair text-[52px] font-black text-white/[0.05] leading-none mb-3 tracking-[-2px]">04</div>
-        <div class="w-9 h-[3px] bg-primary rounded-full mb-4"></div>
-        <div class="font-playfair text-[17px] font-bold text-white mb-2">Track & Optimize</div>
-        <div class="text-[13px] leading-[1.7] text-white/40 font-light">Monitor every application, get interview coaching, and use analytics to continuously refine your approach.</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ── TESTIMONIALS ── -->
-<section class="py-[100px] px-[60px] max-w-[1200px] mx-auto">
-  <div class="section-label-line flex items-center gap-[10px] text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
-    Success Stories
-  </div>
-  <h2 class="font-playfair text-sec font-bold tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-[520px]">
-    Real people, <em class="italic text-primary">real offers</em>
-  </h2>
-
-  <div class="grid grid-cols-3 gap-[18px] mt-[52px]">
-
-    <div class="bg-white border border-neutral-border p-[30px] rounded-[14px] transition-all duration-200 hover:border-primary hover:-translate-y-[3px] hover:shadow-[0_10px_32px_rgba(25,118,210,0.1)]">
-      <span class="block font-playfair text-[52px] font-black text-primary/60 leading-[0.8] mb-[14px]">"</span>
-      <p class="text-sm leading-[1.7] text-neutral-text font-light mb-5">I was applying for 3 months with zero callbacks. ApplyIQ rewrote my resume with better keyword matching and I had 5 interviews within two weeks.</p>
-      <div class="flex items-center gap-[11px] pt-4 border-t border-neutral-border">
-        <div class="w-[34px] h-[34px] bg-primary rounded-full flex items-center justify-center text-white text-[11px] font-semibold">MK</div>
-        <div>
-          <div class="text-[13px] font-medium text-neutral-text">Maya K.</div>
-          <div class="text-[11px] text-neutral-muted mt-[1px]">Now: UX Designer @ Figma</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white border border-neutral-border p-[30px] rounded-[14px] transition-all duration-200 hover:border-primary hover:-translate-y-[3px] hover:shadow-[0_10px_32px_rgba(25,118,210,0.1)]">
-      <span class="block font-playfair text-[52px] font-black text-primary/60 leading-[0.8] mb-[14px]">"</span>
-      <p class="text-sm leading-[1.7] text-neutral-text font-light mb-5">The cover letter AI is unreal. Each one sounds completely personal — not like a template. Hiring managers actually comment on them during interviews.</p>
-      <div class="flex items-center gap-[11px] pt-4 border-t border-neutral-border">
-        <div class="w-[34px] h-[34px] rounded-full flex items-center justify-center text-white text-[11px] font-semibold bg-secondary">JR</div>
-        <div>
-          <div class="text-[13px] font-medium text-neutral-text">James R.</div>
-          <div class="text-[11px] text-neutral-muted mt-[1px]">Now: PM @ Notion</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white border border-neutral-border p-[30px] rounded-[14px] transition-all duration-200 hover:border-primary hover:-translate-y-[3px] hover:shadow-[0_10px_32px_rgba(25,118,210,0.1)]">
-      <span class="block font-playfair text-[52px] font-black text-primary/60 leading-[0.8] mb-[14px]">"</span>
-      <p class="text-sm leading-[1.7] text-neutral-text font-light mb-5">Managing 40+ applications felt overwhelming. The tracker and reminders kept me on top of every opportunity. Landed a 40% salary increase.</p>
-      <div class="flex items-center gap-[11px] pt-4 border-t border-neutral-border">
-        <div class="w-[34px] h-[34px] rounded-full flex items-center justify-center text-white text-[11px] font-semibold bg-success">SP</div>
-        <div>
-          <div class="text-[13px] font-medium text-neutral-text">Sarah P.</div>
-          <div class="text-[11px] text-neutral-muted mt-[1px]">Now: Senior Engineer @ Vercel</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ── CTA ── -->
-<div class="cta-section mx-[60px] mb-[100px] bg-bg-dark rounded-[18px] p-[70px_80px] grid grid-cols-2 items-center gap-[60px] relative overflow-hidden">
-  <div>
-    <div class="cta-eyebrow-line flex items-center gap-2 text-[11px] font-semibold tracking-[2.5px] uppercase text-blue-100 mb-4">
-      Start Today
-    </div>
-    <h2 class="font-playfair text-[40px] font-bold text-white tracking-[-1.5px] leading-[1.1] mb-[14px]">
-      Your next <em class="italic text-blue-100">offer</em> starts here
-    </h2>
-    <p class="text-[15px] text-white/52 font-light leading-[1.65]">Join 12,000+ job seekers who found their next role faster with ApplyIQ. Free to start, no credit card needed.</p>
-  </div>
-
-  <div class="flex flex-col gap-[11px]">
-    <input type="email" placeholder="Enter your email address"
-           class="px-4 py-[13px] font-dm text-sm bg-white/[0.07] border border-white/[0.14] rounded-lg text-white outline-none transition-colors duration-200 placeholder-white/30 focus:border-primary"/>
-    <button class="py-[14px] font-dm text-[15px] font-medium bg-primary text-white border-none rounded-lg cursor-pointer transition-all duration-200 shadow-[0_4px_18px_rgba(25,118,210,0.38)] hover:bg-primary-dark hover:-translate-y-[1px] hover:shadow-[0_8px_26px_rgba(25,118,210,0.45)]">
-      Create Free Account →
-    </button>
-    <p class="text-[11px] text-white/25 text-center">By signing up you agree to our Terms of Service &amp; Privacy Policy</p>
-  </div>
-</div>
-
-<!-- ── FOOTER ── -->
-<footer class="border-t border-neutral-border px-[60px] py-[42px] flex items-center justify-between bg-white">
-  <div class="flex items-center gap-[7px] font-playfair text-lg font-bold text-neutral-text">
-    <div class="w-[7px] h-[7px] bg-primary rounded-full"></div>
-    ApplyIQ
-  </div>
-
-  <ul class="flex gap-[26px] list-none">
-    <li><a href="#" class="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Features</a></li>
-    <li><a href="#" class="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Pricing</a></li>
-    <li><a href="#" class="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Blog</a></li>
-    <li><a href="#" class="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Privacy</a></li>
-    <li><a href="#" class="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Terms</a></li>
-  </ul>
-
-  <div class="text-xs text-neutral-muted">© 2026 ApplyIQ. All rights reserved.</div>
-</footer>
-
-</body>
-</html>
+  </body></html>

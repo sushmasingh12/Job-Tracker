@@ -50,11 +50,34 @@ const Sidebar = () => {
             <span className="material-symbols-outlined">dashboard</span>
             Dashboard
           </NavLink>
-          <NavLink onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group">
+          <div className="pt-4 pb-2">
+            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Applications
+            </p>
+          </div>
+          <NavLink to="/addAplication" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group">
             <span className="material-symbols-outlined group-hover:text-white">
               folder_open
             </span>
-            Applications
+            Add Applications
+            <span className="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-xs">
+              12
+            </span>
+          </NavLink>
+          <NavLink to="/aplications" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group">
+            <span className="material-symbols-outlined group-hover:text-white">
+              folder_open
+            </span>
+            Applications 
+            <span className="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-xs">
+              12
+            </span>
+          </NavLink>
+          <NavLink to="/aplicationDetails" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group">
+            <span className="material-symbols-outlined group-hover:text-white">
+              folder_open
+            </span>
+            Applications Details
             <span className="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-xs">
               12
             </span>

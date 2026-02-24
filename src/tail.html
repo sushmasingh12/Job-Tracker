@@ -1,148 +1,160 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Resume Builder: Step 1 Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #3B82F6;
+            --secondary: #8B5CF6;
+            --background-dark: #0F172A;
+            --surface-dark: #1E293B;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+    </style>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3B82F6",
+                        "secondary": "#8B5CF6",
+                        "background-dark": "#0F172A",
+                        "surface-dark": "#1E293B",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-dark font-display text-slate-100 antialiased h-screen flex flex-col overflow-hidden">
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+<main class="flex-1 overflow-y-auto bg-gradient-to-b from-[#0F172A] to-[#1E293B]/20 py-12 px-6">
+<div class="max-w-4xl mx-auto space-y-12">
+<div class="text-center space-y-2">
+<h2 class="text-3xl font-bold text-white">AI Resume Builder</h2>
+<p class="text-slate-400">Tailor your professional experience to any job in seconds</p>
+</div>
+<div class="space-y-10">
+<section class="space-y-6">
+<div class="flex items-center gap-4">
+<div>
+<h3 class="text-xl font-semibold text-white">Step 1: Choose Your Resume</h3>
+<p class="text-sm text-slate-400">Select a base resume or upload a new one</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass-card p-4 rounded-2xl border-2 border-primary bg-primary/5 ring-1 ring-primary/20 cursor-pointer relative group transition-all hover:scale-[1.02]">
+<div class="flex items-start justify-between mb-8">
+<div class="h-10 w-10 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">check</span>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white truncate">Product_Designer_2024.pdf</h4>
+<p class="text-xs text-slate-400 mt-1">Uploaded 2 days ago • 1.2MB</p>
+</div>
+</div>
+<div class="glass-card p-4 rounded-2xl border border-slate-700 hover:border-slate-500 cursor-pointer transition-all hover:scale-[1.02] group">
+<div class="flex items-start mb-8">
+<div class="h-10 w-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+<span class="material-symbols-outlined">description</span>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-200 truncate">Senior_Lead_Roles.docx</h4>
+<p class="text-xs text-slate-500 mt-1">Uploaded 3 weeks ago • 840KB</p>
+</div>
+</div>
+<label class="border-2 border-dashed border-slate-700 hover:border-primary/50 rounded-2xl flex flex-col items-center justify-center p-6 cursor-pointer bg-slate-800/20 hover:bg-slate-800/40 transition-all group min-h-[140px]">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors text-3xl mb-2">cloud_upload</span>
+<span class="text-sm font-medium text-slate-400 group-hover:text-slate-200">Upload New</span>
+<span class="text-[10px] text-slate-600">PDF, DOCX up to 10MB</span>
+<input class="hidden" type="file"/>
+</label>
+</div>
+</section>
+<section class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="h-10 w-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">target</span>
+</div>
+<div>
+<h3 class="text-xl font-semibold text-white">Step 2: Target Job</h3>
+<p class="text-sm text-slate-400">Provide the job details you want to match</p>
+</div>
+</div>
+<div class="glass-card rounded-2xl p-6 space-y-6">
+<div class="space-y-4">
+<label class="block text-sm font-medium text-slate-300">Select from Active Applications</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-500 group-focus-within:text-primary">search</span>
+</div>
+<select class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl block p-3.5 pl-11 pr-10 appearance-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+<option>Search your current applications...</option>
+<option>Senior Product Designer @ Stripe</option>
+<option>Product Lead @ Meta</option>
+<option>Senior UX Engineer @ Vercel</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-slate-500">expand_more</span>
+</div>
+</div>
+<div class="relative py-2 flex items-center">
+<div class="flex-grow border-t border-slate-800"></div>
+<span class="flex-shrink mx-4 text-xs font-bold text-slate-600 uppercase tracking-widest">OR</span>
+<div class="flex-grow border-t border-slate-800"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<label class="block text-sm font-medium text-slate-300">Paste Job Description</label>
+<span class="text-[10px] text-slate-500 italic">Supports plain text</span>
+</div>
+<textarea class="w-full bg-slate-900/50 border border-slate-700 text-slate-300 text-sm rounded-xl p-4 min-h-[160px] focus:ring-2 focus:ring-secondary focus:border-secondary transition-all placeholder:text-slate-600" placeholder="Paste the job description or specific requirements here for a better AI analysis..."></textarea>
+</div>
+</div>
+</section>
+<div class="flex flex-col items-center pt-6 space-y-4">
+<button class="group w-full max-w-md py-4 px-8 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl text-lg font-bold shadow-xl shadow-secondary/20 hover:shadow-secondary/40 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden glow-purple">
+<div class="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="material-symbols-outlined">auto_fix_high</span>
+<span class="relative">Analyze &amp; Customize</span>
+</button>
+<div class="flex items-center gap-4 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> 5 AI Credits will be used</span>
+<span class="h-1 w-1 rounded-full bg-slate-700"></span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">timer</span> Estimated time: 10s</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="flex-none h-12 px-8 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+<div class="flex gap-6">
+<span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-500"></span> AI Engine Online</span>
+<span class="flex items-center gap-2">Base: ATS Optimized V4</span>
+</div>
+<div>
+<span>JobTrackr Professional © 2024</span>
+</div>
+</footer>
 
-  return (
-    <>
-      {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-sidebar flex items-center justify-between px-4 border-b border-slate-700">
-        <div className="flex items-center gap-2 text-primary-light">
-          <span className="material-symbols-outlined text-3xl">work_history</span>
-          <span className="text-xl font-bold tracking-tight text-white">JobTrackr</span>
-        </div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-white p-1 rounded-md hover:bg-slate-700 transition-colors"
-          aria-label="Toggle menu"
-        >
-          <span className="material-symbols-outlined text-2xl">
-            {isOpen ? "close" : "menu"}
-          </span>
-        </button>
-      </div>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div
-        className={`
-          w-64 bg-sidebar text-white flex flex-col fixed inset-y-0 left-0 z-50
-          transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
-        `}
-      >
-        {/* Logo - hidden on mobile (shown in top bar instead) */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-700">
-          <div className="flex items-center gap-2 text-primary-light">
-            <span className="material-symbols-outlined text-3xl">work_history</span>
-            <span className="text-xl font-bold tracking-tight text-white">JobTrackr</span>
-          </div>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg bg-primary/20 text-white"
-          >
-            <span className="material-symbols-outlined">dashboard</span>
-            Dashboard
-          </NavLink>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">folder_open</span>
-            Applications
-            <span className="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-xs">12</span>
-          </NavLink>
-
-          <div className="pt-4 pb-2">
-            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              AI Tools
-            </p>
-          </div>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">description</span>
-            Resume Builder
-          </NavLink>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">auto_fix_high</span>
-            Cover Letter
-          </NavLink>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">psychology</span>
-            Interview Prep
-          </NavLink>
-
-          <div className="pt-4 pb-2">
-            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Insights
-            </p>
-          </div>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">analytics</span>
-            Analytics
-          </NavLink>
-
-          <NavLink
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          >
-            <span className="material-symbols-outlined group-hover:text-white">settings</span>
-            Settings
-          </NavLink>
-        </nav>
-
-        {/* User Profile */}
-        <div className="border-t border-slate-700 p-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-light font-bold text-sm shrink-0">
-              JD
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">John Doe</p>
-              <p className="text-xs text-slate-400 truncate">john@example.com</p>
-            </div>
-            <button className="text-slate-400 hover:text-white shrink-0">
-              <span className="material-symbols-outlined">logout</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop spacer — push main content right on large screens */}
-      <div className="hidden lg:block w-64 shrink-0" />
-
-      {/* Mobile spacer — push main content below top bar */}
-      <div className="lg:hidden h-16" />
-    </>
-  );
-};
-
-export default Sidebar;
+</body></html>
