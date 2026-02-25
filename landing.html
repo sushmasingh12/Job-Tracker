@@ -2,7 +2,7 @@
 <html lang="en"><head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Job Application Detail - JobTrackr</title>
+    <title>AI Resume Customizer Dashboard - JobTrackr</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
     <link
@@ -19,472 +19,520 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1976d2",
-                        "primary-dark": "#145da8",
-                        "primary-light": "#e3f2fd",
-                        "secondary": "#9c27b0",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111921",
+                        "primary": "#2563eb",
+                        "primary-dark": "#1d4ed8",
+                        "primary-light": "#eff6ff",
+                        "background-light": "#f8fafc",
                         "neutral-surface": "#ffffff",
-                        "neutral-text": "#111418",
-                        "neutral-muted": "#637588",
-                        "neutral-border": "#dce0e5",
-                        "success": "#22c55e",
+                        "neutral-text": "#1e293b",
+                        "neutral-muted": "#64748b",
+                        "neutral-border": "#e2e8f0",
+                        "success": "#10b981",
                         "warning": "#f59e0b",
                         "danger": "#ef4444",
-                        "sidebar-bg": "#1e293b",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
                         "body": ["Inter", "sans-serif"],
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    borderRadius: {"DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
                 },
             },
         }
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-            .timeline-line::before {
-                content: '';
-                position: absolute;
-                left: 7px;
-                top: 24px;
-                bottom: 0;
-                width: 2px;
-                background-color: #dce0e5;
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
             }
-            .timeline-item:last-child .timeline-line::before {
-                display: none;
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
             }
         }
     </style>
   </head>
   <body
-    class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex text-neutral-text overflow-hidden">
-    <aside
-      class="w-64 bg-sidebar-bg text-white flex flex-col fixed inset-y-0 left-0 z-50">
-      <div
-        class="h-16 flex items-center px-6 border-b border-slate-700 shrink-0">
-        <div class="flex items-center gap-2 text-primary-light">
-          <span
-            class="material-symbols-outlined text-3xl font-variation-fill">work_history</span>
-          <span
-            class="text-xl font-bold tracking-tight text-white">JobTrackr</span>
-        </div>
-      </div>
-      <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-        <a
-          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span
-            class="material-symbols-outlined group-hover:text-white">dashboard</span>
-          Dashboard
-        </a>
-        <a
-          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg bg-primary/20 text-white"
-          href="#">
-          <span class="material-symbols-outlined">folder_open</span>
-          Applications
-          <span
-            class="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-[10px]">12</span>
-        </a>
-        <div class="pt-4 pb-2">
-          <p
-            class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">AI
-            Tools</p>
-        </div>
-        <a
-          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span
-            class="material-symbols-outlined group-hover:text-white">description</span>
-          Resume Builder
-        </a>
-        <a
-          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span
-            class="material-symbols-outlined group-hover:text-white">auto_fix_high</span>
-          Cover Letter
-        </a>
-        <a
-          class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span
-            class="material-symbols-outlined group-hover:text-white">psychology</span>
-          Interview Prep
-        </a>
-      </nav>
-      <div class="border-t border-slate-700 p-4">
-        <div class="flex items-center gap-3">
-          <div
-            class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-light font-bold text-sm">JD</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate">John Doe</p>
-            <p class="text-xs text-slate-400 truncate">john@example.com</p>
-          </div>
-          <button class="text-slate-400 hover:text-white"><span
-              class="material-symbols-outlined text-xl">logout</span></button>
-        </div>
-      </div>
-    </aside>
-    <div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
-      <header
-        class="h-20 bg-neutral-surface border-b border-neutral-border sticky top-0 z-30 px-8 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-4">
-          <button
-            class="p-2 hover:bg-background-light rounded-full transition-colors text-neutral-muted">
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
-          <div>
-            <div class="flex items-center gap-3">
-              <h1
-                class="text-xl font-bold text-neutral-text leading-none">Senior
-                Product Designer</h1>
-              <span class="text-neutral-muted">at</span>
-              <span class="text-xl font-semibold text-primary">Stripe</span>
+    class="bg-background-light font-body antialiased min-h-screen flex text-neutral-text">
+   
+    <div class="flex-1 flex flex-col min-h-screen">
+     
+      <main class="flex-1 overflow-y-auto custom-scrollbar">
+        <div class="max-w-4xl mx-auto p-8 space-y-12 pb-32">
+          <section class="space-y-8">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2 text-primary mb-1">
+                  <span
+                    class="material-symbols-outlined text-xl">auto_awesome</span>
+                  <span class="text-xs font-bold uppercase tracking-wider">AI
+                    Optimization Ready</span>
+                </div>
+                <h2
+                  class="text-2xl font-extrabold text-neutral-text tracking-tight">Optimization
+                  Results</h2>
+              </div>
             </div>
-            <nav
-              class="flex items-center text-xs font-medium text-neutral-muted mt-1">
-              <a class="hover:text-primary transition-colors"
-                href="#">Applications</a>
-              <span class="mx-2 text-neutral-border">/</span>
-              <span class="text-neutral-text">Details</span>
-            </nav>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="relative">
-            <select
-              class="appearance-none bg-orange-100 text-orange-800 text-sm font-bold pl-4 pr-10 py-2 rounded-lg border-none focus:ring-2 focus:ring-orange-500 cursor-pointer">
-              <option selected>Interviewing</option>
-              <option>Applied</option>
-              <option>Offer</option>
-              <option>Rejected</option>
-            </select>
-            <span
-              class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-orange-800 pointer-events-none">expand_more</span>
-          </div>
-          <button
-            class="p-2 text-neutral-muted hover:text-primary hover:bg-background-light rounded-lg transition-colors border border-neutral-border">
-            <span class="material-symbols-outlined">edit</span>
-          </button>
-          <button
-            class="p-2 text-neutral-muted hover:text-danger hover:bg-red-50 rounded-lg transition-colors border border-neutral-border">
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-        </div>
-      </header>
-      <main class="flex-1 overflow-y-auto p-8">
-        <div class="max-w-7xl mx-auto flex gap-8">
-          <div class="w-[70%] space-y-6">
-            <div
-              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
               <div
-                class="flex border-b border-neutral-border bg-gray-50/50 px-4">
-                <button
-                  class="px-6 py-4 text-sm font-semibold border-b-2 border-primary text-primary">Overview</button>
-                <button
-                  class="px-6 py-4 text-sm font-medium text-neutral-muted hover:text-neutral-text transition-colors">Interviews</button>
-                <button
-                  class="px-6 py-4 text-sm font-medium text-neutral-muted hover:text-neutral-text transition-colors">Notes</button>
+                class="md:col-span-5 lg:col-span-4 bg-white rounded-2xl p-6 shadow-sm border border-neutral-border flex flex-col items-center">
+                <h3 class="text-sm font-bold text-neutral-muted mb-6">ATS Match
+                  Score</h3>
+                <div class="relative flex items-center justify-center">
+                  <svg class="w-40 h-40 transform -rotate-90">
+                    <circle class="text-slate-100" cx="80" cy="80"
+                      fill="transparent" r="70" stroke="currentColor"
+                      stroke-width="12"></circle>
+                    <circle class="text-success" cx="80" cy="80"
+                      fill="transparent" r="70" stroke="currentColor"
+                      stroke-dasharray="440" stroke-dashoffset="79.2"
+                      stroke-linecap="round" stroke-width="12"></circle>
+                  </svg>
+                  <div
+                    class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-4xl font-black text-neutral-text">82<span
+                        class="text-xl font-bold text-neutral-muted">%</span></span>
+                    <span
+                      class="text-[10px] bg-success/10 text-success font-black px-2 py-0.5 rounded-full mt-1">OPTIMIZED</span>
+                  </div>
+                </div>
+                <p
+                  class="mt-6 text-xs text-neutral-muted text-center font-medium leading-relaxed px-2">
+                  Your resume matches 82% of the job requirements. Add missing
+                  keywords to reach 95%+.
+                </p>
+              </div>
+              <div
+                class="md:col-span-7 lg:col-span-8 bg-white rounded-2xl p-6 shadow-sm border border-neutral-border">
+                <div class="right-panel">
+
+                  <div class="toggle-bar">
+                    <div class="toggle-group">
+                      <button class="toggle-btn active" id="btn-before"
+                        onclick="switchView('before')">Before Resume</button>
+                      <button class="toggle-btn" id="btn-after"
+                        onclick="switchView('after')">After Resume</button>
+                    </div>
+                    <div class="toggle-right">
+                      <div class="diff-legend">
+                        <span><span class="legend-dot"
+                            style="background:#10B981;"></span>Added</span>
+                        <span><span class="legend-dot"
+                            style="background:#3B82F6;"></span>Improved</span>
+                      </div>
+                      <span class="diff-badge" id="diffBadge" style="display:none;">↑ +24
+                        pts estimated</span>
+                      <button class="btn-outline" onclick="goToOptimize()">Edit in
+                        Optimizer</button>
+                    </div>
+                  </div>
+          
+                  <!-- RESUME VIEWER -->
+                  <div class="resume-viewer" id="resumeViewer">
+          
+                    <!-- BEFORE RESUME — shown by default -->
+                    <div class="resume-paper before-state" id="beforeResume">
+                      <div class="resume-header">
+                        <div class="resume-name">Alex Johnson</div>
+                        <div class="resume-contact">
+                          <span>alex.johnson@email.com</span>
+                          <span>+1 (555) 000-0000</span>
+                          <span>San Francisco, CA</span>
+                          <span>linkedin.com/in/alexj</span>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Summary</div>
+                        <p style="font-size:12.5px;line-height:1.7;color:#444;">
+                          Frontend developer with 4 years of experience building web
+                          applications. Good at JavaScript and React. Looking for new
+                          opportunities to grow and contribute to a team.
+                        </p>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Experience</div>
+          
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">Frontend Developer</div>
+                              <div class="r-job-company">TechCorp Inc.</div>
+                            </div>
+                            <div class="r-job-date">Jan 2021 – Present</div>
+                          </div>
+                          <ul class="r-bullets">
+                            <li>Built UI components using React</li>
+                            <li>Worked with REST APIs and integrated third-party
+                              services</li>
+                            <li>Helped improve website performance</li>
+                            <li>Participated in code reviews and sprint planning</li>
+                          </ul>
+                        </div>
+          
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">Junior Developer</div>
+                              <div class="r-job-company">StartupXYZ</div>
+                            </div>
+                            <div class="r-job-date">Jun 2019 – Dec 2020</div>
+                          </div>
+                          <ul class="r-bullets">
+                            <li>Developed features for the main product</li>
+                            <li>Fixed bugs and maintained codebase</li>
+                            <li>Assisted senior developers</li>
+                          </ul>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Skills</div>
+                        <div class="r-skills">
+                          <span class="r-skill">JavaScript</span>
+                          <span class="r-skill">React</span>
+                          <span class="r-skill">HTML/CSS</span>
+                          <span class="r-skill">Git</span>
+                          <span class="r-skill">REST APIs</span>
+                          <span class="r-skill">Node.js</span>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Education</div>
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">B.S. Computer Science</div>
+                              <div class="r-job-company">State University</div>
+                            </div>
+                            <div class="r-job-date">2015 – 2019</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+          
+                    <!-- AFTER RESUME — hidden by default -->
+                    <div class="resume-paper after-state" id="afterResume"
+                      style="display:none;">
+                      <div class="resume-header">
+                        <div class="resume-name">Alex Johnson</div>
+                        <div class="resume-contact">
+                          <span>alex.johnson@email.com</span>
+                          <span>+1 (555) 000-0000</span>
+                          <span>San Francisco, CA</span>
+                          <span>linkedin.com/in/alexj</span>
+                          <span>github.com/alexj</span>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Summary</div>
+                        <p class="highlight-change"
+                          style="font-size:12.5px;line-height:1.7;color:#444;">
+                          Results-driven <span class="kw-chip">Frontend Engineer</span>
+                          with 4+ years of expertise in building scalable,
+                          high-performance web applications using <span
+                            class="kw-chip">React</span> and <span
+                            class="kw-chip">TypeScript</span>. Proven track record of
+                          delivering impactful user experiences that improve engagement
+                          and retention.
+                        </p>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Experience</div>
+          
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">Senior Frontend Engineer</div>
+                              <div class="r-job-company">TechCorp Inc.</div>
+                            </div>
+                            <div class="r-job-date">Jan 2021 – Present</div>
+                          </div>
+                          <ul class="r-bullets">
+                            <li class="highlight-change">Architected and delivered
+                              <strong>12+ reusable React component library</strong>
+                              features, reducing development time by
+                              <strong>35%</strong></li>
+                            <li>Integrated REST APIs and third-party services, improving
+                              data load times by <strong>40%</strong></li>
+                            <li class="highlight-change">Led <span class="kw-chip">Core
+                                Web Vitals</span> optimization initiative, boosting
+                              Lighthouse score from <strong>62 → 91</strong></li>
+                            <li class="highlight-add">Mentored 3 junior developers through
+                              bi-weekly code reviews and pair programming sessions</li>
+                          </ul>
+                        </div>
+          
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">Frontend Developer</div>
+                              <div class="r-job-company">StartupXYZ</div>
+                            </div>
+                            <div class="r-job-date">Jun 2019 – Dec 2020</div>
+                          </div>
+                          <ul class="r-bullets">
+                            <li>Shipped <strong>8 major product features</strong> using
+                              React and Redux, contributing to 20% user growth</li>
+                            <li class="highlight-add">Reduced critical bug backlog by
+                              <strong>60%</strong> through systematic <span
+                                class="kw-chip">test-driven development</span></li>
+                            <li>Collaborated with senior engineers on system architecture
+                              decisions</li>
+                          </ul>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Skills</div>
+                        <div class="r-skills">
+                          <span class="r-skill">JavaScript</span>
+                          <span class="r-skill">React</span>
+                          <span class="r-skill new-skill">TypeScript</span>
+                          <span class="r-skill">HTML/CSS</span>
+                          <span class="r-skill new-skill">Tailwind CSS</span>
+                          <span class="r-skill">Git</span>
+                          <span class="r-skill">REST APIs</span>
+                          <span class="r-skill">Node.js</span>
+                          <span class="r-skill new-skill">GraphQL</span>
+                          <span class="r-skill new-skill">CI/CD</span>
+                        </div>
+                      </div>
+          
+                      <div class="r-section">
+                        <div class="r-section-title">Education</div>
+                        <div class="r-job">
+                          <div class="r-job-header">
+                            <div>
+                              <div class="r-job-title">B.S. Computer Science</div>
+                              <div class="r-job-company">State University</div>
+                            </div>
+                            <div class="r-job-date">2015 – 2019</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+          
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-2.5">
+                  <span
+                    class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 hover:bg-blue-100 cursor-pointer transition-colors">
+                    User Research <span
+                      class="material-symbols-outlined text-sm">add</span>
+                  </span>
+                  <span
+                    class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 hover:bg-blue-100 cursor-pointer transition-colors">
+                    Design Systems <span
+                      class="material-symbols-outlined text-sm">add</span>
+                  </span>
+                  <span
+                    class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 hover:bg-blue-100 cursor-pointer transition-colors">
+                    Stakeholder Management <span
+                      class="material-symbols-outlined text-sm">add</span>
+                  </span>
+                  <span
+                    class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 hover:bg-blue-100 cursor-pointer transition-colors">
+                    Figma Prototyping <span
+                      class="material-symbols-outlined text-sm">add</span>
+                  </span>
+                  <span
+                    class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 hover:bg-blue-100 cursor-pointer transition-colors">
+                    A/B Testing <span
+                      class="material-symbols-outlined text-sm">add</span>
+                  </span>
+                </div>
+                <div
+                  class="mt-6 p-4 bg-slate-50 rounded-xl border border-dashed border-neutral-border">
+                  <div class="flex gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary">lightbulb</span>
+                    <p class="text-xs text-neutral-muted leading-relaxed">
+                      <span
+                        class="font-bold text-neutral-text text-xs block mb-1">AI
+                        Tip:</span>
+                      Integrating <span
+                        class="text-primary font-bold">"Design Systems"</span>
+                      into your current role description could boost your score
+                      by 8%.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-sm border border-neutral-border overflow-hidden">
+              <div
+                class="p-6 border-b border-neutral-border flex justify-between items-center bg-slate-50/30">
+                <h3 class="text-base font-bold text-neutral-text">Priority
+                  Action Items</h3>
+                <span
+                  class="px-2 py-1 bg-warning/10 text-warning text-[10px] font-black rounded uppercase">Attention
+                  Required</span>
+              </div>
+              <div class="divide-y divide-neutral-border">
+                <div
+                  class="p-5 flex items-start gap-4 hover:bg-slate-50 transition-colors group">
+                  <div
+                    class="mt-1 h-6 w-6 rounded-full bg-warning/20 text-warning flex items-center justify-center shrink-0">
+                    <span
+                      class="material-symbols-outlined text-lg font-bold">priority_high</span>
+                  </div>
+                  <div class="flex-1">
+                    <h4
+                      class="text-sm font-bold text-neutral-text group-hover:text-primary transition-colors">Quantify
+                      Achievements</h4>
+                    <p
+                      class="text-xs text-neutral-muted mt-1 leading-relaxed">Your
+                      "Senior Designer" role lacks metrics. Add data like
+                      "% growth" or "revenue impact" to stand out to
+                      recruiters.</p>
+                  </div>
+                  <button
+                    class="text-xs font-bold text-primary px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary hover:text-white transition-all">Resolve</button>
+                </div>
+                <div
+                  class="p-5 flex items-start gap-4 hover:bg-slate-50 transition-colors group">
+                  <div
+                    class="mt-1 h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <span
+                      class="material-symbols-outlined text-lg font-bold">reorder</span>
+                  </div>
+                  <div class="flex-1">
+                    <h4
+                      class="text-sm font-bold text-neutral-text group-hover:text-primary transition-colors">Education
+                      Formatting</h4>
+                    <p
+                      class="text-xs text-neutral-muted mt-1 leading-relaxed">Move
+                      your certifications below professional experience to align
+                      with standard tech industry templates.</p>
+                  </div>
+                  <button
+                    class="text-xs font-bold text-primary px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary hover:text-white transition-all">Apply</button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-sm border border-neutral-border overflow-hidden">
+              <div
+                class="p-6 border-b border-neutral-border flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="material-symbols-outlined text-primary">history_edu</span>
+                  <h3 class="text-base font-bold text-neutral-text">Experience
+                    Optimization</h3>
+                </div>
               </div>
               <div class="p-6">
-                <div class="grid grid-cols-3 gap-6 mb-8">
-                  <div
-                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
-                    <p
-                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Location</p>
-                    <p
-                      class="text-sm font-medium text-neutral-text flex items-center gap-1.5">
-                      <span
-                        class="material-symbols-outlined text-primary text-lg">location_on</span>
-                      Remote
-                    </p>
+                <div class="mb-6">
+                  <div class="flex items-center gap-2 mb-1">
+                    <h4 class="text-sm font-bold text-neutral-text">Senior
+                      Product Designer</h4>
+                    <span class="text-xs text-neutral-muted">• TechCorp
+                      Solutions</span>
                   </div>
-                  <div
-                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
-                    <p
-                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Salary
-                      Range</p>
-                    <p
-                      class="text-sm font-medium text-neutral-text flex items-center gap-1.5">
-                      <span
-                        class="material-symbols-outlined text-primary text-lg">payments</span>
-                      $160k - $210k
-                    </p>
-                  </div>
-                  <div
-                    class="p-4 bg-background-light rounded-lg border border-neutral-border/50">
-                    <p
-                      class="text-xs font-semibold text-neutral-muted uppercase mb-1">Job
-                      Link</p>
-                    <a
-                      class="text-sm font-medium text-primary hover:underline flex items-center gap-1.5"
-                      href="#">
-                      <span
-                        class="material-symbols-outlined text-lg">link</span>
-                      stripe.com/jobs/designer
-                    </a>
-                  </div>
-                </div>
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-neutral-text">Job
-                      Description</h3>
-                    <button
-                      class="text-sm font-medium text-primary flex items-center gap-1 hover:underline">
-                      Collapse <span
-                        class="material-symbols-outlined text-lg">keyboard_arrow_up</span>
-                    </button>
-                  </div>
-                  <div
-                    class="prose prose-sm max-w-none text-neutral-muted leading-relaxed">
-                    <p>We're looking for a Senior Product Designer to join our
-                      Checkout team. You will be responsible for designing
-                      seamless payment experiences used by millions of
-                      businesses globally.</p>
-                    <p
-                      class="font-semibold text-neutral-text mt-4">Responsibilities:</p>
-                    <ul class="list-disc pl-5 space-y-1">
-                      <li>Own the end-to-end design process for core payment
-                        features.</li>
-                      <li>Collaborate with engineers and product managers to
-                        define roadmaps.</li>
-                      <li>Conduct user research and iterate based on
-                        high-fidelity prototypes.</li>
-                      <li>Contribute to the evolution of our design system.</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
-              <div class="flex items-center justify-between mb-6">
-                <h3
-                  class="text-lg font-bold text-neutral-text flex items-center gap-2">
-                  <span
-                    class="material-symbols-outlined text-primary">event</span>
-                  Interview Timeline
-                </h3>
-                <button
-                  class="bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 transition-colors">
-                  <span class="material-symbols-outlined text-sm">add</span> ADD
-                  INTERVIEW
-                </button>
-              </div>
-              <div class="space-y-6 relative">
-                <div class="timeline-item flex gap-4 timeline-line relative">
-                  <div
-                    class="h-4 w-4 rounded-full bg-primary ring-4 ring-primary-light z-10 mt-1.5"></div>
-                  <div class="flex-1 pb-6">
-                    <div class="flex justify-between items-start">
-                      <div>
-                        <p class="text-sm font-bold text-neutral-text">Technical
-                          Portfolio Review</p>
-                        <p class="text-xs text-neutral-muted">Scheduled for Oct
-                          28, 2023 • 2:00 PM</p>
-                      </div>
-                      <span
-                        class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100 uppercase">Upcoming</span>
-                    </div>
-                    <div class="mt-2 flex items-center gap-3">
-                      <div class="flex -space-x-2">
-                        <div
-                          class="h-6 w-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">AS</div>
-                        <div
-                          class="h-6 w-6 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-[10px] font-bold">RK</div>
-                      </div>
-                      <span class="text-xs text-neutral-muted">2
-                        Interviewers</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="timeline-item flex gap-4 timeline-line relative">
-                  <div
-                    class="h-4 w-4 rounded-full bg-success z-10 mt-1.5"></div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                      <div>
-                        <p class="text-sm font-bold text-neutral-text">Recruiter
-                          Screen</p>
-                        <p class="text-xs text-neutral-muted">Completed on Oct
-                          24, 2023</p>
-                      </div>
-                      <span
-                        class="text-[10px] font-bold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-100 uppercase">Passed</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-neutral-text">Personal
-                  Notes</h3>
-                <div class="flex gap-2">
-                  <button
-                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
-                      class="material-symbols-outlined text-xl">format_bold</span></button>
-                  <button
-                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
-                      class="material-symbols-outlined text-xl">format_italic</span></button>
-                  <button
-                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
-                      class="material-symbols-outlined text-xl">format_list_bulleted</span></button>
-                  <button
-                    class="p-1.5 hover:bg-background-light rounded transition-colors text-neutral-muted"><span
-                      class="material-symbols-outlined text-xl">link</span></button>
-                </div>
-              </div>
-              <textarea
-                class="w-full h-32 p-4 text-sm text-neutral-text bg-background-light border-neutral-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Type your interview prep notes here..."></textarea>
-            </div>
-          </div>
-          <div class="w-[30%] space-y-6">
-            <div
-              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
-              <h3
-                class="text-sm font-bold text-neutral-text uppercase tracking-wider mb-6">Status
-                History</h3>
-              <div class="space-y-6">
-                <div class="flex gap-3 relative">
-                  <div
-                    class="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0 z-10">
+                  <div class="flex items-center gap-2">
                     <span
-                      class="material-symbols-outlined text-white text-sm">chat_bubble</span>
-                  </div>
-                  <div
-                    class="absolute left-3 top-6 bottom-0 w-[1px] h-6 bg-neutral-border -translate-x-1/2"></div>
-                  <div>
-                    <p
-                      class="text-sm font-bold text-neutral-text">Interviewing</p>
-                    <p class="text-xs text-neutral-muted">Today, 10:45 AM</p>
+                      class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-black rounded uppercase">AI
+                      Optimized</span>
                   </div>
                 </div>
-                <div class="flex gap-3 relative">
-                  <div
-                    class="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center shrink-0 z-10">
-                    <span
-                      class="material-symbols-outlined text-white text-sm">check_circle</span>
-                  </div>
-                  <div
-                    class="absolute left-3 top-6 bottom-0 w-[1px] h-6 bg-neutral-border -translate-x-1/2"></div>
-                  <div>
-                    <p class="text-sm font-medium text-neutral-text">Application
-                      Reviewed</p>
-                    <p class="text-xs text-neutral-muted">Oct 25, 2023</p>
-                  </div>
-                </div>
-                <div class="flex gap-3">
-                  <div
-                    class="h-6 w-6 rounded-full bg-gray-300 flex items-center justify-center shrink-0 z-10">
-                    <span
-                      class="material-symbols-outlined text-white text-sm">send</span>
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium text-neutral-text">Applied</p>
-                    <p class="text-xs text-neutral-muted">Oct 24, 2023</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="bg-neutral-surface rounded-xl border border-neutral-border shadow-sm p-6">
-              <h3
-                class="text-sm font-bold text-neutral-text uppercase tracking-wider mb-6">Application
-                Materials</h3>
-              <div class="space-y-4">
-                <div
-                  class="group p-3 rounded-lg border border-neutral-border hover:border-primary transition-colors bg-white">
-                  <div class="flex items-center gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-danger">
+                      <span
+                        class="material-symbols-outlined text-sm">history</span>
+                      <span
+                        class="text-[10px] font-black uppercase tracking-widest">Original
+                        Version</span>
+                    </div>
                     <div
-                      class="h-10 w-10 rounded bg-red-50 text-danger flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined">description</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <p
-                        class="text-sm font-bold text-neutral-text truncate">Resume_Custom.pdf</p>
-                      <p
-                        class="text-[10px] text-neutral-muted font-medium">Optimized
-                        for Stripe</p>
+                      class="bg-slate-50 border border-neutral-border rounded-xl p-5 min-h-[140px]">
+                      <p class="text-sm text-neutral-muted leading-relaxed">
+                        Designed user interfaces for mobile apps. Worked with
+                        the development team to ensure designs were implemented
+                        correctly. Managed a team of 2 junior designers.
+                      </p>
                     </div>
                   </div>
-                  <div class="mt-3 flex gap-2">
-                    <button
-                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-background-light hover:bg-neutral-border transition-colors flex items-center justify-center gap-1 uppercase">
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-success">
                       <span
-                        class="material-symbols-outlined text-sm">download</span>
-                      Download
-                    </button>
-                    <button
-                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center gap-1 uppercase">
+                        class="material-symbols-outlined text-sm">auto_awesome</span>
                       <span
-                        class="material-symbols-outlined text-sm">autorenew</span>
-                      Regenerate
-                    </button>
-                  </div>
-                </div>
-                <div
-                  class="group p-3 rounded-lg border border-neutral-border hover:border-primary transition-colors bg-white">
-                  <div class="flex items-center gap-3">
+                        class="text-[10px] font-black uppercase tracking-widest">AI
+                        Recommended</span>
+                    </div>
                     <div
-                      class="h-10 w-10 rounded bg-blue-50 text-primary flex items-center justify-center shrink-0">
-                      <span
-                        class="material-symbols-outlined font-variation-fill">article</span>
+                      class="bg-primary-light/30 border border-primary/10 rounded-xl p-5 min-h-[140px] relative">
+                      <p class="text-sm text-neutral-800 leading-relaxed">
+                        Spearheaded <span
+                          class="bg-yellow-200/60 rounded px-1 font-medium">end-to-end
+                          UI design</span> for high-traffic mobile apps,
+                        resulting in a <span
+                          class="bg-yellow-200/60 rounded px-1 font-medium">22%
+                          increase in user engagement</span>. Collaborated
+                        cross-functionally with engineering via <span
+                          class="bg-yellow-200/60 rounded px-1 font-medium">Agile
+                          workflows</span> to ensure pixel-perfect delivery.
+                      </p>
+                      <div
+                        class="mt-4 pt-4 border-t border-primary/10 flex justify-end gap-3">
+                        <button
+                          class="px-3 py-1.5 text-xs font-bold text-neutral-muted hover:text-neutral-text transition-colors">Discard</button>
+                        <button
+                          class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-dark shadow-sm transition-all flex items-center gap-1.5">
+                          <span
+                            class="material-symbols-outlined text-sm">check</span>
+                          Apply
+                        </button>
+                      </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                      <p
-                        class="text-sm font-bold text-neutral-text truncate">Cover_Letter_Final.pdf</p>
-                      <p
-                        class="text-[10px] text-neutral-muted font-medium">Generated
-                        by AI</p>
-                    </div>
-                  </div>
-                  <div class="mt-3 flex gap-2">
-                    <button
-                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-background-light hover:bg-neutral-border transition-colors flex items-center justify-center gap-1 uppercase">
-                      <span
-                        class="material-symbols-outlined text-sm">download</span>
-                      Download
-                    </button>
-                    <button
-                      class="flex-1 text-[10px] font-bold py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center gap-1 uppercase">
-                      <span
-                        class="material-symbols-outlined text-sm">autorenew</span>
-                      Regenerate
-                    </button>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="bg-sidebar-bg rounded-xl p-6 text-white shadow-lg overflow-hidden relative">
-              <div class="relative z-10">
-                <h3
-                  class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">JobTrackr
-                  Insight</h3>
-                <p class="text-sm font-medium leading-relaxed">Your profile
-                  matches <span class="text-primary-light font-bold">87%</span>
-                  of the requirements for this role. Key missing skill: <span
-                    class="bg-slate-700 px-1.5 rounded text-xs">Framer
-                    AI</span></p>
-                <button
-                  class="mt-4 w-full py-2 bg-primary hover:bg-primary-dark rounded text-xs font-bold transition-colors">VIEW
-                  MATCH REPORT</button>
-              </div>
-              <span
-                class="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl text-white/5 font-variation-fill">psychology</span>
-            </div>
-          </div>
+          </section>
         </div>
       </main>
+      <div
+        class="sticky bottom-0 bg-white/80 backdrop-blur-md border-t border-neutral-border p-4 z-40">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+          <button
+            class="flex items-center gap-2 text-neutral-muted hover:text-danger font-bold text-sm transition-colors group">
+            <span
+              class="material-symbols-outlined group-hover:rotate-[-90deg] transition-transform">restart_alt</span>
+            Start Over
+          </button>
+          <div class="flex items-center gap-3">
+            <button
+              class="flex items-center gap-2 px-4 py-2.5 border border-neutral-border rounded-xl text-neutral-text font-bold text-sm hover:bg-slate-50 transition-all">
+              <span class="material-symbols-outlined text-xl">bookmark</span>
+              Save Draft
+            </button>
+            <button
+              class="flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-primary text-primary font-bold text-sm rounded-xl hover:bg-primary-light transition-all">
+              <span class="material-symbols-outlined text-xl">cloud_sync</span>
+              Save to Application
+            </button>
+            <button
+              class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold text-sm rounded-xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">
+              <span class="material-symbols-outlined text-xl">download</span>
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </body></html>
