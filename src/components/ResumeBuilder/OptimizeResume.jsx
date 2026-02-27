@@ -63,35 +63,41 @@ const OptimizeResume = () => {
               Score Breakdown
             </div>
 
-            <div>
+            
               <div class="flex justify-between text-sm mb-1">
                 <span class="text-slate-400">Keywords & Skills</span>
                 <span class="font-mono">68%</span>
               </div>
-              <div class="h-2 bg-white/5 rounded-full">
+              <div class="h-2 bg-slate-300 border border-neutral-border rounded-full">
                 <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-[68%]"></div>
               </div>
-            </div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-slate-400">Keywords & Skills</span>
+                <span class="font-mono">68%</span>
+              </div>
+              <div class="h-2 bg-slate-300 border border-neutral-border rounded-full">
+                <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-[68%]"></div>
+              </div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-slate-400">Keywords & Skills</span>
+                <span class="font-mono">68%</span>
+              </div>
+              <div class="h-2 bg-slate-300 border border-neutral-border rounded-full">
+                <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-[68%]"></div>
+              </div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-slate-400">Keywords & Skills</span>
+                <span class="font-mono">68%</span>
+              </div>
+              <div class="h-2 bg-slate-300 border border-neutral-border rounded-full">
+                <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-[68%]"></div>
+              </div>
+          
           </div>
             
           </div>
 
-          <div class="bg-[#0D1521] border border-blue-400/10 rounded-2xl p-5 space-y-4">
-            <div class="text-xs uppercase tracking-widest text-slate-500">
-              Score Breakdown
-            </div>
-
-            <div>
-              <div class="flex justify-between text-sm mb-1">
-                <span class="text-slate-400">Keywords & Skills</span>
-                <span class="font-mono">68%</span>
-              </div>
-              <div class="h-2 bg-white/5 rounded-full">
-                <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-[68%]"></div>
-              </div>
-            </div>
-          </div>
-
+          
           <div
             onclick="goToOptimize()"
             class="cursor-pointer bg-gradient-to-r from-blue-500/20 to-cyan-400/10 border border-blue-400/30 rounded-2xl p-5 hover:shadow-lg hover:shadow-blue-500/20 transition"
@@ -105,33 +111,28 @@ const OptimizeResume = () => {
         </div>
 
         <div class="flex-1 flex flex-col overflow-hidden">
-          <div class="flex items-center justify-between px-7 py-4 border-b border-blue-400/10">
-            <div class="flex bg-[#0D1521] border border-blue-400/10 rounded-lg p-1">
+          <div class="flex items-center justify-between  px-7 py-4 ">
+            <div class="flex bg-neutral-surface rounded-md">
               <button
-                id="btn-before"
-                onclick="switchView('before')"
-                class="px-5 py-2 text-sm rounded-md bg-blue-600 text-white"
+                
+                class="px-5 py-2 text-sm rounded-md bg-primary text-white"
               >
                 Before Resume
               </button>
               <button
-                id="btn-after"
-                onclick="switchView('after')"
+                
                 class="px-5 py-2 text-sm rounded-md text-slate-400"
               >
                 After Resume
               </button>
             </div>
 
-            <button class="px-4 py-2 text-sm border border-blue-400/20 rounded-lg text-slate-400">
-              Edit in Optimizer
-            </button>
           </div>
 
           <div class="flex-1 overflow-y-auto p-8 flex justify-center">
             <div
               id="beforeResume"
-              class="bg-white text-black w-full max-w-2xl p-12 shadow-2xl rounded"
+              class="bg-white text-black w-full max-w-2xl p-12 shadow-lg rounded"
             >
               <h1 class="text-2xl font-bold mb-2">Alex Johnson</h1>
               <p class="text-sm text-gray-600 mb-6">Frontend Developer</p>
@@ -158,13 +159,8 @@ const OptimizeResume = () => {
         </div>
       </div>
 
-      <nav class="flex items-center justify-between px-7 h-14 border-b border-blue-400/10 bg-[#080C14]/95 backdrop-blur-md">
-        <div class="flex items-center gap-3 text-sm font-semibold">
-          Resume Analyzer
-          <span class="text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-blue-500/30 to-cyan-400/30 border border-blue-400/40 text-blue-300 uppercase tracking-wider">
-            AI Powered
-          </span>
-        </div>
+      <div class="flex items-center justify-between px-7 h-14 border-b border-blue-400/10 ">
+        
 
         <div class="flex gap-3">
           <button class="px-4 py-2 text-sm border border-blue-400/20 rounded-lg text-slate-400 hover:text-white hover:border-blue-500 transition">
@@ -182,7 +178,7 @@ const OptimizeResume = () => {
             ✦ Optimize Resume →
           </button>
         </div>
-      </nav>
+      </div>
     </div>
   );
 };

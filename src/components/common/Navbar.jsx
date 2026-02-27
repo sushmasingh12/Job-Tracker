@@ -1,7 +1,7 @@
 import React from "react";
 import {Link } from "react-router-dom";
 
-const Header = () => {
+const Navbar = () => {
   return (
     
         <header className="h-16 bg-neutral-surface border-b border-neutral-border sticky top-0 z-30 px-6 flex items-center justify-between shrink-0">
@@ -42,4 +42,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navbar;
