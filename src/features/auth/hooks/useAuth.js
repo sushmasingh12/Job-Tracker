@@ -19,8 +19,8 @@ export const useLogin = () => {
             console.log(data)
             navigate("/dashboard")
         }
-        catch(error){
-            console.log(error.message)
+        catch(err){
+            console.error(err.message);
         }
     };
 
@@ -30,4 +30,37 @@ export const useLogin = () => {
         errors,
         isSubmitting,
     };
+}
+
+export const useRegister = () => {
+    const navigate = useNavigate()
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState:{errors, isSubmitting}
+    } = useForm({
+        defaultValues: {
+            firstname: "",
+            lastname: "",
+            email: "",
+            password: "",
+            confirmpassword: "",
+          },
+    });
+    const onSubmit = (data) => {
+        try {
+            console.log(data)    
+            navigate("/login");
+          } catch (err) {
+            console.error(err.message);
+          }
+    }
+    return {
+        register,
+        handleSubmit: handleSubmit(onSubmit),
+        errors,
+        isSubmitting,
+        watch,                          
+      };
 }

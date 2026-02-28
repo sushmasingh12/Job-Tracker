@@ -9,6 +9,7 @@ import {
 import './index.css'
 import './App.css'
 import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 
 
 
@@ -17,6 +18,7 @@ const router = createBrowserRouter(
     <>
     
     <Route path='/' element={<LoginPage/>}/>
+    <Route path='/signup' element={<RegisterPage/>}/>
     
     
     </>

@@ -1,10 +1,13 @@
+import { useState } from "react";
+import { useRegister } from "../hooks/useAuth";
+import { SocialButtons } from "./SocialButtons";
+import { Divider } from "../../../shared/components/ui/Divider";
+import { FormField } from "../../../shared/components/ui/FormField";
+import { PasswordField } from "./PasswordField";
+import { Button } from "../../../shared/components/ui/Button";
 
 
-
-
-// ─── Overlay: Sign Up side (shown on left — "Already a member?") ──────────────
-
-function SignUpOverlay({ onSignIn }) {
+export const SignUpOverlay = ({ onSignIn })=> {
   return (
     <div
       className="overlay-wrap absolute top-0 bottom-0 w-1/2 z-50"
@@ -89,10 +92,12 @@ function SignUpOverlay({ onSignIn }) {
 
 // ─── Sign Up Form ─────────────────────────────────────────────────────────────
 
-function SignUpForm() {
-  
+export const SignUpForm =({onSignIn}) =>{
+ 
+  const {register, handleSubmit, errors, isSubmitting, watch} = useRegister()
+  const passwordValue = watch("password");
   return (
-    // form-pane::before glow → stays in App.css
+    
     <div className="form-pane pane-signup bg-white px-11.5 py-10 flex flex-col justify-center overflow-hidden relative">
       <div className="pane-inner w-full max-w-85 mx-auto">
         <h1 className="font-playfair text-[26px] font-bold text-neutral-text tracking-tight mb-1">
@@ -113,7 +118,25 @@ function SignUpForm() {
 
         <form onSubmit={handleSubmit}>
           {/* Name row */}
-          <div className="grid grid-cols-2 gap-2.5 mb-3.25">
+          <div className="grid grid-cols-2 gap-2.5 ">
+          <FormField
+          label="First Name"
+          type="text"
+          placeholder="Enter First Name"
+          registration={register("firstname",{required:"First name is required"})}
+          error={errors.firstname}
+          />
+          <FormField
+          label="Last Name"
+          type="text"
+          placeholder="Enter Last Name"
+          registration={register("lastname",{required:"Last name is required"})}
+          error={errors.lastname}
+          />
+          </div>
+          
+
+          {/* <div className="grid grid-cols-2 gap-2.5 mb-3.25">
             <div className="relative">
               <label
                 className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
@@ -146,147 +169,79 @@ function SignUpForm() {
                 placeholder="Morgan"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Email */}
-          <div className="mb-3.25 relative">
-            <label
-              className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
-              htmlFor="su-email"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={state.email}
-              onChange={handleChange}
-              className="inpttext"
-              placeholder="alex@email.com"
-            />
-          </div>
+          <FormField
+          label="Email"
+          type="email"
+          placeholder="you@email.com"
+          registration={register("email", {
+            required:"Email is required",
+            pattern:{value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email",
+          }})}
+          error={errors.email}
+          />
+         <PasswordField 
+         label="Password"
+         placeholder="Enter password"
+         registration={register("password", {
+           required: "Password is required",
+           minLength: { value: 6, message: "Min 6 characters" },
+         })}
+         error={errors.password}
+         />
 
-          {/* Password + Strength */}
-          <div className="mb-3.25 relative">
-            <label
-              className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
-              htmlFor="su-pw"
-            >
-              Password
-            </label>
-            <input
-              type={show ? "text" : "password"}
-              name="password"
-              value={state.password}
-              onChange={handleChange}
-              className="inpttext"
-              placeholder="Enter password"
-            />
-            <button
-              type="button"
-              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
-              onClick={() => setShow((s) => !s)}
-            >
-              {show ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-          </div>
-          {/* Password + Strength */}
-          <div className="mb-3.25 relative">
-            <label
-              className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25"
-              htmlFor="su-pw"
-            >
-              Confirm Password
-            </label>
-            <input
-              type={showConfirmpass ? "text" : "password"}
-              name="confirmpassword"
-              value={state.confirmpassword}
-              onChange={handleChange}
-              className="inpttext"
-              placeholder="Confirm password"
-            />
-            <button
-              type="button"
-              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
-              onClick={() => setShowConfirmpass((s) => !s)}
-            >
-              {showConfirmpass ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-          </div>
+<PasswordField 
+         label="Confirm Password"
+         placeholder="confirm password"
+         registration={register("confirmpassword", {
+           required: "Password is required",
+           validate: (val) => val === passwordValue || "Passwords do not match",
+         })}
+         error={errors.confirmpassword}
+         />
+         
+          
 
-          {/* Terms */}
+          {/* ── Terms ── */}
           <div className="flex items-start gap-2 mb-4">
             <input
+              {...register("terms", { required: "Please accept terms to continue" })}
               type="checkbox"
               id="su-terms"
               className="w-3.25 h-3.25 accent-primary cursor-pointer mt-0.5 shrink-0"
             />
-            <label
-              className="text-[12px] text-neutral-muted leading-relaxed font-light"
-              htmlFor="su-terms"
-            >
-              I agree to{" "}
-              <button className="text-primary font-medium border-b border-primary-light">
-                Terms
-              </button>{" "}
-              &amp;{" "}
-              <button className="text-primary font-medium border-b border-primary-light">
-                Privacy Policy
-              </button>
-            </label>
+            <div>
+              <label
+                className="text-[12px] text-neutral-muted leading-relaxed font-light"
+                htmlFor="su-terms"
+              >
+                I agree to{" "}
+                <button type="button" className="text-primary font-medium border-b border-primary-light">
+                  Terms
+                </button>{" "}
+                &amp;{" "}
+                <button type="button" className="text-primary font-medium border-b border-primary-light">
+                  Privacy Policy
+                </button>
+              </label>
+              {/* ✅ Terms ka error bhi dikhega ab */}
+              {errors.terms && (
+                <p className="text-[11px] text-red-500 mt-0.5">{errors.terms.message}</p>
+              )}
+            </div>
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            className="w-full py-3.25 font-dm text-[14px] font-medium text-white border-none rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.75 relative overflow-hidden hover:-translate-y-px active:translate-y-0"
-            style={{
-              background: "#1976d2",
-              boxShadow: "0 4px 16px rgba(25,118,210,0.3)",
-            }}
-          >
-            <span>Create Account</span>
-            {/* {!loading && !success && <ArrowIcon />}
-            <Spinner visible={loading} /> */}
-          </button>
+          <Button type="submit" loading={isSubmitting} fullWidth>
+            Sign Up
+          </Button>
+         
         </form>
       </div>
     </div>
   );
 }
 
-// ─── Sign Up Page ─────────────────────────────────────────────────────────────
 
-export default function SignUp() {
-  const navigate = useNavigate();
-  const handleSignUp = () => {
-    navigate("/login");
-  };
-  return (
-    <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-hidden relative">
-      {/* Background */}
-      <div className="hero-grid-bg" />
-      <div
-        className="blob-a fixed rounded-full pointer-events-none blur-[90px]"
-        style={{ animation: "blobDrift 14s ease-in-out infinite" }}
-      />
-      <div
-        className="blob-b fixed rounded-full pointer-events-none blur-[90px]"
-        style={{ animation: "blobDrift 10s ease-in-out infinite reverse" }}
-      />
-
-      {/* auth-card: complex multi-layer box-shadow → stays in App.css */}
-      <div
-        className="auth-card signup-mode relative w-230 h-147.5 rounded-2xl overflow-hidden z-10"
-        style={{ animation: "cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards" }}
-      >
-        <div className="absolute inset-0 grid grid-cols-2">
-          <div className="bg-white" />
-          <SignUpForm onSignIn={handleSignUp} />
-        </div>
-        <SignUpOverlay onSignIn={handleSignUp} />
-      </div>
-    </div>
-  );
-}
