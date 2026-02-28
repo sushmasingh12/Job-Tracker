@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {  useNavigate } from "react-router-dom";
-import { SocialButtons, Divider, EyeOffIcon,EyeIcon} from "./AuthComponent";
+import { SocialButtons, Divider, EyeOffIcon,EyeIcon} from "./AuthLayout";
 
 // ─── Overlay: Sign In side (shown on right — "New here?") ────────────────────
 

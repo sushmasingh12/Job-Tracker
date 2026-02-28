@@ -9,7 +9,7 @@ import {
   ArrowIcon,
   getStrength,
   EyeIcon,
-} from "./AuthComponent";
+} from "./AuthLayout";
 
 // ─── Overlay: Sign Up side (shown on left — "Already a member?") ──────────────
 
