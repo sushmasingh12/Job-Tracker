@@ -1,15 +1,6 @@
-import { useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-import {
-  SocialButtons,
-  Divider,
-  EyeOffIcon,
-  PasswordInput,
-  ArrowIcon,
-  getStrength,
-  EyeIcon,
-} from "./AuthLayout";
+
+
 
 // ─── Overlay: Sign Up side (shown on left — "Already a member?") ──────────────
 
@@ -95,49 +86,11 @@ function SignUpOverlay({ onSignIn }) {
     </div>
   );
 }
-// ─── Reducer ─────────────────────────────────────────────────────────────
-function reducer(state, action) {
-  switch (action.type) {
-    case "CHANGE":
-      return { ...state, [action.field]: action.value };
-    case "RESET":
-      return {
-        firstname: "",
-        lastname: "",
-        email: "",
-        password: "",
-        confirmpassword: "",
-      };
-    default:
-      return state;
-  }
-}
+
 // ─── Sign Up Form ─────────────────────────────────────────────────────────────
 
-function SignUpForm({ onSignIn }) {
-  const initialState = {
-    firstname: "",
-    lastname: "",
-    email: "",
-    password: "",
-    confirmpassword: "",
-  };
-
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const [show, setShow] = useState(false);
-  const [showConfirmpass, setShowConfirmpass] = useState(false);
-  const handleChange = (e) => {
-    dispatch({ type: "CHANGE", field: e.target.name, value: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if(state.password !== state.confirmpassword){
-      alert("passwords do not match")
-      return;
-    }
-    onSignIn()
-  }
+function SignUpForm() {
+  
   return (
     // form-pane::before glow → stays in App.css
     <div className="form-pane pane-signup bg-white px-11.5 py-10 flex flex-col justify-center overflow-hidden relative">

@@ -1,10 +1,12 @@
-import { useState } from "react";
-import {  useNavigate } from "react-router-dom";
-import { SocialButtons, Divider, EyeOffIcon,EyeIcon} from "./AuthLayout";
+import { Button } from "../../../shared/components/ui/Button";
+import { Divider } from "../../../shared/components/ui/Divider";
+import { FormField } from "../../../shared/components/ui/FormField";
+import { useLogin } from "../hooks/useAuth";
+import { PasswordField } from "./PasswordField";
+import { SocialButtons } from "./SocialButtons";
+import { useNavigate } from "react-router-dom";
 
-// ─── Overlay: Sign In side (shown on right — "New here?") ────────────────────
-
-function SignInOverlay({onCreateAccount}) {
+export const SignInOverlay = ({onCreateAccount}) => {
   return (
     <div className="overlay-wrap absolute top-0 bottom-0 w-1/2 z-50">
       <div className="overlay-panel relative w-full h-full bg-sidebar flex flex-col justify-between px-11.5 py-11 overflow-hidden">
@@ -69,14 +71,8 @@ function SignInOverlay({onCreateAccount}) {
 
 // ─── Sign In Form ─────────────────────────────────────────────────────────────
 
-function SignInForm({onCreateAccount , onSignIn}) {
-  const [email, setEmail] = useState("")
-  const [password , setPassword] = useState("")
-  const [show, setShow] = useState(false);
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSignIn();
-  }
+export const SignInForm = ({onCreateAccount}) => {
+  const {register, handleSubmit, errors, isSubmitting} =useLogin();
   return (
     <div className="form-pane pane-signin bg-white px-11.5 py-10 flex flex-col justify-center overflow-hidden relative">
       <div className="pane-inner w-full max-w-85 mx-auto">
@@ -93,13 +89,23 @@ function SignInForm({onCreateAccount , onSignIn}) {
           </span>
         </p>
 
-        <SocialButtons />
-        <Divider />
+        <SocialButtons/>
+        <Divider/>
 
         
 
         <form onSubmit={handleSubmit}>
-          <div className="field mb-3.25 relative">
+          <FormField
+          label="Email"
+          type="email"
+          placeholder="you@email.com"
+          registration={register("email", {
+            required:"Email is required",
+            pattern:{value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email",
+          }})}
+          error={errors.email}
+          />
+          {/* <div className="field mb-3.25 relative">
             <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25" htmlFor="si-email">
               Email
             </label>
@@ -109,51 +115,20 @@ function SignInForm({onCreateAccount , onSignIn}) {
               className="inpttext"
               placeholder="you@email.com"
             />
-          </div>
-
-          {/* Password */}
-          <div className="field mb-3.25 relative">
-            <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.25" htmlFor="si-pw">
-              Password
-            </label>
-            <input
-              type={show ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="inpttext"
-              placeholder="Enter password"
-            />
-            <button
-              type="button"
-              className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
-              onClick={() => setShow((s) => !s)}
-            >
-              {show ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-            <div className="flex items-center justify-between mt-1.5">
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" className="w-3.25 h-3.25 accent-primary cursor-pointer" />
-                <span className="text-[12px] text-neutral-muted font-light">Remember me</span>
-              </label>
-              <button  className="text-[12px] text-neutral-muted border-b border-transparent hover:text-primary hover:border-primary-light transition-all">
-                Forgot password?
-              </button>
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="submit-btn w-full py-3.25 font-dm text-[14px] font-medium text-white border-none rounded-lg cursor-pointer transition-all flex items-center justify-center gap-1.75 relative overflow-hidden hover:-translate-y-px active:translate-y-0"
-            style={{
-              background:"#1976d2",
-              boxShadow: "0 4px 16px rgba(25,118,210,0.3)",
-            }}
-          >
-            <span>Sign In</span>
-            {/* {!loading && !success && <ArrowIcon />}
-            <Spinner visible={loading} /> */}
-          </button>
+          </div> */}
+         <PasswordField
+         label="Password"
+         placeholder="Enter password"
+         registration={register("password", {
+           required: "Password is required",
+           minLength: { value: 6, message: "Min 6 characters" },
+         })}
+         error={errors.password}
+         />
+          
+          <Button type="submit" loading={isSubmitting} fullWidth>
+            Sign In
+          </Button>
 
         </form>
 
@@ -173,38 +148,38 @@ function SignInForm({onCreateAccount , onSignIn}) {
 
 // ─── Sign In Page ─────────────────────────────────────────────────────────────
 
-export default function SignIn() {
-  const navigate = useNavigate()
-  const handleCreateAccount = ()=> {
-    navigate("/signup")
-  }
-  const handleSignIn= () => {
-    navigate("/dashboard")
-  }
-  return (
-    <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-hidden relative">
+// export default function SignIn() {
+//   const navigate = useNavigate()
+//   const handleCreateAccount = ()=> {
+//     navigate("/signup")
+//   }
+//   const handleSignIn= () => {
+//     navigate("/dashboard")
+//   }
+//   return (
+//     <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-hidden relative">
 
-      {/* Background */}
-      <div className="hero-grid-bg"/>
-      <div className="blob-a fixed rounded-full pointer-events-none blur-[90px]" style={{ animation: "blobDrift 14s ease-in-out infinite" }} />
-      <div className="blob-b fixed rounded-full pointer-events-none blur-[90px]" style={{ animation: "blobDrift 10s ease-in-out infinite reverse" }} />
+//       {/* Background */}
+//       <div className="hero-grid-bg"/>
+//       <div className="blob-a fixed rounded-full pointer-events-none blur-[90px]" style={{ animation: "blobDrift 14s ease-in-out infinite" }} />
+//       <div className="blob-b fixed rounded-full pointer-events-none blur-[90px]" style={{ animation: "blobDrift 10s ease-in-out infinite reverse" }} />
 
-      {/* Auth Card */}
-      <div
-        className="auth-card relative w-230 h-147.5 rounded-2xl overflow-hidden z-10"
-        style={{ animation: "cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards" }}
-      >
+//       {/* Auth Card */}
+//       <div
+//         className="auth-card relative w-230 h-147.5 rounded-2xl overflow-hidden z-10"
+//         style={{ animation: "cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards" }}
+//       >
 
-        {/* Form (left half) + empty right half placeholder */}
-        <div className="absolute inset-0 grid grid-cols-2">
-          <SignInForm onCreateAccount={handleCreateAccount} onSignIn={handleSignIn}/>
-          <div className="bg-white" /> {/* right half — overlay covers this */}
-        </div>
+//         {/* Form (left half) + empty right half placeholder */}
+//         <div className="absolute inset-0 grid grid-cols-2">
+//           <SignInForm onCreateAccount={handleCreateAccount} onSignIn={handleSignIn}/>
+//           <div className="bg-white" /> {/* right half — overlay covers this */}
+//         </div>
 
-        {/* Overlay slides on the right */}
-        <SignInOverlay onCreateAccount={handleCreateAccount}/>
+//         {/* Overlay slides on the right */}
+//         <SignInOverlay onCreateAccount={handleCreateAccount}/>
 
-      </div>
-    </div>
-  );
-}
+//       </div>
+//     </div>
+//   );
+// }
