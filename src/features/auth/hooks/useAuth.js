@@ -51,7 +51,7 @@ export const useRegister = () => {
     const onSubmit = (data) => {
         try {
             console.log(data)    
-            navigate("/login");
+            navigate("/");
           } catch (err) {
             console.error(err.message);
           }

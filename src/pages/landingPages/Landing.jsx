@@ -17,10 +17,10 @@ const Landing = () => {
         </Link>
 
         <div className="flex gap-2.5">
-          <Link to="/login" className="inline-flex items-center px-5 py-2.25 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
+          <Link to="/signin" className="inline-flex items-center px-5 py-2.25 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
             Sign In
           </Link>
-          <Link to="/login" className="inline-flex items-center gap-1.5 px-5 py-2.25 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
+          <Link to="/signup" className="inline-flex items-center gap-1.5 px-5 py-2.25 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
             Get Started →
           </Link>
         </div>
@@ -50,7 +50,7 @@ const Landing = () => {
           </p>
 
           <div className="anim-4 flex gap-3.5 items-center">
-            <button onClick={() => navigate("/login")}
+            <button onClick={() => navigate("/signin")}
               className="inline-flex items-center gap-2 px-7.5 py-3.5 text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]"
             >
               Start for free →
