@@ -54,7 +54,9 @@ const STATS = [
 // ─── Single Card ──────────────────────────────────────────────────────────────
 function StatItem({ label, value, icon, iconBg, iconColor, footer }) {
   return (
-    <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border hover:shadow-md transition-shadow">
+    <div className="relative bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-6 hover:shadow-md transition-shadow overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+        
       <div className="flex justify-between items-start">
         <div>
           <p className="text-xs font-medium text-neutral-muted">{label}</p>

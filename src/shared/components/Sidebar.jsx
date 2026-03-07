@@ -72,12 +72,12 @@ const Sidebar = () => {
             <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Applications</p>
           </div>
 
-          <NavLink to="/applications/add" onClick={close} className={navClass}>
+          <NavLink to="/application/applicationForm" onClick={close} className={navClass}>
             <span className="material-symbols-outlined">add_circle</span>
             Add Application
           </NavLink>
 
-          <NavLink to="/applications" onClick={close} className={navClass}>
+          <NavLink to="/application/applicationspage" onClick={close} className={navClass}>
             <span className="material-symbols-outlined">folder_open</span>
             Applications
             <span className="ml-auto bg-primary text-white py-0.5 px-2 rounded-full text-xs">12</span>

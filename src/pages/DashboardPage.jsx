@@ -35,6 +35,7 @@ const DashboardPage = () => {
         </div>
 
         {/* ── Stats Row ── */}
+        
         <StatsCard />
 
         {/* ── Main Grid ── */}

@@ -1,11 +1,13 @@
 export const FormField = ({
   label,
   registration,
+  icons,
   error,
   type = "text",
   placeholder,
   className = "",
   children,
+  
 }) => {
   return (
     <div className={`field mb-3.25 relative ${className}`}>
@@ -14,16 +16,29 @@ export const FormField = ({
           {label}
         </label>
       )}
-      {children ?? (
-        <input
-          {...registration}
-          type={type}
-          placeholder={placeholder}
-          className={`inpttext w-full ${
-            error ? "border-red-400 focus:border-red-500" : ""
-          }`}
-        />
-      )}
+      <div className="relative">
+        {icons && !children && (
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-muted z-10">
+            <span className="material-symbols-outlined text-[20px]">{icons}</span>
+          </span>
+        )}
+
+        {children ?? (
+          <input
+            {...registration}
+            type={type}
+            placeholder={placeholder}
+            className={`inpttext w-full transition-colors
+              ${icons ? "pl-10" : ""}
+              ${error
+                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                : "focus:border-primary focus:ring-2 focus:ring-primary/20"
+              }`}
+          />
+        )}
+      </div>
+      
+      
       {error && (
         <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
           <svg
