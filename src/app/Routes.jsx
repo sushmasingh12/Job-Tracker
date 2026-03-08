@@ -9,7 +9,7 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import AppLayouts from "./layouts/AppLayouts";
 import DashboardPage from "../pages/DashboardPage";
-import ApplicationForm from "../pages/applications/ApplicationForm";
+import ApplicationForm from "../pages/applications/ApplicationForms";
 import Resume from "../pages/ai/Resume";
 import CoverLetter from "../pages/ai/CoverLetter";
 import Interview from "../pages/ai/Interview";

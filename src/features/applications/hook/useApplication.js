@@ -1,4 +1,7 @@
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { addApplication } from "../store/applicationsSlice";
 
 export const RULES = {
   jobTitle: {
@@ -49,41 +52,96 @@ export const RULES = {
 };
 
 export const useApplicationForm = () => {
+  const dispatch = useDispatch();
+  
   const {
     register,
     handleSubmit,
-    control,       
-    reset,        
+    control,
+    reset,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm({
     jobTitle: "",
     company: "",
     location: "",
     applicationDate: new Date().toISOString().split("T")[0],
-    status: "applied",
+    status: "Applied", // Fixed: Match STATUS_CONFIG keys (capitalized)
     salaryMin: "",
     salaryMax: "",
     jobPostUrl: "",
     jobDescription: "",
     notes: "",
   });
-  const onSubmit = (data) => {
+
+  const onSubmit = useCallback((data) => {
     try {
-      console.log(data);
-      alert("success");
+      // Create new application object with required fields
+      const newApplication = {
+        id: Date.now(), // Simple ID generation - consider UUID for production
+        role: data.jobTitle,
+        company: data.company,
+        location: data.location || "Remote",
+        workType: "Remote",
+        appliedDate: new Date(data.applicationDate).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }),
+        salary: data.salaryMin && data.salaryMax 
+          ? `$${Number(data.salaryMin).toLocaleString()} - $${Number(data.salaryMax).toLocaleString()}`
+          : data.salaryMin 
+            ? `$${Number(data.salaryMin).toLocaleString()}+`
+            : data.salaryMax 
+              ? `Up to $${Number(data.salaryMax).toLocaleString()}`
+              : "Not disclosed",
+        status: data.status,
+        initial: data.company.charAt(0).toUpperCase(),
+        gradientFrom: "from-blue-500",
+        gradientTo: "to-purple-500",
+        accentColor: "bg-blue-500/80",
+        description: data.jobDescription,
+        responsibilities: [],
+        requirements: [],
+        benefits: [],
+        matchScore: 0,
+        matchLabel: "New",
+        matchColor: "text-slate-400",
+        statusHistory: [
+          { 
+            label: "Applied", 
+            date: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric"
+            }), 
+            icon: "send", 
+            color: "bg-blue-500" 
+          },
+        ],
+      };
+      
+      // Dispatch action to add application to store
+      dispatch(addApplication(newApplication));
+      
+      // Reset form after successful submission
+      reset();
+      
+      // Return success for caller to handle UI updates
+      return { success: true, data: newApplication };
     } catch (err) {
-      console.error(err.message);
+      console.error("Failed to submit application:", err);
+      return { success: false, error: err.message };
     }
-  };
+  }, [dispatch, reset]);
+
   return {
     register,
-    handleSubmit: handleSubmit(onSubmit), 
+    handleSubmit: handleSubmit(onSubmit),
     control,
     reset,
     errors,
     isSubmitting,
     isDirty,
     isValid,
-    
   };
 };

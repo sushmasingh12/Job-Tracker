@@ -40,7 +40,7 @@ export const FormField = ({
       
       
       {error && (
-        <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
+        <p className="text-[11px] text-danger mt-1 flex items-center gap-1">
           <svg
             width="10"
             height="10"

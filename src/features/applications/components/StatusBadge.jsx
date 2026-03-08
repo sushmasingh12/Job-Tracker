@@ -7,9 +7,9 @@ const StatusBadge = ({ status }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${cfg.pill}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${cfg.badgeCls}`}
     >
-      {cfg.dot && <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />}
+      {cfg.dotColor && <span className={`w-1.5 h-1.5 rounded-full ${cfg.dotColor}`} />}
       {cfg.icon && (
         <span className="material-symbols-outlined text-[14px]">{cfg.icon}</span>
       )}

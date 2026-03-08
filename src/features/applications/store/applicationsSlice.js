@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { APPLICATIONS_DATA } from "../contants/Applicationconstants";
 
 
@@ -11,12 +11,18 @@ const initialState = {
   currentPage: 1,
   perPage: PER_PAGE,
   selectedApplication: null,
+  isLoading: false,
+  error: null,
 };
 
 const applicationsSlice = createSlice({
   name: "applications",
   initialState,
   reducers: {
+    addApplication(state, action) {
+      // Add new application to the beginning of the list
+      state.applications.unshift(action.payload);
+    },
     setActiveFilter(state, action) {
       state.activeFilter = action.payload;
       state.currentPage = 1; 
@@ -35,48 +41,81 @@ const applicationsSlice = createSlice({
     clearSelectedApplication(state) {
       state.selectedApplication = null;         
     },
+    setLoading(state, action) {
+      state.isLoading = action.payload;
+    },
+    setError(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
 export const {
+  addApplication,
   setActiveFilter,
   setSearchQuery,
   setCurrentPage,
   selectApplication,
   clearSelectedApplication,
+  setLoading,
+  setError,
 } = applicationsSlice.actions;
 
 export default applicationsSlice.reducer;
 
-// ── Selectors ────────────────────────────────────────────────────────────────
+// ── Base Selectors ────────────────────────────────────────────────────────────────
 
+export const selectApplicationsState = (state) => state.applications;
+export const selectApplications = (state) => state.applications.applications;
+export const selectActiveFilter = (state) => state.applications.activeFilter;
+export const selectSearchQuery = (state) => state.applications.searchQuery;
+export const selectCurrentPage = (state) => state.applications.currentPage;
+export const selectPerPage = (state) => state.applications.perPage;
 
-export const selectFilteredApplications = (state) => {
-  const { applications, activeFilter, searchQuery } = state.applications;
-  return applications.filter((app) => {
-    const matchesFilter = activeFilter === "All" || app.status === activeFilter;
-    const q = searchQuery.toLowerCase();
-    const matchesSearch =
-      !q ||
-      app.role.toLowerCase().includes(q) ||
-      app.company.toLowerCase().includes(q);
-    return matchesFilter && matchesSearch;
-  });
-};
+// ── Memoized Selectors ────────────────────────────────────────────────────────────────
 
+// Memoized selector for filtered applications - only recomputes when applications, filter, or search changes
+export const selectFilteredApplications = createSelector(
+  [selectApplications, selectActiveFilter, selectSearchQuery],
+  (applications, activeFilter, searchQuery) => {
+    const q = searchQuery.toLowerCase().trim();
+    
+    return applications.filter((app) => {
+      // Filter by status
+      const matchesFilter = activeFilter === "All" || app.status === activeFilter;
+      
+      // Filter by search query (search in role and company)
+      const matchesSearch = !q || 
+        app.role.toLowerCase().includes(q) || 
+        app.company.toLowerCase().includes(q);
+      
+      return matchesFilter && matchesSearch;
+    });
+  }
+);
 
-export const selectPaginatedApplications = (state) => {
-  const filtered = selectFilteredApplications(state);
-  const { currentPage, perPage } = state.applications;
-  return filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
-};
+// Memoized selector for paginated applications - only recomputes when filtered results or pagination changes
+export const selectPaginatedApplications = createSelector(
+  [selectFilteredApplications, selectCurrentPage, selectPerPage],
+  (filtered, currentPage, perPage) => {
+    const startIndex = (currentPage - 1) * perPage;
+    return filtered.slice(startIndex, startIndex + perPage);
+  }
+);
 
-
-export const selectPaginationMeta = (state) => {
-  const filtered = selectFilteredApplications(state);
-  return {
+// Memoized selector for pagination metadata
+export const selectPaginationMeta = createSelector(
+  [selectFilteredApplications, selectPerPage, selectCurrentPage],
+  (filtered, perPage, currentPage) => ({
     total: filtered.length,
-    perPage: state.applications.perPage,
-    currentPage: state.applications.currentPage,
-  };
-};
+    perPage,
+    currentPage,
+    totalPages: Math.ceil(filtered.length / perPage),
+  })
+);
+
+// Selector to find application by ID
+export const selectApplicationById = createSelector(
+  [selectApplications, (_state, id) => id],
+  (applications, id) => applications.find((app) => String(app.id) === String(id))
+);
