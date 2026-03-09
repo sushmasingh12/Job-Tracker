@@ -48,3 +48,25 @@ jobtrackr/
 ├── .gitignore
 └── README.md
 ```
+## Getting Started
+
+### Prerequisites
+- Node.js v18+
+- MongoDB (local or Atlas)
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-username/jobtrackr.git
+cd jobtrackr
+```
+
+### 3. Frontend setup
+
+```bash
+cd frontend
+npm install
+npm run dev                # runs on http://localhost:5173
+```
+
+---
