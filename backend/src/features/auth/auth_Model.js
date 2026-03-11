@@ -6,13 +6,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "First name is required"],
         trim: true,
-        maxlength: [50, "First name cannot exceed 50 characters"]
+        minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [50, "Name cannot exceed 50 characters"]
     },
     lastname: {
         type: String,
         required: [true, "Last name is required"],
         trim: true,
-        maxlength: [50, "Last name cannot exceed 50 characters"]
+        minlength: [2, "Name must be at least 2 characters"],
+        maxlength: [50, "Name cannot exceed 50 characters"]
     },
     email: {
         type: String,
@@ -28,13 +30,15 @@ const userSchema = new mongoose.Schema({
         minlength: [6, "Password must be at least 6 characters"],
         select: false
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
-
-// Hash password before saving
+  
+      isVerified: {
+        type: Boolean,
+        default: false,
+      },
+  
+      resetPasswordToken: String,
+      resetPasswordExpire: Date,
+}, {timestamps: true});
 userSchema.pre("save", async function(next) {
     if (!this.isModified("password")) {
         next();
@@ -43,7 +47,6 @@ userSchema.pre("save", async function(next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password method
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };

@@ -1,4 +1,3 @@
-
 export const getStrength =(val) =>{
     if (!val) return { score: 0, label: "", color: "" };
   
