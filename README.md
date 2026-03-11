@@ -1,16 +1,72 @@
-# React + Vite
+# JobTrackr 🎯
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A full-stack job application tracking platform — built with React + Node.js + MongoDB.
 
-Currently, two official plugins are available:
+Track every job you apply to, manage application statuses, and get AI-powered resume insights — all in one place.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Frontend**
+- React 18 + Vite
+- Tailwind CSS
+- React Hook Form
+- React Router v6
+- Redux Toolkit
 
-## Expanding the ESLint configuration
+**Backend**
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT (Access + Refresh tokens)
+- express-validator
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Project Structure
+
+```
+jobtrackr/
+├── frontend/                   # React app
+│   └── src/
+│       ├── features/
+│       │   ├── auth/           # Login, Register
+│       │   ├── applications/   # CRUD, filters, detail view
+│       │   └── dashboard/      # Stats, charts
+│       ├── shared/             # Navbar, Sidebar, UI components
+│       └── pages/              # Route-level page wrappers
+│
+├── backend/                    # Express API
+│   └── src/
+│       ├── features/
+│       │   ├── auth/           # Register, Login, JWT refresh
+│       │   └── applications/   # Full CRUD + stats
+│       └── shared/
+│           ├── middleware/     # authenticate, errorHandler, validate
+│           └── utils/          # apiResponse, generateTokens
+│
+├── .gitignore
+└── README.md
+```
+## Getting Started
+
+### Prerequisites
+- Node.js v18+
+- MongoDB (local or Atlas)
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-username/jobtrackr.git
+cd jobtrackr
+```
+
+### 3. Frontend setup
+
+```bash
+cd frontend
+npm install
+npm run dev                # runs on http://localhost:5173
+```
+
+---
