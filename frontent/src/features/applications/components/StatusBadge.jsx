@@ -2,6 +2,7 @@ import React from "react";
 import { STATUS_CONFIG } from "../contants/Applicationconstants";
 
 
+
 const StatusBadge = ({ status }) => {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG["Applied"];
 

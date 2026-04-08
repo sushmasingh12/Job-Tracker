@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { setCurrentPage } from "../store/applicationsSlice";
 
+
 const Pagination = ({ total, perPage, currentPage, totalPages }) => {
   const dispatch = useDispatch();
   

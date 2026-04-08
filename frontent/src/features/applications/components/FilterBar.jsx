@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveFilter, setSearchQuery } from "../store/applicationsSlice";
+import { setActiveFilter,setSearchQuery } from "../store/applicationsSlice";
 import { STATUS_FILTERS } from "../contants/Applicationconstants";
+
 
 /**
  * Custom hook for debounced value - delays updating the value until after

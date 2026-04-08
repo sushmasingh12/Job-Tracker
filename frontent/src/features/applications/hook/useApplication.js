@@ -1,7 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { addApplication } from "../store/applicationsSlice";
+import { createApplicationThunk } from "../store/applicationsSlice";
 
 export const RULES = {
   jobTitle: {
@@ -10,7 +10,6 @@ export const RULES = {
     maxLength: { value: 120, message: "Maximum 120 characters" },
   },
   company: {
-    required: "Company name is required",
     minLength: { value: 2, message: "Minimum 2 characters" },
   },
   applicationDate: {
@@ -51,9 +50,10 @@ export const RULES = {
   },
 };
 
-export const useApplicationForm = () => {
+export const useApplicationForm = (onClose) => {
   const dispatch = useDispatch();
-  
+  const [showToast, setShowToast] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -61,78 +61,49 @@ export const useApplicationForm = () => {
     reset,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm({
-    jobTitle: "",
-    company: "",
-    location: "",
-    applicationDate: new Date().toISOString().split("T")[0],
-    status: "Applied", // Fixed: Match STATUS_CONFIG keys (capitalized)
-    salaryMin: "",
-    salaryMax: "",
-    jobPostUrl: "",
-    jobDescription: "",
-    notes: "",
+    mode: "onChange",
+    defaultValues: {
+      jobTitle: "",
+      company: "",
+      location: "",
+      applicationDate: new Date().toISOString().split("T")[0],
+      status: "Applied",
+      salaryMin: "",
+      salaryMax: "",
+      jobPostUrl: "",
+      jobDescription: "",
+      notes: "",
+    },
   });
 
-  const onSubmit = useCallback((data) => {
-    try {
-      // Create new application object with required fields
-      const newApplication = {
-        id: Date.now(), // Simple ID generation - consider UUID for production
-        role: data.jobTitle,
-        company: data.company,
-        location: data.location || "Remote",
-        workType: "Remote",
-        appliedDate: new Date(data.applicationDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        }),
-        salary: data.salaryMin && data.salaryMax 
-          ? `$${Number(data.salaryMin).toLocaleString()} - $${Number(data.salaryMax).toLocaleString()}`
-          : data.salaryMin 
-            ? `$${Number(data.salaryMin).toLocaleString()}+`
-            : data.salaryMax 
-              ? `Up to $${Number(data.salaryMax).toLocaleString()}`
-              : "Not disclosed",
+  const onSubmit = useCallback(
+    async (data) => {
+      const payload = {
+        jobTitle: data.jobTitle,
+        company: data.company || undefined,
+        location: data.location || undefined,
+        applicationDate: data.applicationDate,
         status: data.status,
-        initial: data.company.charAt(0).toUpperCase(),
-        gradientFrom: "from-blue-500",
-        gradientTo: "to-purple-500",
-        accentColor: "bg-blue-500/80",
-        description: data.jobDescription,
-        responsibilities: [],
-        requirements: [],
-        benefits: [],
-        matchScore: 0,
-        matchLabel: "New",
-        matchColor: "text-slate-400",
-        statusHistory: [
-          { 
-            label: "Applied", 
-            date: new Date().toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric"
-            }), 
-            icon: "send", 
-            color: "bg-blue-500" 
-          },
-        ],
+        salaryMin: data.salaryMin || undefined,
+        salaryMax: data.salaryMax || undefined,
+        jobPostUrl: data.jobPostUrl || undefined,
+        jobDescription: data.jobDescription,
+        notes: data.notes || undefined,
       };
-      
-      // Dispatch action to add application to store
-      dispatch(addApplication(newApplication));
-      
-      // Reset form after successful submission
-      reset();
-      
-      // Return success for caller to handle UI updates
-      return { success: true, data: newApplication };
-    } catch (err) {
-      console.error("Failed to submit application:", err);
-      return { success: false, error: err.message };
-    }
-  }, [dispatch, reset]);
+
+      const resultAction = await dispatch(createApplicationThunk(payload));
+
+      if (createApplicationThunk.fulfilled.match(resultAction)) {
+        reset();
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+          onClose?.();
+        }, 3000);
+      }
+    },
+    [dispatch, reset, onClose]
+  );
 
   return {
     register,
@@ -143,5 +114,6 @@ export const useApplicationForm = () => {
     isSubmitting,
     isDirty,
     isValid,
+    showToast,
   };
 };

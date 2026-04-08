@@ -1,8 +1,9 @@
 import React from 'react'
+import CustomizeResume from '../../features/resume/components/CustmizeResume'
 
 const Resume = () => {
   return (
-    <div>Resume</div>
+    <div><CustomizeResume/></div>
   )
 }
 

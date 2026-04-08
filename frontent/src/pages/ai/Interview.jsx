@@ -1,9 +1,9 @@
 import React from 'react'
-
-const Interview = () => {
+import Interview from '../../features/interview/components/Interview'
+const Interviews = () => {
   return (
-    <div>Interview</div>
+    <div><Interview/></div>
   )
 }
 
-export default Interview
+export default Interviews

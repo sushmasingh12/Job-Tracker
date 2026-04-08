@@ -1,7 +1,8 @@
-import User from "./auth_Model.js"; 
-import generateToken from "../../utils/generateTokens.js"; 
+import User from "./auth_Model.js";
+import generateToken from "../../utils/generateTokens.js";
 import Joi from "joi";
 
+// ── Validation Schemas ────────────────────────────────────────────────────
 const registerSchema = Joi.object({
   firstname: Joi.string().min(2).required().messages({
     "string.min": "First name must be at least 2 characters",
@@ -37,10 +38,8 @@ const loginSchema = Joi.object({
   }),
 });
 
-export const registerUser = async (
-  res,
-  { firstname, lastname, email, password }
-) => {
+// ── Register ──────────────────────────────────────────────────────────────
+export const registerUser = async (res, { firstname, lastname, email, password }) => {
   try {
     const { error } = registerSchema.validate(
       { firstname, lastname, email, password },
@@ -55,7 +54,7 @@ export const registerUser = async (
     if (userExists) throw new Error("User already exists");
 
     const user = await User.create({ firstname, lastname, email, password });
-    generateToken(res, user._id);
+    generateToken(res, user._id); // httpOnly cookie set karo
 
     return {
       _id: user._id,
@@ -69,30 +68,37 @@ export const registerUser = async (
   }
 };
 
+// ── Login ─────────────────────────────────────────────────────────────────
+// ✅ FIX: `token` ab return object mein include kiya
+// Pehle sirf cookie mein tha — frontend ko response body mein nahi milta tha
+// js-cookie mein save karne ke liye token body mein bhejna zaroori hai
 export const loginUser = async (res, { email, password }) => {
   try {
     const { error } = loginSchema.validate(
       { email, password },
       { abortEarly: false }
     );
-
     if (error) {
       const messages = error.details.map((d) => d.message).join(", ");
       throw new Error(messages);
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const normalizedEmail = email.toLowerCase().trim();
+ 
+    const user = await User.findOne({ email: normalizedEmail }).select("+password");
     if (!user) throw new Error("Invalid email or password");
-
+ 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) throw new Error("Invalid email or password");
-
-    generateToken(res, user._id);
+ 
+    const token = generateToken(res, user._id);
+    
     return {
       id: user._id,
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      token, // ✅ FIX: Ab frontend ko milega → js-cookie mein save hoga
     };
   } catch (error) {
     console.error("Login Error:", error.message);
@@ -100,9 +106,9 @@ export const loginUser = async (res, { email, password }) => {
   }
 };
 
-// Logout
+// ── Logout ────────────────────────────────────────────────────────────────
 export const logoutUser = (res) => {
-  res.cookie("token", "", {
+  res.cookie("auth_token", "", {
     httpOnly: true,
     expires: new Date(0),
     path: "/",

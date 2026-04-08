@@ -1,120 +1,135 @@
-import { useForm } from "react-hook-form";
+import { useForm} from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setCredentials, setLoading, setError, logout as logoutAction } from "../store/authSlice";
-import { registerUser, loginUser, logout } from "../services/authService";
+import { useDispatch,useSelector } from "react-redux";
+import {
+  setCredentials,
+  setLoading,
+  setError,
+  logout as logoutAction,
+  selectAuthError,  
+  selectAuthLoading,
+} from "../store/authSlice";
+import { loginUser, logout, registerUser } from "../services/authService";
+
+// ═══════════════════════════════════════════════════════
+//  useLogin
+// ═══════════════════════════════════════════════════════
 
 export const useLogin = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-        setSubmitting
-    } = useForm({
-        defaultValues: {
-            email: "",
-            password: ""
-        }
-    });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const apiError = useSelector(selectAuthError);
+  const isLoading = useSelector(selectAuthLoading);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: { email: "", password: "" },
+  });
 
-    const onSubmit = async (data) => {
-        try {
-            dispatch(setLoading(true));
-            const result = await loginUser(data);
-            
-            if (result.success) {
-                dispatch(setCredentials({
-                    user: result.user,
-                    token: result.token
-                }));
-                navigate("/dashboard");
-            } else {
-                dispatch(setError(result.message || "Login failed"));
-            }
-        } catch (err) {
-            const errorMessage = err.response?.data?.message || err.message || "Login failed";
-            dispatch(setError(errorMessage));
-        } finally {
-            setSubmitting(false);
-            dispatch(setLoading(false));
-        }
-    };
+  const onSubmit = async (data) => {
+    try {
+      dispatch(setLoading(true));
+      const result = await loginUser(data);
 
-    return {
-        register,
-        handleSubmit: handleSubmit(onSubmit),
-        errors,
-        isSubmitting,
-    };
+      if (result.success) {
+        dispatch(
+          setCredentials({
+            user: result.data,
+            token: result.data.token,
+          })
+        );
+        navigate("/dashboard");
+      } else {
+        dispatch(setError(result.message || "Login failed"));
+      }
+    } catch (err) {
+      dispatch(
+        setError(err.response?.data?.message || err.message || "Login failed")
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  return {
+    register,
+    handleSubmit: handleSubmit(onSubmit),
+    errors,
+    isSubmitting:isSubmitting || isLoading,
+    apiError,
+  };
 };
 
+// ═══════════════════════════════════════════════════════
+//  useRegister
+// ═══════════════════════════════════════════════════════
 export const useRegister = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors, isSubmitting },
-        setSubmitting
-    } = useForm({
-        defaultValues: {
-            firstname: "",
-            lastname: "",
-            email: "",
-            password: "",
-            confirmpassword: "",
-        }
-    });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const apiError  = useSelector(selectAuthError);
+  const isLoading = useSelector(selectAuthLoading);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      firstname: "",
+      lastname: "",
+      email: "",
+      password: "",
+      confirmpassword: "",
+    },
+  });
 
-    const onSubmit = async (data) => {
-        try {
-            dispatch(setLoading(true));
-            
-            // Remove confirmpassword before sending to API
-            const { confirmpassword, ...userData } = data;
-            
-            const result = await registerUser(userData);
-            
-            if (result.success) {
-                dispatch(setCredentials({
-                    user: result.user,
-                    token: result.token
-                }));
-                navigate("/dashboard");
-            } else {
-                dispatch(setError(result.message || "Registration failed"));
-            }
-        } catch (err) {
-            const errorMessage = err.response?.data?.message || err.message || "Registration failed";
-            dispatch(setError(errorMessage));
-        } finally {
-            setSubmitting(false);
-            dispatch(setLoading(false));
-        }
-    };
+  const onSubmit = async (data) => {
+    try {
+      dispatch(setLoading(true));
+      const {  ...userData } = data;
 
-    return {
-        register,
-        handleSubmit: handleSubmit(onSubmit),
-        errors,
-        isSubmitting,
-        watch,
-    };
+      const result = await registerUser(userData);
+
+      if (result.success) {
+        navigate("/signin", { state: { registered: true } });
+      } else {
+        dispatch(setError(result.message || "Registration failed"));
+      }
+    } catch (err) {
+      dispatch(
+        setError(
+          err.response?.data?.message || err.message || "Registration failed"
+        )
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  return {
+    register,
+    handleSubmit: handleSubmit(onSubmit),
+    errors,
+    isSubmitting: isSubmitting || isLoading,
+    watch,
+    apiError,
+  };
 };
 
+// ═══════════════════════════════════════════════════════
+//  useLogout
+// ═══════════════════════════════════════════════════════
 export const useLogout = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    
-    const handleLogout = () => {
-        logout();
-        dispatch(logoutAction());
-        navigate("/");
-    };
-    
-    return { logout: handleLogout };
-};
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const handleLogout = () => {
+    logout();
+    dispatch(logoutAction());
+    navigate("/");
+  };
+
+  return { logout: handleLogout };
+};

@@ -1,8 +1,9 @@
 import React from 'react'
+import Cover from '../../features/coverLetter/components/Cover'
 
 const CoverLetter = () => {
   return (
-    <div>CoverLetter</div>
+    <div><Cover/></div>
   )
 }
 

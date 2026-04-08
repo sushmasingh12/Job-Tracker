@@ -3,6 +3,7 @@ import User from "./auth_Model.js";
 
 export const protect = async (req, res, next) => {
   let token;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -10,8 +11,8 @@ export const protect = async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
 
-  if (!token && req.cookies?.token) {
-    token = req.cookies.token;
+  if (!token && req.cookies?.auth_token) {
+    token = req.cookies.auth_token;
   }
 
   if (!token) {
@@ -23,7 +24,7 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.userId);
+    req.user = await User.findById(decoded.userId).select("-password");
 
     if (!req.user) {
       return res.status(401).json({

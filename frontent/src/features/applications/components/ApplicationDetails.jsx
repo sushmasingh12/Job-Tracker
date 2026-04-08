@@ -1,8 +1,18 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { clearSelectedApplication, selectApplicationById } from "../store/applicationsSlice";
+import {
+  clearSelectedApplication,
+  selectApplicationById,
+  fetchApplicationByIdThunk,
+  selectIsLoading,
+  downloadApplicationMaterialThunk,
+} from "../store/applicationsSlice";
 import StatusBadge from "./StatusBadge";
+import {
+  setApplicationContext,
+  setCurrentStep,
+} from "../../coverLetter/store/coverSlice";
 
 const TABS = ["Overview", "Resume", "Cover Letter", "Notes", "Timeline"];
 
@@ -10,28 +20,164 @@ const ApplicationDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  
-  // Use memoized selector to find application by ID
+
   const app = useSelector((state) => selectApplicationById(state, id));
+  const isLoading = useSelector(selectIsLoading);
   const [activeTab, setActiveTab] = useState("Overview");
 
-  // Handle navigation back
+  const [resumePage, setResumePage] = useState(0);
+  const [coverLetterPage, setCoverLetterPage] = useState(0);
+  const [noteIndex, setNoteIndex] = useState(0);
+  const [timelineIndex, setTimelineIndex] = useState(0);
+
+  useEffect(() => {
+    if (id && !app) {
+      dispatch(fetchApplicationByIdThunk(id));
+    }
+  }, [id, app, dispatch]);
+
   const handleBack = useCallback(() => {
     dispatch(clearSelectedApplication());
     navigate("/application/applicationspage");
   }, [dispatch, navigate]);
 
-  // Memoized calculations
-  const { circumference, dashArray } = useMemo(() => {
+  const { dashArray } = useMemo(() => {
     const circ = 2 * Math.PI * 15.9155;
     const score = app?.matchScore ?? 0;
     return {
-      circumference: circ,
       dashArray: `${(score / 100) * circ}, ${circ}`,
     };
   }, [app?.matchScore]);
 
-  // Handle loading/error state
+  const resumeSections = useMemo(
+    () => [
+      {
+        title: "Resume Overview",
+        content:
+          app?.resumeSummary ||
+          `This resume has been tailored for ${app?.company || "the company"} role.`,
+      },
+      {
+        title: "Matched Skills",
+        content: app?.matchedSkills?.length
+          ? app.matchedSkills.join(", ")
+          : "No matched skills available.",
+      },
+      {
+        title: "Optimization Notes",
+        content:
+          app?.resumeNotes ||
+          "Resume optimization suggestions are not available yet.",
+      },
+    ],
+    [app],
+  );
+
+  const coverLetterSections = useMemo(
+    () => [
+      {
+        title: "Cover Letter Draft",
+        content:
+          app?.coverLetter ||
+          `Dear Hiring Manager,\n\nI am excited to apply for the ${app?.role || "role"} position at ${app?.company || "your company"}.`,
+      },
+      {
+        title: "Personalization",
+        content:
+          app?.coverLetterNotes ||
+          "This cover letter can be personalized further based on job requirements.",
+      },
+    ],
+    [app],
+  );
+
+  const notesList = useMemo(
+    () =>
+      app?.notes?.length
+        ? app.notes
+        : [
+            "No notes added yet.",
+            "You can store recruiter updates here.",
+            "You can track follow-up reminders here.",
+          ],
+    [app],
+  );
+
+  const timelineList = useMemo(
+    () =>
+      app?.timeline?.length
+        ? app.timeline
+        : [
+            {
+              title: "Application Submitted",
+              date: app?.appliedDate || "N/A",
+              description: "Your application was submitted successfully.",
+            },
+            {
+              title: "Awaiting Review",
+              date: "Pending",
+              description: "The application is waiting for recruiter review.",
+            },
+          ],
+    [app],
+  );
+
+  const handleRegenerateCoverLetter = () => {
+    dispatch(
+      setApplicationContext({
+        applicationId: app.id,
+        jobDetails: {
+          jobTitle: app.role || "",
+          companyName: app.company || "",
+          location: app.location || "",
+          jobDescription: app.jobDescription || "",
+        },
+        generatedLetter: app.coverLetter || "",
+      }),
+    );
+
+    dispatch(setCurrentStep(1));
+    navigate("/ai/cover-letter");
+  };
+
+  const handleEditCoverLetter = () => {
+    dispatch(
+      setApplicationContext({
+        applicationId: app.id,
+        jobDetails: {
+          jobTitle: app.role || "",
+          companyName: app.company || "",
+          location: app.location || "",
+          jobDescription: app.jobDescription || "",
+        },
+        generatedLetter: app.coverLetter || "",
+      }),
+    );
+
+    dispatch(setCurrentStep(app.coverLetter ? 4 : 1));
+    navigate("/cover-letter");
+  };
+
+  const handleDownloadResume = () => {
+    dispatch(
+      downloadApplicationMaterialThunk({
+        id: app.id,
+        type: "resume",
+        format: "pdf",
+      }),
+    );
+  };
+
+  const handleDownloadCoverLetter = () => {
+    dispatch(
+      downloadApplicationMaterialThunk({
+        id: app.id,
+        type: "cover-letter",
+        format: "pdf",
+      }),
+    );
+  };
+
   if (!id) {
     return (
       <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-4 lg:p-8 flex items-center justify-center">
@@ -49,16 +195,27 @@ const ApplicationDetails = () => {
     return (
       <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-4 lg:p-8 flex items-center justify-center">
         <div className="text-center">
-          <span className="material-symbols-outlined text-5xl text-slate-400 mb-3 block">
-            search_off
-          </span>
-          <p className="text-slate-500 mb-4">Application not found</p>
-          <button
-            onClick={handleBack}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Back to Applications
-          </button>
+          {isLoading ? (
+            <>
+              <span className="material-symbols-outlined text-5xl text-blue-400 mb-3 block animate-spin">
+                progress_activity
+              </span>
+              <p className="text-slate-500">Loading application...</p>
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-5xl text-slate-400 mb-3 block">
+                search_off
+              </span>
+              <p className="text-slate-500 mb-4">Application not found</p>
+              <button
+                onClick={handleBack}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Back to Applications
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -76,6 +233,7 @@ const ApplicationDetails = () => {
         </span>
         Back to Applications
       </button>
+
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 lg:w-3/5 flex flex-col gap-6">
           <div className="relative rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm p-6 shadow-sm overflow-hidden">
@@ -86,6 +244,7 @@ const ApplicationDetails = () => {
               >
                 {app.initial}
               </div>
+
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {app.role}
@@ -102,6 +261,7 @@ const ApplicationDetails = () => {
                     {app.location} ({app.workType})
                   </span>
                 </div>
+
                 <div className="flex gap-2 mt-3 flex-wrap">
                   <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     Full-time
@@ -115,8 +275,13 @@ const ApplicationDetails = () => {
                   <StatusBadge status={app.status} />
                 </div>
               </div>
+
               <div className="flex flex-col items-center shrink-0">
-                <div className="relative h-12 w-12 flex items-center justify-center" role="img" aria-label={`Match score: ${app.matchScore}%`}>
+                <div
+                  className="relative h-12 w-12 flex items-center justify-center"
+                  role="img"
+                  aria-label={`Match score: ${app.matchScore}%`}
+                >
                   <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
                     <path
                       className="text-slate-100 dark:text-slate-700/50"
@@ -146,8 +311,9 @@ const ApplicationDetails = () => {
               </div>
             </div>
           </div>
+
           <div className="flex-1 flex flex-col bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
-            <div 
+            <div
               className="flex items-center border-b border-slate-200 dark:border-slate-700/50 px-2 pt-2 overflow-x-auto"
               role="tablist"
             >
@@ -168,7 +334,8 @@ const ApplicationDetails = () => {
                 </button>
               ))}
             </div>
-            <div 
+
+            <div
               id={`panel-${activeTab}`}
               role="tabpanel"
               className="p-6 overflow-y-auto flex-1"
@@ -179,6 +346,7 @@ const ApplicationDetails = () => {
                     About the Role
                   </h3>
                   <p className="mb-4">{app.description}</p>
+
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                     Key Responsibilities:
                   </h4>
@@ -187,6 +355,7 @@ const ApplicationDetails = () => {
                       <li key={i}>{r}</li>
                     ))}
                   </ul>
+
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                     Requirements:
                   </h4>
@@ -195,6 +364,7 @@ const ApplicationDetails = () => {
                       <li key={i}>{r}</li>
                     ))}
                   </ul>
+
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                     Benefits:
                   </h4>
@@ -204,6 +374,104 @@ const ApplicationDetails = () => {
                     ))}
                   </ul>
                 </div>
+              ) : activeTab === "Resume" ? (
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      {resumeSections[resumePage].title}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-6">
+                      {resumeSections[resumePage].content}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                        View Resume
+                      </button>
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
+                        Optimize Resume
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === "Cover Letter" ? (
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      {coverLetterSections[coverLetterPage].title}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-6 whitespace-pre-line">
+                      {coverLetterSections[coverLetterPage].content}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleEditCoverLetter}
+                        className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+                      >
+                        Edit Letter
+                      </button>
+
+                      <button
+                        onClick={handleRegenerateCoverLetter}
+                        className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white"
+                      >
+                        Regenerate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === "Notes" ? (
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      Note {noteIndex + 1}
+                    </h3>
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 text-sm text-slate-600 dark:text-slate-300 leading-6">
+                      {notesList[noteIndex]}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                        Add Note
+                      </button>
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
+                        Edit Note
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === "Timeline" ? (
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      {timelineList[timelineIndex].title}
+                    </h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
+                      {timelineList[timelineIndex].date}
+                    </p>
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 text-sm text-slate-600 dark:text-slate-300 leading-6">
+                      {timelineList[timelineIndex].description}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                        Add Step
+                      </button>
+                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
+                        Update Status
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-slate-400">
                   <span className="material-symbols-outlined text-4xl mb-2">
@@ -212,9 +480,14 @@ const ApplicationDetails = () => {
                   <p className="text-sm">{activeTab} content coming soon.</p>
                 </div>
               )}
+
+              {activeTab !== "Overview" && (
+                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700/50 flex items-center justify-between"></div>
+              )}
             </div>
           </div>
         </div>
+
         <div className="w-full lg:w-[30%] space-y-6">
           <div className="rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm p-6 shadow-sm">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
@@ -245,6 +518,7 @@ const ApplicationDetails = () => {
               ))}
             </div>
           </div>
+
           <div className="rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm p-6 shadow-sm">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-5">
               Application Materials
@@ -284,16 +558,31 @@ const ApplicationDetails = () => {
                     </div>
                   </div>
                   <div className="mt-3 flex gap-2">
-                    <button className="flex-1 text-[10px] font-bold py-1.5 rounded bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-1 uppercase border border-slate-200 dark:border-slate-700">
+                    <button
+                      onClick={
+                        m.name.includes("Resume")
+                          ? handleDownloadResume
+                          : handleDownloadCoverLetter
+                      }
+                      className="flex-1 text-[10px] font-bold py-1.5 rounded bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-1 uppercase border border-slate-200 dark:border-slate-700"
+                    >
                       <span className="material-symbols-outlined text-sm">
                         download
-                      </span>{" "}
+                      </span>
                       Download
                     </button>
-                    <button className="flex-1 text-[10px] font-bold py-1.5 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1 uppercase">
+
+                    <button
+                      onClick={
+                        m.name.includes("Resume")
+                          ? undefined
+                          : handleRegenerateCoverLetter
+                      }
+                      className="flex-1 text-[10px] font-bold py-1.5 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1 uppercase"
+                    >
                       <span className="material-symbols-outlined text-sm">
                         autorenew
-                      </span>{" "}
+                      </span>
                       Regenerate
                     </button>
                   </div>
@@ -301,6 +590,7 @@ const ApplicationDetails = () => {
               ))}
             </div>
           </div>
+
           <div className="rounded-xl p-6 bg-slate-800 dark:bg-slate-900 text-white shadow-lg overflow-hidden relative">
             <div className="relative z-10">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
@@ -326,4 +616,5 @@ const ApplicationDetails = () => {
     </div>
   );
 };
+
 export default ApplicationDetails;
