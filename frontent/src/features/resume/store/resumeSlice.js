@@ -101,8 +101,6 @@ const initialState = {
   optimizeSuccess: false,
   optimizedResult: null,
 
-  downloadLoading: false,
-  downloadError: null,
   downloadData: null,
 };
 

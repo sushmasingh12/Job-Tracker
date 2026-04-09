@@ -4,10 +4,13 @@ import GeneratePanel from "./Generatepanel";
 import InterviewHeader from "./Interviewheader";
 import MockInterview from "./Mockinterview";
 import MyAnswers from "./Myanswers";
-import ProfileSelectorModal from "./Profileselectormodal";
-import QuestionCard from "./Questioncard";
 import QuestionFilters from "./Questionfilters";
 import SessionStats from "./Sessionstats";
+import ManualProfileModal from "./ManualProfileModal";
+import QuestionCard from "./Questioncard";
+import ProfileSelectorModal from "./Profileselectormodal";
+
+
 
 const TABS = [
   { id: 'practice', label: 'Practice Questions', icon: 'quiz' },
@@ -57,7 +60,11 @@ const Interview = () => {
     error,
     openProfileModal,
     closeProfileModal,
+    openManualModal,
+    closeManualModal,
+    showManualModal,
     handleSelectProfile,
+    handleGenerateManual,
     generateQuestions,
     changeTab,
     changeFilter,
@@ -157,6 +164,7 @@ const Interview = () => {
         <InterviewHeader
           profile={selectedProfile}
           onSelectProfile={openProfileModal}
+          onOpenManual={openManualModal}
           countdown={countdown}
           interviewDate={interviewDate}
           onSetInterviewDate={handleSetInterviewDate}
@@ -171,11 +179,10 @@ const Interview = () => {
                   <button
                     key={tab.id}
                     onClick={() => changeTab(tab.id)}
-                    className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap ${
-                      isActive
-                        ? 'border-primary text-primary'
-                        : 'border-transparent text-neutral-muted hover:text-neutral-text hover:border-neutral-300'
-                    }`}
+                    className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap ${isActive
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-neutral-muted hover:text-neutral-text hover:border-neutral-300'
+                      }`}
                   >
                     <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
                     {tab.label}
@@ -210,6 +217,14 @@ const Interview = () => {
           selectedProfile={selectedProfile}
           onSelect={handleSelectProfile}
           onClose={closeProfileModal}
+        />
+      )}
+
+      {showManualModal && (
+        <ManualProfileModal
+          loading={questionsLoading}
+          onGenerate={handleGenerateManual}
+          onClose={closeManualModal}
         />
       )}
     </div>

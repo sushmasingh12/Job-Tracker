@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { interviewService } from '../services/interviewServices';
-import { addCustomQuestion,
+import {
+  addCustomQuestion,
   endMockSession,
   markQuestionComplete,
   nextMockQuestion,
@@ -19,18 +20,20 @@ import { addCustomQuestion,
   setSavedAnswers,
   setSelectedProfile,
   setShowProfileModal,
+  setShowManualModal,
   startMockSession,
   tickMockTimer,
   toggleBookmark,
-  unmarkQuestionComplete, } from '../store/interviewSlice';
+  unmarkQuestionComplete,
+} from '../store/interviewSlice';
 
 
 const normalizeAnswers = (payload) => {
   const answersArray = Array.isArray(payload)
     ? payload
     : Array.isArray(payload?.answers)
-    ? payload.answers
-    : [];
+      ? payload.answers
+      : [];
 
   return answersArray.reduce((acc, item) => {
     const questionId = item?.questionId || item?.id;
@@ -100,8 +103,10 @@ export const useInterview = () => {
       dispatch(setProfilesLoading(true));
       dispatch(setError(null));
 
-      const data = await interviewService.getProfiles(token);
-      dispatch(setProfiles(Array.isArray(data) ? data : data?.jobs || []));
+      const response = await interviewService.getProfiles(token);
+      // The backend returns { success: true, data: [applications...] }
+      const profiles = response?.data || (Array.isArray(response) ? response : []);
+      dispatch(setProfiles(profiles));
     } catch (error) {
       dispatch(setError(error.message || 'Failed to load profiles'));
     } finally {
@@ -136,6 +141,14 @@ export const useInterview = () => {
     dispatch(setShowProfileModal(false));
   }, [dispatch]);
 
+  const openManualModal = useCallback(() => {
+    dispatch(setShowManualModal(true));
+  }, [dispatch]);
+
+  const closeManualModal = useCallback(() => {
+    dispatch(setShowManualModal(false));
+  }, [dispatch]);
+
   const handleSelectProfile = useCallback(
     async (profile) => {
       dispatch(setSelectedProfile(profile));
@@ -146,30 +159,64 @@ export const useInterview = () => {
   );
 
   const generateQuestions = useCallback(
-    async ({ questionTypes, count }) => {
-      if (!interview.selectedProfile) return;
+  async ({ questionTypes, count }) => {
+    if (!interview.selectedProfile) return;
 
+    try {
+      dispatch(setQuestionsLoading(true));
+      dispatch(setError(null));
+
+      const data = await interviewService.generateQuestions(token, {
+        jobId: interview.selectedProfile._id,
+        jobTitle: interview.selectedProfile.jobTitle,
+        company: interview.selectedProfile.company,
+        jobDescription: interview.selectedProfile.jobDescription || '',
+        questionTypes,
+        count,
+      });
+
+      dispatch(setQuestions(data?.questions || []));
+    } catch (error) {
+      dispatch(setError(error.message || 'Failed to generate questions'));
+    } finally {
+      dispatch(setQuestionsLoading(false));
+    }
+  },
+  [dispatch, interview.selectedProfile, token]
+);
+
+  const handleGenerateManual = useCallback(
+    async ({ jobTitle, techStack, questionTypes, count }) => {
       try {
         dispatch(setQuestionsLoading(true));
         dispatch(setError(null));
 
         const data = await interviewService.generateQuestions(token, {
-          jobId: interview.selectedProfile._id,
-          jobTitle: interview.selectedProfile.jobTitle,
-          company: interview.selectedProfile.company,
-          jobDescription: interview.selectedProfile.jobDescription || '',
+          jobId: 'manual',
+          jobTitle,
+          techStack,
           questionTypes,
           count,
         });
 
+        const manualProfile = {
+          _id: 'manual',
+          jobTitle,
+          company: 'Self-Practice',
+          techStack,
+          isManual: true,
+        };
+
+        dispatch(setSelectedProfile(manualProfile));
         dispatch(setQuestions(data?.questions || []));
+        dispatch(setShowManualModal(false));
       } catch (error) {
-        dispatch(setError(error.message || 'Failed to generate questions'));
+        dispatch(setError(error.message || 'Failed to generate manual questions'));
       } finally {
         dispatch(setQuestionsLoading(false));
       }
     },
-    [dispatch, interview.selectedProfile, token]
+    [dispatch, token]
   );
 
   const handleAddCustomQuestion = useCallback(
@@ -267,6 +314,9 @@ export const useInterview = () => {
     closeProfileModal,
     handleSelectProfile,
     generateQuestions,
+    handleGenerateManual,
+    openManualModal,
+    closeManualModal,
     handleAddCustomQuestion,
     changeTab,
     changeFilter,

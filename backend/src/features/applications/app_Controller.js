@@ -172,6 +172,38 @@ export const saveCoverLetter = async (req, res) => {
   }
 };
 
+export const saveResume = async (req, res) => {
+  try {
+    const { content, templateId } = req.body;
+
+    if (!content) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Resume content required hai" });
+    }
+
+    const application = await appService.saveResume(
+      new mongoose.Types.ObjectId(getUserId(req)),
+      req.params.id,
+      { content, templateId }
+    );
+
+    if (!application) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Application nahi mili" });
+    }
+
+    res.status(200).json({ success: true, data: application });
+  } catch (err) {
+    if (err.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid application ID" });
+    }
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 
 export const deleteApplication = async (req, res) => {

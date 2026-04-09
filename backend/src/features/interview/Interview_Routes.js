@@ -1,35 +1,46 @@
 import { Router } from "express";
 import { protect } from "../auth/auth_Middleware.js";
-const {
+
+import {
   generateQuestions,
   saveAnswer,
   getAnswers,
   setInterviewDate,
   deletePrep,
-} = require('../controllers/interviewController');
+  getFeedback,
+} from "./Interview_Controller.js";
+
+import {
+  validateGenerateQuestions,
+  validateSaveAnswer,
+  validateInterviewDate,
+  validateJobIdParam,
+  validateFeedbackRequest,
+  rateLimitGenerateQuestions,
+  interviewErrorHandler,
+} from "./Interview_Middleware.js";
 
 const router = Router();
-// All routes require authentication
+
 router.use(protect);
 
-// Generate AI questions for a job profile
-// POST /api/interview/generate
-router.post('/generate', generateQuestions);
+router.post(
+  "/generate",
+  rateLimitGenerateQuestions,
+  validateGenerateQuestions,
+  generateQuestions
+);
 
-// Save a user's answer for a question
-// POST /api/interview/answers
-router.post('/answers', saveAnswer);
+router.post("/answers", validateSaveAnswer, saveAnswer);
 
-// Get all saved answers + questions for a job
-// GET /api/interview/answers/:jobId
-router.get('/answers/:jobId', getAnswers);
+router.post("/feedback", validateFeedbackRequest, getFeedback);
 
-// Set/update interview date for countdown
-// PUT /api/interview/date
-router.put('/date', setInterviewDate);
+router.get("/answers/:jobId", validateJobIdParam, getAnswers);
 
-// Delete entire prep session for a job
-// DELETE /api/interview/:jobId
-router.delete('/:jobId', deletePrep);
+router.put("/date", validateInterviewDate, setInterviewDate);
 
-module.exports = router;
+router.delete("/:jobId", validateJobIdParam, deletePrep);
+
+router.use(interviewErrorHandler);
+
+export default router;

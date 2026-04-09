@@ -1,6 +1,11 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useResume from "../hooks/useResume";
+import applicationService from "../../applications/services/applicationService";
+import { useDispatch } from "react-redux";
+import { 
+    clearOptimizeState 
+} from "../store/resumeSlice";
 
 const UploadedFilePreview = ({ file, onClear, onReplace }) => {
   const isPdf = file.name?.toLowerCase().endsWith(".pdf");
@@ -57,6 +62,8 @@ const UploadedFilePreview = ({ file, onClear, onReplace }) => {
 
 const CustomizeResume = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const appState = location.state || {};
 
   const {
     resumes,
@@ -77,14 +84,22 @@ const CustomizeResume = () => {
   } = useResume();
 
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobDescription, setJobDescription] = useState(appState.jobDescription || "");
   const [localError, setLocalError] = useState("");
+
+  const applicationId = appState.applicationId || null;
+
+  useEffect(() => {
+    if (appState.jobDescription && !jobDescription) {
+      setJobDescription(appState.jobDescription);
+    }
+  }, [appState.jobDescription]);
 
   useEffect(() => {
     if (analyzeSuccess) {
-      navigate("/ai/resume/optimizeResume");
+      navigate("/ai/resume/optimizeResume", { state: { applicationId } });
     }
-  }, [analyzeSuccess, navigate]);
+  }, [analyzeSuccess, navigate, applicationId]);
 
   useEffect(() => {
     if (uploadSuccess) {
@@ -163,8 +178,10 @@ const CustomizeResume = () => {
     setLocalError("");
   };
 
+  const dispatch = useDispatch();
+
   const handleCustomizeWithAI = async () => {
-    if (!activeResumeId) {
+    if (!uploadedFile && !activeResumeId) {
       setLocalError("Please upload a resume.");
       return;
     }

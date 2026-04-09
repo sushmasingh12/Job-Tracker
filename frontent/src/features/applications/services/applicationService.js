@@ -3,9 +3,6 @@ import axios from "axios";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 const BASE = "/applications";
@@ -85,6 +82,8 @@ export const transformApplication = (app = {}) => {
     coverLetter: app.coverLetter?.content || "",
     coverLetterGeneratedAt: app.coverLetter?.generatedAt || null,
 
+    optimizedResume: app.optimizedResume || null,
+
     resumeSummary: app.resumeSummary || "",
     matchedSkills: Array.isArray(app.matchedSkills) ? app.matchedSkills : [],
     resumeNotes: app.resumeNotes || "",
@@ -114,13 +113,13 @@ const getById = async (id) => {
   return transformApplication(data?.data);
 };
 
-const create = async (formData) => {
-  const { data } = await api.post(BASE, formData);
+const create = async (payload) => {
+  const { data } = await api.post(BASE, payload);
   return transformApplication(data?.data);
 };
 
-const update = async (id, formData) => {
-  const { data } = await api.put(`${BASE}/${id}`, formData);
+const update = async (id, payload) => {
+  const { data } = await api.put(`${BASE}/${id}`, payload);
   return transformApplication(data?.data);
 };
 
@@ -131,6 +130,14 @@ const patchStatus = async (id, status) => {
 
 const saveCoverLetterToApplication = async (id, content) => {
   const { data } = await api.patch(`${BASE}/${id}/cover-letter`, { content });
+  return transformApplication(data?.data);
+};
+
+const saveResumeToApplication = async (id, { content, templateId }) => {
+  const { data } = await api.patch(`${BASE}/${id}/resume`, {
+    content,
+    templateId,
+  });
   return transformApplication(data?.data);
 };
 
@@ -165,8 +172,9 @@ const applicationService = {
   update,
   patchStatus,
   saveCoverLetterToApplication,
+  saveResumeToApplication,
   downloadApplicationMaterial,
   remove,
 };
 
-export default applicationService;
+export default applicationService;

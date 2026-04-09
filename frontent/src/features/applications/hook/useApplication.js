@@ -78,20 +78,7 @@ export const useApplicationForm = (onClose) => {
 
   const onSubmit = useCallback(
     async (data) => {
-      const payload = {
-        jobTitle: data.jobTitle,
-        company: data.company || undefined,
-        location: data.location || undefined,
-        applicationDate: data.applicationDate,
-        status: data.status,
-        salaryMin: data.salaryMin || undefined,
-        salaryMax: data.salaryMax || undefined,
-        jobPostUrl: data.jobPostUrl || undefined,
-        jobDescription: data.jobDescription,
-        notes: data.notes || undefined,
-      };
-
-      const resultAction = await dispatch(createApplicationThunk(payload));
+      const resultAction = await dispatch(createApplicationThunk(data));
 
       if (createApplicationThunk.fulfilled.match(resultAction)) {
         reset();

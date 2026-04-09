@@ -15,7 +15,7 @@ const ResumePreviewView = ({ sections }) => {
   const isDynamic = !!sections?.sectionOrder;
   const basics = isDynamic ? (sections.basics || {}) : sections;
   const sectionOrder = isDynamic ? sections.sectionOrder : [
-    "summary", "experience", "projects", "skills", "education", 
+    "summary", "experience", "projects", "skills", "education",
     "certifications", "achievements", "volunteer", "languages"
   ];
   const dynamicSections = isDynamic ? (sections.sections || {}) : sections;
@@ -122,12 +122,12 @@ const ResumePreviewView = ({ sections }) => {
           <div className="space-y-5">
             {data.map((item, index) => {
               const title = item.role || item.name || item.degree || item.title || (typeof item === 'object' && Object.keys(item).length > 0 ? item[Object.keys(item)[0]] : "") || "";
-              
+
               const subtitleFields = ['company', 'school', 'org', 'issuer', 'location'];
               const subtitle = subtitleFields.map(f => item[f]).filter(Boolean).join(" · ");
-              
+
               const date = item.duration || item.year || item.date || "";
-              
+
               const desc = item.description || item.grade || item.summary || "";
               const bullets = Array.isArray(item.bullets) ? item.bullets : Array.isArray(item.achievements) ? item.achievements : [];
               const tags = Array.isArray(item.tech) ? item.tech : Array.isArray(item.skills) ? item.skills : [];

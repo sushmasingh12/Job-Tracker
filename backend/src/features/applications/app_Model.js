@@ -78,9 +78,10 @@ const applicationSchema = new mongoose.Schema(
       type: [statusHistoryEntrySchema],
       default: [],
     },
-        coverLetter: {
-      content:     { type: String, default: "" },
-      generatedAt: { type: Date },
+    optimizedResume: {
+      content: { type: Object },
+      templateId: { type: String },
+      savedAt: { type: Date, default: Date.now },
     },
     // ─────────────────────────────────────────────────────────────────────────
   },

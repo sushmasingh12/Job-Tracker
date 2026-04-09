@@ -5,6 +5,7 @@ const initialState = {
   profilesLoading: false,
   selectedProfile: null,
   showProfileModal: false,
+  showManualModal: false,
 
   questions: [],
   questionsLoading: false,
@@ -57,6 +58,9 @@ const interviewSlice = createSlice({
     },
     setShowProfileModal: (state, action) => {
       state.showProfileModal = Boolean(action.payload);
+    },
+    setShowManualModal: (state, action) => {
+      state.showManualModal = Boolean(action.payload);
     },
 
     setQuestions: (state, action) => {
@@ -186,6 +190,7 @@ export const {
   setProfilesLoading,
   setSelectedProfile,
   setShowProfileModal,
+  setShowManualModal,
   setQuestions,
   setQuestionsLoading,
   setError,

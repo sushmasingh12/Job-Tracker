@@ -5,6 +5,7 @@ import authRouter from "./features/auth/auth_Routes.js";
 import coverLetterRouter from "./features/coverLetter/coverLetter_Routes.js";
 import appRouter from "./features/applications/app_Routes.js";
 import resumeRouter from "./features/resume/resume_Routes.js";
+import interviewRouter from "./features/interview/Interview_Routes.js";
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/coverLetter", coverLetterRouter);
 app.use("/api/applications", appRouter);
 app.use("/api/resume", resumeRouter);
+app.use("/api/interview", interviewRouter);
 
 export default app;

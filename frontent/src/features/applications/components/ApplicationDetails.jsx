@@ -9,10 +9,13 @@ import {
   downloadApplicationMaterialThunk,
 } from "../store/applicationsSlice";
 import StatusBadge from "./StatusBadge";
+import ResumePreviewView from "../../resume/components/Resumepreviewview ";
 import {
   setApplicationContext,
   setCurrentStep,
 } from "../../coverLetter/store/coverSlice";
+
+
 
 const TABS = ["Overview", "Resume", "Cover Letter", "Notes", "Timeline"];
 
@@ -96,10 +99,10 @@ const ApplicationDetails = () => {
       app?.notes?.length
         ? app.notes
         : [
-            "No notes added yet.",
-            "You can store recruiter updates here.",
-            "You can track follow-up reminders here.",
-          ],
+          "No notes added yet.",
+          "You can store recruiter updates here.",
+          "You can track follow-up reminders here.",
+        ],
     [app],
   );
 
@@ -108,17 +111,17 @@ const ApplicationDetails = () => {
       app?.timeline?.length
         ? app.timeline
         : [
-            {
-              title: "Application Submitted",
-              date: app?.appliedDate || "N/A",
-              description: "Your application was submitted successfully.",
-            },
-            {
-              title: "Awaiting Review",
-              date: "Pending",
-              description: "The application is waiting for recruiter review.",
-            },
-          ],
+          {
+            title: "Application Submitted",
+            date: app?.appliedDate || "N/A",
+            description: "Your application was submitted successfully.",
+          },
+          {
+            title: "Awaiting Review",
+            date: "Pending",
+            description: "The application is waiting for recruiter review.",
+          },
+        ],
     [app],
   );
 
@@ -166,6 +169,15 @@ const ApplicationDetails = () => {
         format: "pdf",
       }),
     );
+  };
+
+  const handleOptimizeResume = () => {
+    navigate("/ai/resume", {
+      state: {
+        jobDescription: app.jobDescription || "",
+        applicationId: app.id,
+      },
+    });
   };
 
   const handleDownloadCoverLetter = () => {
@@ -324,11 +336,10 @@ const ApplicationDetails = () => {
                   role="tab"
                   aria-selected={activeTab === tab}
                   aria-controls={`panel-${tab}`}
-                  className={`px-5 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
-                    activeTab === tab
-                      ? "border-blue-600 text-blue-600 dark:text-blue-400"
-                      : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                  }`}
+                  className={`px-5 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab === tab
+                    ? "border-blue-600 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                    }`}
                 >
                   {tab}
                 </button>
@@ -375,25 +386,56 @@ const ApplicationDetails = () => {
                   </ul>
                 </div>
               ) : activeTab === "Resume" ? (
-                <div className="flex flex-col justify-between h-full">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                      {resumeSections[resumePage].title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-6">
-                      {resumeSections[resumePage].content}
-                    </p>
+                <div className="flex flex-col h-full">
+                  <div className="flex-1 overflow-y-auto pr-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {app.optimizedResume ? "Optimized Resume" : resumeSections[resumePage].title}
+                      </h3>
+                      {app.optimizedResume && (
+                        <span className="text-[10px] font-bold px-2 py-1 rounded bg-green-500/10 text-green-500 border border-green-500/20 uppercase tracking-wider">
+                          AI Optimized
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="text-sm text-slate-600 dark:text-slate-300 leading-6">
+                      {app.optimizedResume ? (
+                        <div className="space-y-6">
+                          <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 flex items-center justify-between">
+                            <div>
+                              <p className="font-bold text-blue-700 dark:text-blue-400 text-sm">Latest Optimization</p>
+                              <p className="text-[10px] text-blue-600 dark:text-blue-500 mt-0.5">
+                                Saved on {new Date(app.optimizedResume.savedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <button 
+                              onClick={handleDownloadResume}
+                              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded shadow-sm transition-colors uppercase"
+                            >
+                              Download PDF
+                            </button>
+                          </div>
+                          
+                          <div className="border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-900/50 p-4">
+                            <ResumePreviewView sections={app.optimizedResume.content} />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="whitespace-pre-line">
+                          {resumeSections[resumePage].content}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between gap-2">
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                        View Resume
-                      </button>
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
-                        Optimize Resume
-                      </button>
-                    </div>
+                  <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    <button
+                      onClick={handleOptimizeResume}
+                      className="px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200"
+                    >
+                      {app.optimizedResume ? "Re-optimize with AI" : "Optimize for this Role"}
+                    </button>
                   </div>
                 </div>
               ) : activeTab === "Cover Letter" ? (
@@ -613,7 +655,7 @@ const ApplicationDetails = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -1,5 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import applicationService from "../../applications/services/applicationService";
+import { saveApplicationResumeThunk } from "../../applications/store/applicationsSlice";
 
 import {
   CheckIcon,
@@ -8,6 +11,13 @@ import {
   WarningCircleIcon,
   ArrowDownIcon,
 } from "./Resumeicons";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+// Configure PDF worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 import useResume from "../hooks/useResume";
 import { getResumeFileService } from "../services/resumeServices";
 import ResumePreviewView from "./Resumepreviewview ";
@@ -190,9 +200,8 @@ const Accordion = ({ title, score, suggestions }) => {
         <div className="flex items-center gap-4">
           <span className="text-lg font-bold text-slate-900">{score}/100</span>
           <ArrowDownIcon
-            className={`w-5 h-5 text-slate-700 transition-transform duration-300 ${
-              isOpen ? "rotate-180" : ""
-            }`}
+            className={`w-5 h-5 text-slate-700 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+              }`}
           />
         </div>
       </button>
@@ -212,9 +221,8 @@ const Accordion = ({ title, score, suggestions }) => {
                     <WarningCircleIcon />
                   )}
                   <h4
-                    className={`font-medium ${
-                      s.type === "good" ? "text-green-700" : "text-amber-700"
-                    }`}
+                    className={`font-medium ${s.type === "good" ? "text-green-700" : "text-amber-700"
+                      }`}
                   >
                     {s.tip}
                   </h4>
@@ -233,10 +241,15 @@ const Accordion = ({ title, score, suggestions }) => {
 
 const Details = ({ feedback }) => {
   const sections = [
-    { title: "Keywords & Skills", key: "keywordsSkills" },
-    { title: "Content Quality", key: "contentQuality" },
-    { title: "Structure & Layout", key: "structureLayout" },
-    { title: "Formatting Score", key: "formattingScore" },
+    { title: "Relevance", key: "relevance" },
+    { title: "Section Quality", key: "sectionQuality" },
+    { title: "Content Strength", key: "contentStrength" },
+    { title: "Experience", key: "experience" },
+    { title: "Projects", key: "projects" },
+    { title: "Skills Alignment", key: "skills" },
+    { title: "Formatting", key: "formatting" },
+    { title: "Structure & Flow", key: "structure" },
+    { title: "Keyword Match", key: "keywordMatch" },
   ];
 
   return (
@@ -244,7 +257,7 @@ const Details = ({ feedback }) => {
       <h2 className="text-xl md:text-xl font-bold text-slate-900">
         Detailed Analysis
       </h2>
-      <div className="grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {sections.map(({ title, key }) => (
           <Accordion
             key={key}
@@ -462,27 +475,26 @@ const fillPDFDoc = (doc, sections) => {
 };
 
 // ─── Original PDF Viewer — fetches uploaded PDF via authenticated API ─────────
-const OriginalPDFViewer = ({ resumeId, fileType }) => {
-  const [blobUrl, setBlobUrl] = useState(null);
+const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
+  const [fileBlob, setFileBlob] = useState(null);
+  const [numPages, setNumPages] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState("");
 
   useEffect(() => {
-    if (!resumeId) return;
+    if (!resumeId || fileType !== "pdf") return;
 
     let objectUrl;
     setLoading(true);
     setFetchError("");
-    setBlobUrl(null);
 
     getResumeFileService({ resumeId })
       .then((blob) => {
-        objectUrl = URL.createObjectURL(blob);
-        setBlobUrl(objectUrl);
+        setFileBlob(blob);
       })
       .catch((err) => {
         const msg =
-          err?.response?.data?.message || "Could not load resume file.";
+          err?.response?.data?.message || "Could not load original PDF.";
         setFetchError(msg);
       })
       .finally(() => setLoading(false));
@@ -490,7 +502,11 @@ const OriginalPDFViewer = ({ resumeId, fileType }) => {
     return () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [resumeId]);
+  }, [resumeId, fileType]);
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
 
   if (loading) {
     return (
@@ -498,51 +514,52 @@ const OriginalPDFViewer = ({ resumeId, fileType }) => {
         <span className="material-symbols-outlined text-4xl animate-spin text-primary">
           progress_activity
         </span>
-        <p className="text-sm">Loading your resume…</p>
+        <p className="text-sm">Loading original format…</p>
       </div>
     );
   }
 
-  if (fileType === "docx") {
+  if (fileType === "pdf" && fileBlob) {
     return (
-      <div className="text-center py-16 text-slate-500">
-        <span className="material-symbols-outlined text-4xl mb-3 block">
-          article
-        </span>
-        <p className="text-sm font-medium">DOCX Preview</p>
-        <p className="text-xs mt-1 text-slate-400">
-          Inline preview is available for PDF files only. Your DOCX was parsed
-          and analyzed successfully.
-        </p>
+      <div className="w-full flex flex-col items-center bg-slate-100 rounded-xl p-4 overflow-auto max-h-[800px]">
+        <Document
+          file={fileBlob}
+          onLoadSuccess={onDocumentLoadSuccess}
+          loading={
+            <div className="p-10 text-slate-400">Rendering PDF...</div>
+          }
+          error={
+            <div className="p-10 text-red-400">Failed to render PDF layout.</div>
+          }
+        >
+          {Array.from(new Array(numPages), (el, index) => (
+            <div key={`page_${index + 1}`} className="mb-4 shadow-xl">
+              <Page
+                pageNumber={index + 1}
+                width={600}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+              />
+            </div>
+          ))}
+        </Document>
       </div>
     );
   }
 
-  if (fetchError) {
+  // Fallback to structured view for DOCX or if PDF fails
+  if (!sections) {
     return (
-      <div className="text-center py-16 text-slate-500">
-        <span className="material-symbols-outlined text-4xl mb-3 block text-amber-400">
+      <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+        <span className="material-symbols-outlined text-4xl text-amber-500">
           warning
         </span>
-        <p className="text-sm font-medium">Preview unavailable</p>
-        <p className="text-xs mt-1 text-slate-400">{fetchError}</p>
-        <p className="text-xs mt-2 text-slate-400">
-          Re-upload the resume to enable PDF preview.
-        </p>
+        <p className="text-sm">No preview content available.</p>
       </div>
     );
   }
 
-  if (!blobUrl) return null;
-
-  return (
-    <iframe
-      src={blobUrl}
-      className="w-full rounded border-0"
-      style={{ minHeight: "700px" }}
-      title="Original Resume"
-    />
-  );
+  return <ResumePreviewView sections={sections} />;
 };
 
 const TemplateCard = ({ template, selected, onSelect }) => {
@@ -550,11 +567,10 @@ const TemplateCard = ({ template, selected, onSelect }) => {
     <button
       type="button"
       onClick={() => onSelect(template.id)}
-      className={`text-left w-full rounded-3xl border p-5 transition-all ${
-        selected
+      className={`text-left w-full rounded-3xl border p-5 transition-all ${selected
           ? "border-blue-500 ring-2 ring-blue-100 bg-white shadow-md"
           : "border-slate-200 bg-white hover:border-blue-200 hover:shadow-sm"
-      }`}
+        }`}
     >
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
@@ -562,11 +578,10 @@ const TemplateCard = ({ template, selected, onSelect }) => {
           <p className="text-sm text-slate-500 mt-1">{template.description}</p>
         </div>
         <span
-          className={`text-[11px] px-2.5 py-1 rounded-full border ${
-            selected
+          className={`text-[11px] px-2.5 py-1 rounded-full border ${selected
               ? "bg-blue-50 text-blue-700 border-blue-200"
               : "bg-slate-50 text-slate-500 border-slate-200"
-          }`}
+            }`}
         >
           {template.badge}
         </span>
@@ -587,14 +602,9 @@ const TemplateCard = ({ template, selected, onSelect }) => {
       <div className="rounded-2xl border border-slate-200 overflow-hidden h-[360px]">
         <ResumePreview templateId={template.id} />
       </div>
-      {selected && (
-        <div className="mt-4 flex items-center gap-2 text-sm font-medium text-blue-600">
-          <span className="material-symbols-outlined text-base">
-            check_circle
-          </span>
-          Selected template
-        </div>
-      )}
+      Selected template
+
+
     </button>
   );
 };
@@ -602,129 +612,64 @@ const TemplateCard = ({ template, selected, onSelect }) => {
 const buildDetailedFeedback = (analysisResult, optimizedResult) => {
   const finalScore =
     optimizedResult?.newAtsScore || analysisResult?.atsScore || 0;
-  const suggestions = Array.isArray(analysisResult?.suggestions)
-    ? analysisResult.suggestions
-    : [];
+  const breakdown = analysisResult?.scoreBreakdown || {};
 
- 
+  const categories = [
+    "relevance",
+    "sectionQuality",
+    "contentStrength",
+    "experience",
+    "projects",
+    "skills",
+    "formatting",
+    "structure",
+    "keywordMatch",
+  ];
 
-
-  return {
+  const feedback = {
     atsScore: finalScore,
     atsSuggestions: (analysisResult?.suggestions || []).map((tip) => ({
       type: "warning",
       tip,
     })),
-
-    keywordsSkills: {
-      score: analysisResult?.scoreBreakdown?.keywordsSkills || finalScore,
-      tips: [
-        ...(analysisResult?.missingKeywords || []).slice(0, 4).map((tip) => ({
-          type: "warning",
-          tip: `Add missing keyword: ${tip}`,
-          explanation:
-            "This keyword is missing from your resume and may improve ATS relevance.",
-        })),
-        ...(analysisResult?.matchedKeywords || []).slice(0, 2).map((tip) => ({
-          type: "good",
-          tip: `Matched keyword: ${tip}`,
-          explanation:
-            "This keyword is already aligned with the job description.",
-        })),
-      ],
-    },
-
-    contentQuality: {
-      score: analysisResult?.scoreBreakdown?.contentQuality || finalScore,
-      tips: [
-        ...(analysisResult?.strengths || []).slice(0, 3).map((tip) => ({
-          type: "good",
-          tip,
-          explanation: "This is a strong part of your resume content.",
-        })),
-        ...(analysisResult?.contentIssues || []).slice(0, 3).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "This content issue may reduce the effectiveness of your resume.",
-        })),
-      ],
-    },
-
-   
-
-    skills: {
-      score: analysisResult?.scoreBreakdown?.keywordsSkills || finalScore,
-      tips: [
-        ...(analysisResult?.matchedKeywords || []).slice(0, 3).map((tip) => ({
-          type: "good",
-          tip: `Matched keyword: ${tip}`,
-          explanation: "This skill/keyword is already present and relevant.",
-        })),
-        ...(analysisResult?.missingKeywords || []).slice(0, 3).map((tip) => ({
-          type: "warning",
-          tip: `Missing keyword: ${tip}`,
-          explanation:
-            "Consider adding this skill or keyword naturally where relevant.",
-        })),
-      ],
-    },
-
-   structureLayout: {
-  score: analysisResult?.scoreBreakdown?.structureLayout || finalScore,
-  tips: [
-    ...(analysisResult?.sectionIssues?.length
-      ? analysisResult.sectionIssues.slice(0, 3).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "This section-related issue may affect resume structure and readability.",
-        }))
-      : []),
-
-    ...(analysisResult?.formattingIssues?.length
-      ? analysisResult.formattingIssues.slice(0, 3).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "Formatting/layout can affect ATS parsing and recruiter readability.",
-        }))
-      : []),
-
-    ...(!analysisResult?.sectionIssues?.length &&
-    !analysisResult?.formattingIssues?.length
-      ? (analysisResult?.suggestions || []).slice(0, 4).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "Suggested improvement based on overall resume analysis.",
-        }))
-      : []),
-  ],
-},
-
-formattingScore: {
-  score: analysisResult?.scoreBreakdown?.formattingScore || finalScore,
-  tips:
-    analysisResult?.formattingIssues?.length > 0
-      ? analysisResult.formattingIssues.slice(0, 6).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "This formatting issue may affect ATS parsing or visual clarity.",
-        }))
-      : (analysisResult?.suggestions || []).slice(0, 4).map((tip) => ({
-          type: "warning",
-          tip,
-          explanation:
-            "Formatting-specific issues were not returned by the API, so this general suggestion is shown instead.",
-        })),
-},
   };
+
+  categories.forEach((cat) => {
+    feedback[cat] = {
+      score: breakdown[cat]?.score || finalScore,
+      tips: (breakdown[cat]?.tips || []).map((tip) => ({
+        type: "warning",
+        tip,
+        explanation: `Recommended improvement for your resume's ${cat.replace(/([A-Z])/g, " $1").toLowerCase()}.`,
+      })),
+    };
+  });
+
+  // Supplement with existing strengths/suggestions if specific category tips are low
+  if (feedback.contentStrength.tips.length === 0 && analysisResult?.strengths) {
+    feedback.contentStrength.tips = analysisResult.strengths.slice(0, 2).map((s) => ({
+      type: "good",
+      tip: s,
+      explanation: "Identified strength in your content.",
+    }));
+  }
+
+  if (feedback.keywordMatch.tips.length === 0 && analysisResult?.missingKeywords) {
+    feedback.keywordMatch.tips = analysisResult.missingKeywords.slice(0, 3).map((kw) => ({
+      type: "warning",
+      tip: `Missing keyword: ${kw}`,
+      explanation: "Essential keyword from job description not found in resume.",
+    }));
+  }
+
+  return feedback;
 };
+
 
 const OptimizeResume = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { applicationId } = location.state || {};
 
   const {
     resumes,
@@ -741,17 +686,52 @@ const OptimizeResume = () => {
     optimizeSuccess,
     downloadLoading,
     handleOptimize,
+    handleDownload,
+    listLoading,
   } = useResume();
+
+  const dispatch = useDispatch();
 
   const [activeView, setActiveView] = useState("before");
   const [selectedTemplate, setSelectedTemplate] = useState("modern");
   const [error, setError] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSaveToApplication = async () => {
+    if (!optimizedResult?.optimizedSections) return;
+
+    if (!applicationId) {
+      // If not from an application, treat "Save" as a download per user request
+      handleDownloadPdf();
+      return;
+    }
+    
+    setSaveLoading(true);
+    setError("");
+    try {
+      await dispatch(
+        saveApplicationResumeThunk({
+          id: applicationId,
+          content: optimizedResult.optimizedSections,
+          templateId: selectedTemplate,
+        }),
+      ).unwrap();
+      
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Failed to save resume to application.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!analysisResult?.resumeId) {
+    if (!analysisResult && !optimizeLoading) {
       navigate("/ai/resume");
     }
-  }, [analysisResult, navigate]);
+  }, [analysisResult, navigate, optimizeLoading]);
 
   useEffect(() => {
     if (optimizeError) {
@@ -772,10 +752,11 @@ const OptimizeResume = () => {
   }, [defaultTemplate]);
 
   useEffect(() => {
-    if (optimizeSuccess && optimizedResult) {
+    // Only auto-switch to "after" if we just successfully optimized
+    if (optimizeSuccess && optimizedResult && activeView !== "after") {
       setActiveView("after");
     }
-  }, [optimizeSuccess, optimizedResult]);
+  }, [optimizeSuccess, optimizedResult, activeView]);
 
   const selectedResume = useMemo(() => {
     return resumes.find(
@@ -785,10 +766,10 @@ const OptimizeResume = () => {
 
   const breakdown = analysisResult?.scoreBreakdown || {};
   const breakdownItems = [
-    { label: "Keywords & Skills", value: breakdown.keywordsSkills || 0 },
-    { label: "Content Quality", value: breakdown.contentQuality || 0 },
-    { label: "Structure Layout", value: breakdown.structureLayout || 0 },
-    { label: "Formatting Score", value: breakdown.formattingScore || 0 },
+    { label: "Relevance", value: breakdown.relevance?.score || analysisResult?.atsScore || 0 },
+    { label: "Content Strength", value: breakdown.contentStrength?.score || analysisResult?.atsScore || 0 },
+    { label: "Skills Alignment", value: breakdown.skills?.score || analysisResult?.atsScore || 0 },
+    { label: "Formatting", value: breakdown.formatting?.score || analysisResult?.atsScore || 0 },
   ];
 
   const currentFeedback = buildDetailedFeedback(
@@ -802,22 +783,33 @@ const OptimizeResume = () => {
       return;
     }
 
-    setActiveView(view === "after" ? "after" : "before");
+    if (view === "after" && !optimizedResult) {
+      return; // Can't switch to after if not optimized yet
+    }
+
+    setActiveView(view);
   };
 
-  const handleStartOptimize = () => {
-    if (!analysisResult?.resumeId || !currentJobDescription?.trim()) {
-      setError("Missing resume analysis or job description.");
+  const handleStartOptimize = async () => {
+    if (!currentJobDescription?.trim()) {
+      setError("Missing job description.");
       return;
     }
 
     setError("");
+
+    if (!analysisResult?.resumeId) {
+      setError("Missing resume analysis.");
+      return;
+    }
+
     handleOptimize(
       analysisResult.resumeId,
       currentJobDescription,
       selectedTemplate,
     );
   };
+
 
   const optimizedSections = optimizedResult?.optimizedSections || null;
   const resumeIdToDownload = analysisResult?.resumeId || activeResumeId;
@@ -917,7 +909,7 @@ const OptimizeResume = () => {
 
           {Array.isArray(optimizedResult?.changesExplained) &&
             optimizedResult.changesExplained.length > 0 && (
-              <div className="bg-neutral-surface border border-green-500/20 rounded-2xl p-5 space-y-3">
+              <div className="bg-neutral-surface border border-green-500/20 rounded-2xl p-5 space-y-4">
                 <p className="text-xs uppercase tracking-widest text-green-400">
                   AI Improvements
                 </p>
@@ -929,7 +921,28 @@ const OptimizeResume = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 flex items-center gap-2 text-sm">
+
+                {optimizedResult.improvementData && (
+                  <div className="pt-2 border-t border-white/5 space-y-3">
+                    <p className="text-[10px] uppercase tracking-[0.1em] text-slate-500">
+                      Improvement Rationale
+                    </p>
+                    {Object.entries(optimizedResult.improvementData).map(
+                      ([key, val]) => (
+                        <div key={key} className="space-y-1">
+                          <p className="text-[10px] font-bold text-slate-300 capitalize">
+                            {key}:
+                          </p>
+                          <p className="text-[10px] text-slate-500 leading-relaxed">
+                            {val}
+                          </p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-3 flex items-center gap-2 text-sm pt-2">
                   <span className="text-slate-400">New Score:</span>
                   <span className="text-green-400 font-mono font-bold">
                     {optimizedResult.newAtsScore}/100
@@ -945,11 +958,10 @@ const OptimizeResume = () => {
               <div className="flex bg-neutral-surface rounded-lg border border-neutral-border overflow-hidden">
                 <button
                   onClick={() => handleToggleView("before")}
-                  className={`px-5 py-2 text-sm font-medium transition-colors ${
-                    showBefore
+                  className={`px-5 py-2 text-sm font-medium transition-colors ${showBefore
                       ? "bg-primary text-white"
                       : "text-slate-400 hover:text-slate-200"
-                  }`}
+                    }`}
                   type="button"
                 >
                   Before
@@ -958,11 +970,10 @@ const OptimizeResume = () => {
                 <button
                   onClick={() => handleToggleView("after")}
                   disabled={!optimizedResult}
-                  className={`px-5 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-                    showAfter
+                  className={`px-5 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${showAfter
                       ? "bg-primary text-white"
                       : "text-slate-400 hover:text-slate-200"
-                  }`}
+                    }`}
                   type="button"
                 >
                   After
@@ -970,11 +981,10 @@ const OptimizeResume = () => {
 
                 <button
                   onClick={() => handleToggleView("template")}
-                  className={`px-5 py-2 text-sm font-medium transition-colors ${
-                    showTemplate
+                  className={`px-5 py-2 text-sm font-medium transition-colors ${showTemplate
                       ? "bg-primary text-white"
                       : "text-slate-400 hover:text-slate-200"
-                  }`}
+                    }`}
                   type="button"
                 >
                   Template
@@ -984,15 +994,19 @@ const OptimizeResume = () => {
 
             <div className="space-y-8 pr-1 pb-6">
               <div className="border border-neutral-border rounded-2xl p-8 flex justify-center bg-white min-h-[500px]">
-                {optimizeLoading ? (
+                {listLoading || optimizeLoading ? (
                   <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
                     <span className="material-symbols-outlined text-4xl animate-spin text-primary">
                       progress_activity
                     </span>
-                    <p className="text-sm">AI is optimizing your resume…</p>
-                    <p className="text-xs text-slate-600">
-                      This may take a few seconds
+                    <p className="text-sm">
+                      {listLoading ? "Loading your resume..." : "AI is optimizing your resume..."}
                     </p>
+                    {!listLoading && (
+                      <p className="text-xs text-slate-600">
+                        This may take a few seconds
+                      </p>
+                    )}
                   </div>
                 ) : showTemplate ? (
                   <div className="w-full max-w-5xl">
@@ -1032,6 +1046,7 @@ const OptimizeResume = () => {
                   <OriginalPDFViewer
                     resumeId={resumeIdToDownload}
                     fileType={selectedResume?.fileType}
+                    sections={selectedResume?.originalStructuredContent}
                   />
                 )}
               </div>
@@ -1053,13 +1068,42 @@ const OptimizeResume = () => {
             check_circle
           </span>
           {analysisResult
-            ? `Analysis complete • ${
-                optimizedResult?.newAtsScore || analysisResult.atsScore
-              }/100 ATS Score`
+            ? `Analysis complete • ${optimizedResult?.newAtsScore || analysisResult.atsScore
+            }/100 ATS Score`
             : "Analyzing…"}
         </div>
 
         <div className="flex gap-3">
+          <button
+            onClick={handleSaveToApplication}
+            disabled={!optimizedResult || saveLoading}
+            className={`px-4 py-2 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${
+              saveSuccess
+                ? "bg-green-600 text-white"
+                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20"
+            } disabled:opacity-40 disabled:cursor-not-allowed`}
+            type="button"
+          >
+            {saveLoading ? (
+              <>
+                <span className="material-symbols-outlined text-sm animate-spin">
+                  progress_activity
+                </span>
+                Saving...
+              </>
+            ) : saveSuccess ? (
+              <>
+                <span className="material-symbols-outlined text-sm">check</span>
+                Saved
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-sm">save</span>
+                {applicationId ? "Save to App" : "Save Resume"}
+              </>
+            )}
+          </button>
+
           <button
             onClick={handleDownloadPdf}
             disabled={!optimizedResult || downloadLoading}

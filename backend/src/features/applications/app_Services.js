@@ -38,7 +38,7 @@ export const createApplication = async (userId, body) => {
   } = body;
 
   const resolvedStatus = status || "Applied";
-
+  
   return await Application.create({
     user: userId,
     jobTitle,
@@ -113,7 +113,7 @@ export const updateApplication = async (userId, appId, body) => {
   return await Application.findOneAndUpdate(
     { _id: appId, user: userId },
     { $set: rest },
-    { new: true, runValidators: true, select: "-__v" }
+    { returnDocument: "after", runValidators: true, select: "-__v" }
   );
 };
 
@@ -127,7 +127,7 @@ export const updateStatus = async (userId, appId, status) => {
       $set:  { status },
       $push: { statusHistory: makeHistoryEntry(status) },
     },
-    { new: true, runValidators: true, select: "-__v" }
+    { returnDocument: "after", runValidators: true, select: "-__v" }
   );
 };
 
@@ -142,9 +142,28 @@ export const saveCoverLetter = async (userId, appId, content) => {
         "coverLetter.generatedAt": new Date(),
       },
     },
-    { new: true, select: "-__v" }
+    { returnDocument: "after", select: "-__v" }
   );
 };
+
+// ── SAVE RESUME ───────────────────────────────────────────────────────────────
+
+export const saveResume = async (userId, appId, { content, templateId }) => {
+  return await Application.findOneAndUpdate(
+    { _id: appId, user: userId },
+    {
+      $set: {
+        optimizedResume: {
+          content,
+          templateId,
+          savedAt: new Date(),
+        },
+      },
+    },
+    { returnDocument: "after", select: "-__v" }
+  );
+};
+
 // ── DELETE ───────────────────────────────────────────────────────────────────
 
 export const deleteApplication = async (userId, appId) => {

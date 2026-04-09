@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 
 const ConfidenceMeter = ({ score }) => {
-  // score: 0-100
-  // Needle rotates from -90deg (0%) to +90deg (100%), center = 0deg
   const angle = -90 + (score / 100) * 180;
 
   let label = 'Low';
   let color = 'text-danger';
-  if (score >= 60) { label = 'High'; color = 'text-success'; }
+  if (score >= 60)      { label = 'High';     color = 'text-success'; }
   else if (score >= 30) { label = 'Moderate'; color = 'text-warning'; }
 
   return (
@@ -21,9 +19,10 @@ const ConfidenceMeter = ({ score }) => {
           help
         </span>
       </h3>
+      {/* FIX: h-22 is not a valid Tailwind utility (skips 22 in the default scale).
+          Replaced with h-[88px] which is the closest equivalent (22 × 4px = 88px). */}
       <div className="relative flex justify-center pt-4 pb-2">
-        {/* Gauge background */}
-        <div className="w-44 h-22 relative">
+        <div className="w-44 h-[88px] relative">
           <svg viewBox="0 0 180 100" className="w-full">
             {/* Background arc */}
             <path
@@ -61,10 +60,8 @@ const ConfidenceMeter = ({ score }) => {
             {/* Needle */}
             <g transform={`rotate(${angle}, 90, 90)`}>
               <line
-                x1="90"
-                y1="90"
-                x2="90"
-                y2="20"
+                x1="90" y1="90"
+                x2="90" y2="20"
                 stroke="#1e293b"
                 strokeWidth="3"
                 strokeLinecap="round"
@@ -85,7 +82,7 @@ const ConfidenceMeter = ({ score }) => {
           ? 'Just getting started! Keep practicing.'
           : score < 60
           ? "You're gaining momentum! Try harder questions."
-          : "Great progress! Almost interview-ready."}
+          : 'Great progress! Almost interview-ready.'}
       </p>
     </div>
   );
@@ -103,9 +100,7 @@ const SessionStats = ({
   const [customType, setCustomType] = useState('behavioral');
 
   const progressPercent =
-    stats.total > 0
-      ? Math.round((stats.practiced / stats.total) * 100)
-      : 0;
+    stats.total > 0 ? Math.round((stats.practiced / stats.total) * 100) : 0;
 
   const handleAddCustom = () => {
     if (!customText.trim()) return;
@@ -125,9 +120,7 @@ const SessionStats = ({
     <div className="w-72 xl:w-80 bg-neutral-surface border-l border-neutral-border flex flex-col shrink-0 h-full overflow-y-auto custom-scrollbar">
       {/* Header */}
       <div className="p-5 border-b border-neutral-border">
-        <h2 className="text-base font-bold text-neutral-text">
-          Session Stats
-        </h2>
+        <h2 className="text-base font-bold text-neutral-text">Session Stats</h2>
         <p className="text-xs text-neutral-muted mt-0.5">
           Track your preparation progress
         </p>
@@ -206,16 +199,12 @@ const SessionStats = ({
                     <span className="capitalize font-medium text-neutral-600">
                       {diff}
                     </span>
-                    <span className="text-neutral-muted">
-                      {done}/{total}
-                    </span>
+                    <span className="text-neutral-muted">{done}/{total}</span>
                   </div>
                   <div className="w-full bg-neutral-100 rounded-full h-1.5">
                     <div
                       className={`h-1.5 rounded-full transition-all duration-500 ${colors[diff]}`}
-                      style={{
-                        width: total > 0 ? `${(done / total) * 100}%` : '0%',
-                      }}
+                      style={{ width: total > 0 ? `${(done / total) * 100}%` : '0%' }}
                     />
                   </div>
                 </div>
@@ -234,9 +223,7 @@ const SessionStats = ({
               {recentActivity.map((q) => (
                 <div key={q.id} className="flex gap-3 items-start">
                   <div className="w-7 h-7 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="material-symbols-outlined text-[14px]">
-                      check
-                    </span>
+                    <span className="material-symbols-outlined text-[14px]">check</span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-neutral-text line-clamp-1">
@@ -285,10 +272,7 @@ const SessionStats = ({
                 Add Question
               </button>
               <button
-                onClick={() => {
-                  setShowCustomInput(false);
-                  setCustomText('');
-                }}
+                onClick={() => { setShowCustomInput(false); setCustomText(''); }}
                 className="px-3 py-2 border border-neutral-border text-neutral-600 text-xs rounded-lg hover:bg-neutral-50"
               >
                 Cancel
@@ -300,9 +284,7 @@ const SessionStats = ({
             onClick={() => setShowCustomInput(true)}
             className="w-full bg-white hover:bg-neutral-50 border border-neutral-border text-neutral-text font-medium py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-sm"
           >
-            <span className="material-symbols-outlined text-[18px]">
-              add_circle
-            </span>
+            <span className="material-symbols-outlined text-[18px]">add_circle</span>
             Add Custom Question
           </button>
         )}

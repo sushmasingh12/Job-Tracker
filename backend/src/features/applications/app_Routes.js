@@ -6,8 +6,9 @@ import {
   updateApplication,
   patchStatus,
   saveCoverLetter,
+  saveResume,
   deleteApplication,
-  downloadApplicationMaterial
+  downloadApplicationMaterial,
 } from "./app_Controller.js";
 import {
   validateObjectId,
@@ -34,6 +35,7 @@ router
 
 router.patch("/:id/status", validateObjectId, validateStatus, patchStatus);
 router.patch("/:id/cover-letter", validateObjectId, saveCoverLetter);
+router.patch("/:id/resume", validateObjectId, saveResume);
 router.get("/:id/download/:type", validateObjectId, downloadApplicationMaterial);
 
 export default router;

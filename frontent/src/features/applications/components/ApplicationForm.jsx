@@ -220,6 +220,7 @@ const ApplicationForm = ({ onClose }) => {
                     registration={register("jobPostUrl", RULES.jobPostUrl)}
                     error={errors.jobPostUrl}
                   />
+
                 </div>
               </div>
 

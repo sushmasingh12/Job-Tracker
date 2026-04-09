@@ -86,6 +86,20 @@ export const saveApplicationCoverLetterThunk = createAsyncThunk(
   },
 );
 
+export const saveApplicationResumeThunk = createAsyncThunk(
+  "applications/saveResume",
+  async ({ id, content, templateId }, { rejectWithValue }) => {
+    try {
+      return await applicationService.saveResumeToApplication(id, {
+        content,
+        templateId,
+      });
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  },
+);
+
 export const downloadApplicationMaterialThunk = createAsyncThunk(
   "applications/downloadMaterial",
   async ({ id, type, format = "pdf" }, { rejectWithValue }) => {
@@ -235,6 +249,21 @@ const applicationsSlice = createSlice({
         const updated = action.payload;
         const index = state.applications.findIndex(
           (app) => app.id === updated.id,
+        );
+        if (index !== -1) {
+          state.applications[index] = updated;
+        } else {
+          state.applications.unshift(updated);
+        }
+      },
+    );
+
+    builder.addCase(
+      saveApplicationResumeThunk.fulfilled,
+      (state, action) => {
+        const updated = action.payload;
+        const index = state.applications.findIndex(
+          (app) => String(app.id) === String(updated.id),
         );
         if (index !== -1) {
           state.applications[index] = updated;

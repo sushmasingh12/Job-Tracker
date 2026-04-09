@@ -55,6 +55,7 @@ const CountdownTimer = ({ countdown }) => {
 const InterviewHeader = ({
   profile,
   onSelectProfile,
+  onOpenManual,
   countdown,
   interviewDate,
   onSetInterviewDate,
@@ -138,6 +139,16 @@ const InterviewHeader = ({
                     </span>
                     Change Profile
                   </button>
+
+                  <button
+                    onClick={onOpenManual}
+                    className="px-2.5 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium rounded-full transition-colors flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[11px]">
+                      add_circle
+                    </span>
+                    Manual Practice
+                  </button>
                 </div>
               </div>
             ) : (
@@ -147,17 +158,28 @@ const InterviewHeader = ({
                   Interview Prep
                 </h1>
                 <p className="text-neutral-muted text-sm mt-1">
-                  Select a job to start preparing
+                  Select a job or add manually to start
                 </p>
-                <button
-                  onClick={onSelectProfile}
-                  className="mt-2.5 px-4 py-1.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
-                >
-                  <span className="material-symbols-outlined text-[16px]">
-                    add
-                  </span>
-                  Select Job Profile
-                </button>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <button
+                    onClick={onSelectProfile}
+                    className="px-4 py-1.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      add
+                    </span>
+                    Select Job Profile
+                  </button>
+                  <button
+                    onClick={onOpenManual}
+                    className="px-4 py-1.5 bg-white border border-primary text-primary hover:bg-primary/5 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      add_circle
+                    </span>
+                    Manual Add
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -32,7 +32,7 @@ const handleResponse = async (res) => {
 
 export const interviewService = {
   getProfiles: async (token) => {
-    const res = await fetch(`${API_BASE}/jobs`, {
+    const res = await fetch(`${API_BASE}/applications`, {
       headers: getHeaders(token),
     });
     return handleResponse(res);

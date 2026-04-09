@@ -119,20 +119,36 @@ ${resumeText}
 JOB DESCRIPTION:
 ${jobDescription}
 
+Evaluate the resume on the following 9 criteria:
+1. Relevance (How well the candidate fits the role)
+2. Section Quality (Depth and professionalism of each section)
+3. Content Strength (Use of metrics, impact, and action verbs)
+4. Experience (Relevance and seniority of work history)
+5. Projects (Quality and technical depth of projects)
+6. Skills (Alignment of technical and soft skills)
+7. Formatting (Readability and consistent styling)
+8. Structure (Logical flow and section organization)
+9. Keyword Match (Presence of essential JD terms)
+
 Return ONLY valid raw JSON:
 {
-  "atsScore": <integer 0-100>,
+  "atsScore": <integer 0-100 overall score>,
   "matchedKeywords": [<keywords found in both resume and JD>],
   "missingKeywords": [<top 10 important keywords from JD missing in resume>],
   "scoreBreakdown": {
-    "keywordsSkills": <integer 0-100>,
-    "formattingScore": <integer 0-100>,
-    "structureLayout": <integer 0-100>,
-    "contentQuality": <integer 0-100>
+    "relevance": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "sectionQuality": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "contentStrength": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "experience": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "projects": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "skills": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "formatting": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "structure": { "score": <0-100>, "tips": [<1-2 specific tips>] },
+    "keywordMatch": { "score": <0-100>, "tips": [<1-2 specific tips>] }
   },
-  "suggestions": [<3-5 specific, actionable suggestions>],
-  "strengths": [<3 specific strengths of this resume for this JD>],
-  "potentialScore": <integer 0-100>
+  "suggestions": [<3-5 broad suggestions for overall improvement>],
+  "strengths": [<2-3 specific strengths of this resume for this JD>],
+  "potentialScore": <integer 0-100 after optimization>
 }
 `;
 
@@ -162,6 +178,7 @@ Template style: "${template}" with tone: ${styleTone}.
 
 Your task: Deeply rewrite and tailor the resume below for the target job description.
 This is a FULL rewrite — not a light edit. Every section must be noticeably stronger and more relevant.
+Return relevant improvement data for all resume content so the user knows exactly why each change was made.
 
 ORIGINAL STRUCTURED RESUME:
 ${JSON.stringify(structuredResume, null, 2)}
@@ -258,9 +275,15 @@ The JSON shape must follow the original resume structure exactly:
     }
   },
   "changesExplained": [
-    "<specific improvement made>",
-    "<specific improvement made>"
+    "<specific improvement made for a specific section, e.g., 'Optimized Experience bullets with X metrics'>",
+    "<specific improvement made for a specific section, e.g., 'Reorganized Skills to highlight JD-relevant tech first'>"
   ],
+  "improvementData": {
+    "summary": "<rationale for summary rewrite>",
+    "experience": "<rationale for experience improvements>",
+    "skills": "<rationale for skills reorganization>",
+    "overall": "<overall improvement strategy applied>"
+  },
   "newAtsScore": <integer 0-100>
 }
 `;
