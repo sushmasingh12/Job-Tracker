@@ -15,6 +15,7 @@ import CoverLetter from "../pages/ai/CoverLetter";
 import Interviews from "../pages/ai/Interview";
 import ApplicationRouter from "../pages/applications/ApplicationRouter";
 import Analytics from "../pages/ai/Analytics";
+import SettingsPage from "../pages/SettingsPage";
 import ProtectedRoute from "./ProtectedRoute";
 import OptimizeResume from "../features/resume/components/OptimizeResume";
 import ApplicationForms from "../pages/applications/ApplicationForms";
@@ -43,6 +44,7 @@ export const router = createBrowserRouter(
         <Route path="/ai/cover-letter" element={<CoverLetter />} />
         <Route path="/ai/interview-prep" element={<Interviews />} />
         <Route path="/analytics" element={<Analytics />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
     </>
   )

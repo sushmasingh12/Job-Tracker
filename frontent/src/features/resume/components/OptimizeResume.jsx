@@ -21,7 +21,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import useResume from "../hooks/useResume";
 import { getResumeFileService } from "../services/resumeServices";
 import ResumePreviewView from "./Resumepreviewview ";
-import ResumePreview from "./template/ResumePreview";
+
 
 const ScoreRing = ({ score }) => {
   const pct = Math.min(100, Math.max(0, score || 0));
@@ -485,6 +485,7 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
     if (!resumeId || fileType !== "pdf") return;
 
     let objectUrl;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setFetchError("");
 
@@ -562,52 +563,6 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
   return <ResumePreviewView sections={sections} />;
 };
 
-const TemplateCard = ({ template, selected, onSelect }) => {
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(template.id)}
-      className={`text-left w-full rounded-3xl border p-5 transition-all ${selected
-          ? "border-blue-500 ring-2 ring-blue-100 bg-white shadow-md"
-          : "border-slate-200 bg-white hover:border-blue-200 hover:shadow-sm"
-        }`}
-    >
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900">{template.name}</h3>
-          <p className="text-sm text-slate-500 mt-1">{template.description}</p>
-        </div>
-        <span
-          className={`text-[11px] px-2.5 py-1 rounded-full border ${selected
-              ? "bg-blue-50 text-blue-700 border-blue-200"
-              : "bg-slate-50 text-slate-500 border-slate-200"
-            }`}
-        >
-          {template.badge}
-        </span>
-      </div>
-
-      {/* <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-        <div className="space-y-2">
-          <div className="h-3 w-32 rounded bg-slate-300" />
-          <div className="h-2 w-48 rounded bg-slate-200" />
-          <div className="h-2 w-40 rounded bg-slate-200" />
-          <div className="pt-3 space-y-2">
-            <div className="h-2 w-full rounded bg-slate-200" />
-            <div className="h-2 w-[92%] rounded bg-slate-200" />
-            <div className="h-2 w-[84%] rounded bg-slate-200" />
-          </div>
-        </div>
-      </div> */}
-      <div className="rounded-2xl border border-slate-200 overflow-hidden h-[360px]">
-        <ResumePreview templateId={template.id} />
-      </div>
-      Selected template
-
-
-    </button>
-  );
-};
 
 const buildDetailedFeedback = (analysisResult, optimizedResult) => {
   const finalScore =
@@ -673,10 +628,6 @@ const OptimizeResume = () => {
 
   const {
     resumes,
-    templates,
-    templatesLoading,
-    templatesError,
-    defaultTemplate,
     activeResumeId,
     analysisResult,
     currentJobDescription,
@@ -686,14 +637,14 @@ const OptimizeResume = () => {
     optimizeSuccess,
     downloadLoading,
     handleOptimize,
-    handleDownload,
+    
     listLoading,
   } = useResume();
 
   const dispatch = useDispatch();
 
   const [activeView, setActiveView] = useState("before");
-  const [selectedTemplate, setSelectedTemplate] = useState("modern");
+  const [activeTemplate, setActiveTemplate] = useState("modern");
   const [error, setError] = useState("");
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -714,7 +665,7 @@ const OptimizeResume = () => {
         saveApplicationResumeThunk({
           id: applicationId,
           content: optimizedResult.optimizedSections,
-          templateId: selectedTemplate,
+          
         }),
       ).unwrap();
       
@@ -739,17 +690,7 @@ const OptimizeResume = () => {
     }
   }, [optimizeError]);
 
-  useEffect(() => {
-    if (templatesError) {
-      setError(templatesError);
-    }
-  }, [templatesError]);
-
-  useEffect(() => {
-    if (defaultTemplate) {
-      setSelectedTemplate((prev) => prev || defaultTemplate);
-    }
-  }, [defaultTemplate]);
+ 
 
   useEffect(() => {
     // Only auto-switch to "after" if we just successfully optimized
@@ -778,10 +719,7 @@ const OptimizeResume = () => {
   );
 
   const handleToggleView = (view) => {
-    if (view === "template") {
-      setActiveView("template");
-      return;
-    }
+   
 
     if (view === "after" && !optimizedResult) {
       return; // Can't switch to after if not optimized yet
@@ -806,7 +744,7 @@ const OptimizeResume = () => {
     handleOptimize(
       analysisResult.resumeId,
       currentJobDescription,
-      selectedTemplate,
+      
     );
   };
 
@@ -836,7 +774,6 @@ const OptimizeResume = () => {
   };
 
   const showBefore = activeView === "before";
-  const showTemplate = activeView === "template";
   const showAfter = activeView === "after";
 
   return (
@@ -872,20 +809,6 @@ const OptimizeResume = () => {
               ))}
             </div>
 
-            <div className="w-full bg-neutral-surface border border-neutral-border rounded-2xl p-5 space-y-3">
-              <p className="text-xs uppercase tracking-widest text-slate-500">
-                Chosen Template
-              </p>
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
-                <span className="text-sm font-medium text-slate-700">
-                  {templates.find((t) => t.id === selectedTemplate)?.name ||
-                    "Modern"}
-                </span>
-                <span className="text-xs text-blue-600 font-medium">
-                  {selectedTemplate}
-                </span>
-              </div>
-            </div>
 
             {Array.isArray(analysisResult?.missingKeywords) &&
               analysisResult.missingKeywords.length > 0 && (
@@ -924,7 +847,7 @@ const OptimizeResume = () => {
 
                 {optimizedResult.improvementData && (
                   <div className="pt-2 border-t border-white/5 space-y-3">
-                    <p className="text-[10px] uppercase tracking-[0.1em] text-slate-500">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500">
                       Improvement Rationale
                     </p>
                     {Object.entries(optimizedResult.improvementData).map(
@@ -978,18 +901,29 @@ const OptimizeResume = () => {
                 >
                   After
                 </button>
-
-                <button
-                  onClick={() => handleToggleView("template")}
-                  className={`px-5 py-2 text-sm font-medium transition-colors ${showTemplate
-                      ? "bg-primary text-white"
-                      : "text-slate-400 hover:text-slate-200"
-                    }`}
-                  type="button"
-                >
-                  Template
-                </button>
               </div>
+
+              {showAfter && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-slate-400 font-medium tracking-wide">Template:</span>
+                  <div className="flex bg-neutral-surface rounded-lg border border-neutral-border p-1 gap-1">
+                    {["modern", "professional", "minimal"].map((tpl) => (
+                       <button
+                         key={tpl}
+                         onClick={() => setActiveTemplate(tpl)}
+                         className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all capitalize ${
+                           activeTemplate === tpl
+                             ? "bg-primary text-white shadow-md"
+                             : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                         }`}
+                         type="button"
+                       >
+                         {tpl}
+                       </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-8 pr-1 pb-6">
@@ -1008,40 +942,8 @@ const OptimizeResume = () => {
                       </p>
                     )}
                   </div>
-                ) : showTemplate ? (
-                  <div className="w-full max-w-5xl">
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-slate-900">
-                        Choose a Template
-                      </h3>
-                      <p className="text-sm text-slate-500 mt-1">
-                        Pick the template style you want AI to use for your
-                        optimized resume.
-                      </p>
-                    </div>
-
-                    {templatesLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-3 min-h-[220px] text-slate-500">
-                        <span className="material-symbols-outlined text-3xl animate-spin text-primary">
-                          progress_activity
-                        </span>
-                        <p className="text-sm">Loading templates...</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1  gap-5">
-                        {(templates || []).map((template) => (
-                          <TemplateCard
-                            key={template.id}
-                            template={template}
-                            selected={selectedTemplate === template.id}
-                            onSelect={setSelectedTemplate}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 ) : showAfter ? (
-                  <ResumePreviewView sections={optimizedSections} />
+                  <ResumePreviewView sections={optimizedSections} template={activeTemplate} />
                 ) : (
                   <OriginalPDFViewer
                     resumeId={resumeIdToDownload}

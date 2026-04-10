@@ -59,8 +59,14 @@ export const loginUser = async (userData) => {
 };
 
 // ─── Logout ────────────────────────────────────────────────────────────────
-export const logout = () => {
-  clearAuth(); 
+export const logout = async () => {
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.warn("Backend logout warning:", error);
+  } finally {
+    clearAuth();
+  }
 };
 
 

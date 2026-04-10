@@ -1,56 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const QUESTION_TYPES = [
   {
-    id: 'behavioral',
-    label: 'Behavioral',
-    icon: 'psychology',
-    color: 'text-purple-600 bg-purple-50 border-purple-200',
-    activeColor: 'bg-purple-600 text-white border-purple-600',
-    description: 'STAR-method questions about past experiences',
+    id: "behavioral",
+    label: "Behavioral",
+   
   },
   {
-    id: 'technical',
-    label: 'Technical',
-    icon: 'code',
-    color: 'text-orange-600 bg-orange-50 border-orange-200',
-    activeColor: 'bg-orange-600 text-white border-orange-600',
-    description: 'Role-specific skills and knowledge',
+    id: "technical",
+    label: "Technical",
+    
   },
   {
-    id: 'leadership',
-    label: 'Leadership',
-    icon: 'groups',
-    color: 'text-teal-600 bg-teal-50 border-teal-200',
-    activeColor: 'bg-teal-600 text-white border-teal-600',
-    description: 'Managing teams and driving outcomes',
+    id: "leadership",
+    label: "Leadership",
+    
   },
   {
-    id: 'product',
-    label: 'Product Sense',
-    icon: 'lightbulb',
-    color: 'text-blue-600 bg-blue-50 border-blue-200',
-    activeColor: 'bg-blue-600 text-white border-blue-600',
-    description: 'Product thinking and domain questions',
+    id: "product",
+    label: "Product Sense",
+   
   },
   {
-    id: 'situational',
-    label: 'Situational',
-    icon: 'fork_right',
-    color: 'text-pink-600 bg-pink-50 border-pink-200',
-    activeColor: 'bg-pink-600 text-white border-pink-600',
-    description: 'Hypothetical scenario-based questions',
+    id: "situational",
+    label: "Situational",
+   
   },
 ];
 
 const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
-  const [selectedTypes, setSelectedTypes] = useState(['behavioral', 'technical']);
+  const [selectedTypes, setSelectedTypes] = useState([
+    "behavioral",
+    "technical",
+  ]);
   const [count, setCount] = useState(10);
   const [isExpanded, setIsExpanded] = useState(questionsCount === 0);
 
   const toggleType = (id) => {
     setSelectedTypes((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
     );
   };
 
@@ -126,26 +114,22 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
           <p className="text-xs font-semibold text-neutral-text mb-3 uppercase tracking-wider">
             Question Types
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {QUESTION_TYPES.map((type) => {
               const isActive = selectedTypes.includes(type.id);
+
               return (
                 <button
                   key={type.id}
+                  type="button"
                   onClick={() => toggleType(type.id)}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                    isActive ? type.activeColor : type.color
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    isActive
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-neutral-100 text-neutral-muted hover:bg-neutral-200"
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[16px]">
-                    {type.icon}
-                  </span>
-                  <span>{type.label}</span>
-                  {isActive && (
-                    <span className="material-symbols-outlined text-[14px] ml-auto opacity-80">
-                      check
-                    </span>
-                  )}
+                  {type.label}
                 </button>
               );
             })}

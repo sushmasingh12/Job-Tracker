@@ -4,6 +4,7 @@ import applicationsReducer from "../features/applications/store/applicationsSlic
 import resumeReducer from "../features/resume/store/resumeSlice";
 import coverLetterReducer from "../features/coverLetter/store/coverSlice";
 import interviewReducer from "../features/interview/store/interviewSlice";
+import settingsReducer from "../features/settings/store/settingsSlice";
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         resumes: resumeReducer,
         coverLetter: coverLetterReducer,
         interview: interviewReducer,
+        settings: settingsReducer,
     }
 });
 

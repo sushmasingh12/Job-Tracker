@@ -58,7 +58,7 @@ const resumeSchema = new mongoose.Schema(
       sections: mongoose.Schema.Types.Mixed, // flexible structure from Gemini
       changesExplained: [String],
       newAtsScore: Number,
-      template: String,
+     
       createdAt: Date,
     },
   },

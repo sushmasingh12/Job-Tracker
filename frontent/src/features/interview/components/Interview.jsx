@@ -1,5 +1,4 @@
 import { useInterview } from "../hook/useInterview";
-import CompanyResearch from "./Companyresearch";
 import GeneratePanel from "./Generatepanel";
 import InterviewHeader from "./Interviewheader";
 import MockInterview from "./Mockinterview";
@@ -15,11 +14,10 @@ import ProfileSelectorModal from "./Profileselectormodal";
 const TABS = [
   { id: 'practice', label: 'Practice Questions', icon: 'quiz' },
   { id: 'mock', label: 'Mock Interview', icon: 'video_camera_front' },
-  { id: 'research', label: 'Company Research', icon: 'domain' },
   { id: 'answers', label: 'My Answers', icon: 'folder_special' },
 ];
 
-const EmptyPracticeState = ({ onSelectProfile }) => (
+const EmptyPracticeState = () => (
   <div className="p-6">
     <div className="bg-white border border-dashed border-neutral-border rounded-2xl p-10 text-center">
       <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -29,12 +27,7 @@ const EmptyPracticeState = ({ onSelectProfile }) => (
       <p className="text-sm text-neutral-muted mb-6">
         Pick a saved application first, then generate tailored interview questions.
       </p>
-      <button
-        onClick={onSelectProfile}
-        className="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-xl transition-colors"
-      >
-        Choose Profile
-      </button>
+      
     </div>
   </div>
 );
@@ -77,6 +70,7 @@ const Interview = () => {
     handleEndMock,
     handleResetMock,
     handleAddCustomQuestion,
+    handleBack,
   } = useInterview();
 
   const renderPracticeTab = () => {
@@ -148,8 +142,7 @@ const Interview = () => {
             onReset={handleResetMock}
           />
         );
-      case 'research':
-        return <CompanyResearch profile={selectedProfile} />;
+     
       case 'answers':
         return <MyAnswers questions={questions} savedAnswers={savedAnswers} />;
       case 'practice':
@@ -165,6 +158,7 @@ const Interview = () => {
           profile={selectedProfile}
           onSelectProfile={openProfileModal}
           onOpenManual={openManualModal}
+          onBack={handleBack}
           countdown={countdown}
           interviewDate={interviewDate}
           onSetInterviewDate={handleSetInterviewDate}

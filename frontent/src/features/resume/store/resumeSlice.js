@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  fetchResumeTemplatesService,
+
   fetchResumesService,
   uploadResumeService,
   analyzeResumeService,
@@ -8,16 +8,7 @@ import {
   downloadResumeService,
 } from "../services/resumeServices";
 
-export const fetchResumeTemplates = createAsyncThunk(
-  "resume/fetchTemplates",
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchResumeTemplatesService();
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
-    }
-  }
-);
+
 
 export const fetchResumes = createAsyncThunk(
   "resume/fetchAll",
@@ -54,9 +45,9 @@ export const analyzeResume = createAsyncThunk(
 
 export const optimizeResume = createAsyncThunk(
   "resume/optimize",
-  async ({ resumeId, jobDescription, template }, { rejectWithValue }) => {
+  async ({ resumeId, jobDescription,  }, { rejectWithValue }) => {
     try {
-      return await optimizeResumeService({ resumeId, jobDescription, template });
+      return await optimizeResumeService({ resumeId, jobDescription,  });
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -79,10 +70,7 @@ const initialState = {
   listLoading: false,
   listError: null,
 
-  templates: [],
-  templatesLoading: false,
-  templatesError: null,
-  defaultTemplate: "modern",
+
 
   uploadLoading: false,
   uploadError: null,
@@ -155,20 +143,7 @@ const resumeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchResumeTemplates.pending, (state) => {
-        state.templatesLoading = true;
-        state.templatesError = null;
-      })
-      .addCase(fetchResumeTemplates.fulfilled, (state, action) => {
-        state.templatesLoading = false;
-        state.templates = action.payload?.templates || [];
-        state.defaultTemplate = action.payload?.defaultTemplate || "modern";
-      })
-      .addCase(fetchResumeTemplates.rejected, (state, action) => {
-        state.templatesLoading = false;
-        state.templatesError = action.payload || "Failed to load templates";
-      });
+   
 
     builder
       .addCase(fetchResumes.pending, (state) => {
@@ -267,7 +242,7 @@ const resumeSlice = createSlice({
                 null,
               changesExplained: action.payload?.changesExplained || [],
               newAtsScore: action.payload?.newAtsScore || 0,
-              template: action.payload?.template || "modern",
+              
             },
           });
         }
@@ -307,13 +282,7 @@ export const selectAllResumes = (state) => getResumeRoot(state).resumes;
 export const selectListLoading = (state) => getResumeRoot(state).listLoading;
 export const selectListError = (state) => getResumeRoot(state).listError;
 
-export const selectResumeTemplates = (state) => getResumeRoot(state).templates;
-export const selectTemplatesLoading = (state) =>
-  getResumeRoot(state).templatesLoading;
-export const selectTemplatesError = (state) =>
-  getResumeRoot(state).templatesError;
-export const selectDefaultTemplate = (state) =>
-  getResumeRoot(state).defaultTemplate;
+
 
 export const selectUploadLoading = (state) => getResumeRoot(state).uploadLoading;
 export const selectUploadError = (state) => getResumeRoot(state).uploadError;

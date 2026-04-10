@@ -148,14 +148,14 @@ export const saveCoverLetter = async (userId, appId, content) => {
 
 // ── SAVE RESUME ───────────────────────────────────────────────────────────────
 
-export const saveResume = async (userId, appId, { content, templateId }) => {
+export const saveResume = async (userId, appId, { content, }) => {
   return await Application.findOneAndUpdate(
     { _id: appId, user: userId },
     {
       $set: {
         optimizedResume: {
           content,
-          templateId,
+         
           savedAt: new Date(),
         },
       },

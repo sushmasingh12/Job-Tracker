@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchResumeTemplates,
+
   fetchResumes,
   uploadResume,
   analyzeResume,
@@ -14,10 +14,7 @@ import {
   selectAllResumes,
   selectListLoading,
   selectListError,
-  selectResumeTemplates,
-  selectTemplatesLoading,
-  selectTemplatesError,
-  selectDefaultTemplate,
+ 
   selectUploadLoading,
   selectUploadError,
   selectUploadSuccess,
@@ -43,10 +40,7 @@ const useResume = () => {
   const listLoading = useSelector(selectListLoading);
   const listError = useSelector(selectListError);
 
-  const templates = useSelector(selectResumeTemplates);
-  const templatesLoading = useSelector(selectTemplatesLoading);
-  const templatesError = useSelector(selectTemplatesError);
-  const defaultTemplate = useSelector(selectDefaultTemplate);
+
 
   const uploadLoading = useSelector(selectUploadLoading);
   const uploadError = useSelector(selectUploadError);
@@ -75,11 +69,7 @@ const useResume = () => {
     }
   }, [dispatch, resumes?.length]);
 
-  useEffect(() => {
-    if (!templates?.length) {
-      dispatch(fetchResumeTemplates());
-    }
-  }, [dispatch, templates?.length]);
+ 
 
   const handleUpload = useCallback(
     (file) => {
@@ -108,8 +98,8 @@ const useResume = () => {
   );
 
   const handleOptimize = useCallback(
-    (resumeId, jobDescription, template = "modern") => {
-      return dispatch(optimizeResume({ resumeId, jobDescription, template }));
+    (resumeId, jobDescription, ) => {
+      return dispatch(optimizeResume({ resumeId, jobDescription, }));
     },
     [dispatch]
   );
@@ -134,10 +124,6 @@ const useResume = () => {
     listLoading,
     listError,
 
-    templates,
-    templatesLoading,
-    templatesError,
-    defaultTemplate,
 
     uploadLoading,
     uploadError,

@@ -15,7 +15,7 @@ const TYPE_DESCRIPTIONS = {
     "situational / hypothetical scenario questions that test decision-making and judgment",
 };
 
-const MODEL_CANDIDATES = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+const MODEL_CANDIDATES = ["gemini-1.5-flash", "gemini-1.5-flash-lite", "gemini-3.1-flash-lite-preview"];
 
 const stripCodeFences = (text = "") =>
   String(text).replace(/```json/gi, "").replace(/```/g, "").trim();
@@ -228,9 +228,9 @@ const normalizeQuestion = (q, index) => {
 
   const normalizedTags = Array.isArray(q?.tags)
     ? q.tags
-        .map((tag) => String(tag).trim().toLowerCase())
-        .filter(Boolean)
-        .slice(0, 4)
+      .map((tag) => String(tag).trim().toLowerCase())
+      .filter(Boolean)
+      .slice(0, 4)
     : [];
 
   return {

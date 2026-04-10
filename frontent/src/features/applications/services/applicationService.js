@@ -133,10 +133,10 @@ const saveCoverLetterToApplication = async (id, content) => {
   return transformApplication(data?.data);
 };
 
-const saveResumeToApplication = async (id, { content, templateId }) => {
+const saveResumeToApplication = async (id, { content,  }) => {
   const { data } = await api.patch(`${BASE}/${id}/resume`, {
     content,
-    templateId,
+   
   });
   return transformApplication(data?.data);
 };
@@ -177,4 +177,4 @@ const applicationService = {
   remove,
 };
 
-export default applicationService;
+export default applicationService;

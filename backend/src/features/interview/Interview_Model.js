@@ -159,20 +159,21 @@ const interviewPrepSchema = new mongoose.Schema(
   }
 );
 
-// one prep per user per application
+// one prep per user per application (only for real jobs)
 interviewPrepSchema.index(
   { user: 1, job: 1 },
   {
     unique: true,
+    name: "user_job_idx_v2", // New name to avoid collision with old index
     partialFilterExpression: {
       job: { $exists: true, $ne: null },
     },
   }
 );
 
-// one manual prep per user
+// one manual prep per user per job title
 interviewPrepSchema.index(
-  { user: 1, isManual: 1 },
+  { user: 1, isManual: 1, jobTitleManual: 1 },
   {
     unique: true,
     partialFilterExpression: {

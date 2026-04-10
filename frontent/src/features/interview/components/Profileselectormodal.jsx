@@ -128,13 +128,24 @@ const ProfileSelectorModal = ({
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col border border-neutral-border">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-border shrink-0">
-          <div>
-            <h2 className="text-lg font-bold text-neutral-text">
-              Select Job Profile
-            </h2>
-            <p className="text-xs text-neutral-muted mt-0.5">
-              Choose which job you're preparing for
-            </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors text-neutral-text group"
+              title="Go Back"
+            >
+              <span className="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">
+                arrow_back
+              </span>
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-text leading-tight">
+                Select Job Profile
+              </h2>
+              <p className="text-xs text-neutral-muted mt-0.5">
+                Choose which job you're preparing for
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}

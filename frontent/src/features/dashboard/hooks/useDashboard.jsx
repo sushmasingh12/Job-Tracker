@@ -1,45 +1,47 @@
-// features/dashboard/hooks/useDashboard.js
 import { useState, useEffect } from "react";
-
-// ─── useDashboard ─────────────────────────────────────────────────────────────
-// Centralizes all dashboard data fetching.
-// Replace the mock data with real API calls when backend is ready.
-//
-// Returns:
-//   userName       → string
-//   todayDate      → formatted date string
-//   stats          → array for StatsCard
-//   recentApps     → array for RecentApplications
-//   loading        → boolean
-//   error          → string | null
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../auth/store/authSlice";
+import dashboardService from "../services/dashboardService";
 
 export function useDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
   const [data, setData]       = useState(null);
 
-  useEffect(() => {
-    // TODO: Replace with real API call
-    // e.g. const res = await dashboardService.getSummary();
-    const mockFetch = setTimeout(() => {
-      setData({
-        userName: "John",
-        todayDate: new Date().toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-      });
-      setLoading(false);
-    }, 500);
+  const user = useSelector(selectCurrentUser);
 
-    return () => clearTimeout(mockFetch);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const result = await dashboardService.getDashboardSummary();
+        setData({
+          stats: result.stats,
+          recentApps: result.recentApplications,
+          trendData: result.trendData,
+        });
+      } catch (err) {
+        setError(err.message || "Failed to fetch dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
+  const todayDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return {
-    userName:   data?.userName ?? "",
-    todayDate:  data?.todayDate ?? "",
+    userName: user?.name || user?.firstName || "User",
+    todayDate,
+    stats: data?.stats || undefined,
+    recentApps: data?.recentApps || undefined,
     loading,
     error,
   };

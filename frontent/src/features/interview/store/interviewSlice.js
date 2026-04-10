@@ -18,6 +18,8 @@ const initialState = {
   completedQuestions: [],
   savedAnswers: {},
   bookmarkedQuestions: [],
+  history: [],
+  historyLoading: false,
 
   interviewDate: null,
 
@@ -82,6 +84,13 @@ const interviewSlice = createSlice({
       state.savedAnswers =
         action.payload && typeof action.payload === 'object' ? action.payload : {};
       state.completedQuestions = Object.keys(state.savedAnswers);
+    },
+
+    setHistory: (state, action) => {
+      state.history = Array.isArray(action.payload) ? action.payload : [];
+    },
+    setHistoryLoading: (state, action) => {
+      state.historyLoading = Boolean(action.payload);
     },
 
     setActiveTab: (state, action) => {
@@ -182,6 +191,10 @@ const interviewSlice = createSlice({
     resetMockSession: (state) => {
       state.mockSession = { ...initialState.mockSession };
     },
+    resetInterview: (state) => {
+      state.selectedProfile = null;
+      resetProgressState(state);
+    },
   },
 });
 
@@ -204,11 +217,14 @@ export const {
   saveAnswer,
   toggleBookmark,
   setInterviewDate,
+  setHistory,
+  setHistoryLoading,
   startMockSession,
   tickMockTimer,
   nextMockQuestion,
   endMockSession,
   resetMockSession,
+  resetInterview,
 } = interviewSlice.actions;
 
 export default interviewSlice.reducer;

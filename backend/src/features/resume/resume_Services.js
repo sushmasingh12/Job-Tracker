@@ -12,13 +12,7 @@ const parseGeminiJSON = (text) => {
   return JSON.parse(cleaned);
 };
 
-const TEMPLATE_STYLE_MAP = {
-  modern: "clean, professional, data-driven, ATS-friendly",
-  classic: "traditional, formal, balanced, corporate",
-  minimal: "concise, stripped-back, highly readable, simple",
-  executive: "premium, leadership-focused, polished, strategic",
-  compact: "space-efficient, sharp, one-page oriented, concise",
-};
+
 
 // ─── 1. EXTRACT ──────────────────────────────────────────────────────────────
 const extractStructuredResume = async (resumeText) => {
@@ -161,9 +155,9 @@ Return ONLY valid raw JSON:
 const optimizeResumeContent = async (
   structuredResume,
   jobDescription,
-  template = "modern"
+  
 ) => {
-  const styleTone = TEMPLATE_STYLE_MAP[template] || TEMPLATE_STYLE_MAP.modern;
+ 
 
   // Extract the candidate's actual skills list from the original resume
   // so Gemini knows exactly what skills this person has
@@ -174,7 +168,7 @@ const optimizeResumeContent = async (
 
   const prompt = `
 You are a senior resume writer and ATS optimization specialist.
-Template style: "${template}" with tone: ${styleTone}.
+
 
 Your task: Deeply rewrite and tailor the resume below for the target job description.
 This is a FULL rewrite — not a light edit. Every section must be noticeably stronger and more relevant.

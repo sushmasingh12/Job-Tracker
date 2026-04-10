@@ -5,6 +5,7 @@ import {
   generateQuestions,
   saveAnswer,
   getAnswers,
+  getInterviewHistory,
   setInterviewDate,
   deletePrep,
   getFeedback,
@@ -38,6 +39,8 @@ router.post("/feedback", validateFeedbackRequest, getFeedback);
 router.get("/answers/:jobId", validateJobIdParam, getAnswers);
 
 router.put("/date", validateInterviewDate, setInterviewDate);
+
+router.get("/history", getInterviewHistory);
 
 router.delete("/:jobId", validateJobIdParam, deletePrep);
 

@@ -174,7 +174,7 @@ export const saveCoverLetter = async (req, res) => {
 
 export const saveResume = async (req, res) => {
   try {
-    const { content, templateId } = req.body;
+    const { content,  } = req.body;
 
     if (!content) {
       return res
@@ -185,7 +185,7 @@ export const saveResume = async (req, res) => {
     const application = await appService.saveResume(
       new mongoose.Types.ObjectId(getUserId(req)),
       req.params.id,
-      { content, templateId }
+      { content,  }
     );
 
     if (!application) {

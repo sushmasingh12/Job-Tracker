@@ -8,12 +8,18 @@ import Application from "../applications/app_Model.js";
 const MANUAL_JOB_ID = "manual";
 
 // Helper to find prep session
-const findPrepSession = async (user, jobId) => {
+const findPrepSession = async (user, jobId, jobTitleManual = "") => {
   if (jobId && jobId !== MANUAL_JOB_ID) {
     return InterviewPrep.findOne({ user, job: jobId });
   }
 
-  return InterviewPrep.findOne({ user, isManual: true });
+  const query = { user, isManual: true };
+  if (jobTitleManual) {
+    query.jobTitleManual = jobTitleManual;
+  }
+
+  // If no title provided but we have multiple, this will return the latest one
+  return InterviewPrep.findOne(query).sort({ updatedAt: -1 });
 };
 
 // ── POST /api/interview/generate ─────────────────────────────────
@@ -75,7 +81,7 @@ export const generateQuestions = async (req, res) => {
     });
 
     const query = isManual
-      ? { user: req.user._id, isManual: true }
+      ? { user: req.user._id, isManual: true, jobTitleManual: finalJobTitle }
       : { user: req.user._id, job: jobId };
 
     const update = {
@@ -129,7 +135,8 @@ export const saveAnswer = async (req, res) => {
       });
     }
 
-    const prep = await findPrepSession(req.user._id, jobId);
+    const { jobTitleManual } = req.body;
+    const prep = await findPrepSession(req.user._id, jobId, jobTitleManual);
 
     if (!prep) {
       return res.status(404).json({
@@ -356,6 +363,25 @@ export const getFeedback = async (req, res) => {
     console.error("Get feedback error:", error);
     return res.status(500).json({
       message: error.message || "Failed to generate feedback.",
+    });
+  }
+};
+
+// ── GET /api/interview/history ───────────────────────────────────
+export const getInterviewHistory = async (req, res) => {
+  try {
+    const history = await InterviewPrep.find({ user: req.user._id })
+      .populate("job", "jobTitle company jobDescription")
+      .sort({ updatedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: history,
+    });
+  } catch (error) {
+    console.error("Get history error:", error);
+    return res.status(500).json({
+      message: error.message || "Failed to fetch interview history.",
     });
   }
 };

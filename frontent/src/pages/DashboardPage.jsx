@@ -6,7 +6,7 @@ import TrendChart from '../features/dashboard/components/TrendChart';
 import QuickActions from '../features/dashboard/components/QuickActions';
 
 const DashboardPage = () => {
-  const { userName, todayDate, loading } =useDashboard()
+  const { userName, todayDate, stats, recentApps, trendData, loading } = useDashboard()
 
   if (loading) {
     return (
@@ -36,19 +36,19 @@ const DashboardPage = () => {
 
         {/* ── Stats Row ── */}
         
-        <StatsCard />
+        <StatsCard stats={stats} />
 
         {/* ── Main Grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* Left: Recent Applications */}
           <div className="lg:col-span-7">
-            <RecentApplications />
+            <RecentApplications applications={recentApps} />
           </div>
 
           {/* Right: Trend + Quick Actions */}
           <div className="lg:col-span-5 space-y-8">
-            <TrendChart />
+            <TrendChart data={trendData} />
             <QuickActions />
           </div>
 

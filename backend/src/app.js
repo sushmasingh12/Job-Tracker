@@ -6,6 +6,8 @@ import coverLetterRouter from "./features/coverLetter/coverLetter_Routes.js";
 import appRouter from "./features/applications/app_Routes.js";
 import resumeRouter from "./features/resume/resume_Routes.js";
 import interviewRouter from "./features/interview/Interview_Routes.js";
+import settingsRouter from "./features/settings/settings_Routes.js";
+import dashboardRouter from "./features/dashboard/dashboard_Routes.js";
 
 const app = express();
 
@@ -27,5 +29,7 @@ app.use("/api/coverLetter", coverLetterRouter);
 app.use("/api/applications", appRouter);
 app.use("/api/resume", resumeRouter);
 app.use("/api/interview", interviewRouter);
+app.use("/api/settings", settingsRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 export default app;

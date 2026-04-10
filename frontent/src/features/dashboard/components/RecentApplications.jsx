@@ -1,21 +1,11 @@
-// features/dashboard/components/RecentApplications.jsx
-
 const STATUS_STYLES = {
   Applied:    "bg-blue-100 text-blue-800",
   Interview:  "bg-orange-100 text-orange-800",
   Reviewing:  "bg-gray-100 text-gray-800",
   Rejected:   "bg-red-100 text-red-800",
-  Offered:    "bg-green-100 text-green-800",
+  Offer:      "bg-green-100 text-green-800",
+  Hired:      "bg-purple-100 text-purple-800",
 };
-
-// Placeholder data — replace with API data via useDashboard hook
-const RECENT_APPS = [
-  { id: 1, title: "Senior Product Designer", company: "Google",  location: "Mountain View, CA", status: "Applied",   date: "Oct 24", icon: "domain"     },
-  { id: 2, title: "Frontend Developer",       company: "Stripe",  location: "Remote",            status: "Interview", date: "Oct 22", icon: "business"   },
-  { id: 3, title: "UX Researcher",            company: "Airbnb",  location: "San Francisco, CA", status: "Reviewing", date: "Oct 20", icon: "apartment"  },
-  { id: 4, title: "Product Manager",          company: "Shopify", location: "Ottawa, ON",        status: "Rejected",  date: "Oct 18", icon: "storefront" },
-  { id: 5, title: "Design System Lead",       company: "Figma",   location: "Remote",            status: "Applied",   date: "Oct 15", icon: "hub"        },
-];
 
 // ─── Single Application Row ───────────────────────────────────────────────────
 function ApplicationRow({ title, company, location, status, date, icon }) {
@@ -44,28 +34,37 @@ function ApplicationRow({ title, company, location, status, date, icon }) {
 }
 
 // ─── RecentApplications ───────────────────────────────────────────────────────
-// Props:
-//   applications (optional) → array of app objects to override defaults
-//   onViewAll    (optional) → callback for "View All" click
-const RecentApplications = ({ applications = RECENT_APPS, onViewAll }) => {
+const RecentApplications = ({ applications = [], onViewAll }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-neutral-text">Recent Applications</h2>
-        <button
-          onClick={onViewAll}
-          className="text-sm font-medium text-primary hover:text-primary-dark hover:underline"
-        >
-          View All
-        </button>
+        {applications.length > 0 && (
+          <button
+            onClick={onViewAll}
+            className="text-sm font-medium text-primary hover:text-primary-dark hover:underline"
+          >
+            View All
+          </button>
+        )}
       </div>
 
       {/* List */}
       <div className="space-y-4">
-        {applications.map((app) => (
-          <ApplicationRow key={app.id} {...app} />
-        ))}
+        {applications.length > 0 ? (
+          applications.map((app) => (
+            <ApplicationRow key={app.id} {...app} />
+          ))
+        ) : (
+          <div className="bg-neutral-surface border border-neutral-border border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center">
+            <span className="material-symbols-outlined text-4xl text-neutral-muted mb-2">
+              post_add
+            </span>
+            <p className="text-neutral-text font-medium">No applications found</p>
+            <p className="text-neutral-muted text-sm mt-1">Start tracking your job search by adding one!</p>
+          </div>
+        )}
       </div>
     </div>
   );

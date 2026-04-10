@@ -21,10 +21,7 @@ resumeApi.interceptors.request.use((config) => {
   return config;
 });
 
-export const fetchResumeTemplatesService = async () => {
-  const { data } = await resumeApi.get("/templates");
-  return data;
-};
+
 
 export const fetchResumesService = async () => {
   const { data } = await resumeApi.get("/list");
@@ -71,14 +68,16 @@ export const analyzeResumeService = async ({
 export const optimizeResumeService = async ({
   resumeId,
   jobDescription,
-  template = "modern",
+ 
+  
 }) => {
   const { data } = await resumeApi.post(
     "/optimize",
     {
       resumeId,
       jobDescription,
-      template,
+      
+      
     },
     {
       withCredentials: true,

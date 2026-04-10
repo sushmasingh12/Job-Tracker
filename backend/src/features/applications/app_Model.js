@@ -80,7 +80,6 @@ const applicationSchema = new mongoose.Schema(
     },
     optimizedResume: {
       content: { type: Object },
-      templateId: { type: String },
       savedAt: { type: Date, default: Date.now },
     },
     // ─────────────────────────────────────────────────────────────────────────

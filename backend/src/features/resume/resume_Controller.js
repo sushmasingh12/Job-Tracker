@@ -7,56 +7,7 @@ import {
   optimizeResumeContent,
 } from "./resume_Services.js";
 
-export const RESUME_TEMPLATES = [
-  {
-    id: "modern",
-    name: "Modern",
-    description: "Clean layout with strong hierarchy and ATS-friendly spacing.",
-    badge: "Recommended",
-    category: "ATS Friendly",
-  },
-  {
-    id: "classic",
-    name: "Classic",
-    description: "Traditional professional structure for corporate roles.",
-    badge: "Professional",
-    category: "Corporate",
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    description: "Simple and lightweight design focused on readability.",
-    badge: "Simple",
-    category: "Clean",
-  },
-  {
-    id: "executive",
-    name: "Executive",
-    description: "Premium layout for senior and leadership positions.",
-    badge: "Premium",
-    category: "Leadership",
-  },
-  {
-    id: "compact",
-    name: "Compact",
-    description: "Space-efficient template ideal for 1-page resumes.",
-    badge: "1 Page",
-    category: "Concise",
-  },
-];
 
-export const getResumeTemplates = async (req, res) => {
-  try {
-    res.json({
-      success: true,
-      count: RESUME_TEMPLATES.length,
-      templates: RESUME_TEMPLATES,
-      defaultTemplate: "modern",
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message || "Failed to fetch templates" });
-  }
-};
 
 export const uploadResume = async (req, res) => {
   try {
@@ -143,7 +94,7 @@ export const analyzeResume = async (req, res) => {
 
 export const optimizeResume = async (req, res) => {
   try {
-    const { resumeId, jobDescription, template } = req.body;
+    const { resumeId, jobDescription,  } = req.body;
 
     if (!resumeId || !jobDescription?.trim()) {
       return res.status(400).json({
@@ -151,10 +102,7 @@ export const optimizeResume = async (req, res) => {
       });
     }
 
-    const selectedTemplate = template || "modern";
-    const templateMeta =
-      RESUME_TEMPLATES.find((item) => item.id === selectedTemplate) ||
-      RESUME_TEMPLATES[0];
+    
 
     const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
     if (!resume) {
@@ -164,14 +112,14 @@ export const optimizeResume = async (req, res) => {
     const optimized = await optimizeResumeContent(
       resume.originalStructuredContent,
       jobDescription,
-      selectedTemplate
+      
     );
 
     resume.optimizedContent = {
       sections: optimized.optimizedSections,
       changesExplained: optimized.changesExplained,
       newAtsScore: optimized.newAtsScore,
-      template: selectedTemplate,
+      
       createdAt: new Date(),
     };
     await resume.save();
@@ -179,8 +127,7 @@ export const optimizeResume = async (req, res) => {
     res.json({
       success: true,
       resumeId: resume._id,
-      template: selectedTemplate,
-      templateMeta,
+     
       optimizedSections: optimized.optimizedSections,
       changesExplained: optimized.changesExplained || [],
       newAtsScore: optimized.newAtsScore || 0,
@@ -208,7 +155,7 @@ export const downloadResume = async (req, res) => {
     res.json({
       format,
       sections: resume.optimizedContent.sections,
-      template: resume.optimizedContent.template,
+     
       filename: resume.originalName.replace(/\.[^.]+$/, ""),
     });
   } catch (err) {

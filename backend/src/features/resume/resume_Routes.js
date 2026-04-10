@@ -7,7 +7,7 @@ import {
   downloadResume,
   getResumeFile,
   deleteResume,
-  getResumeTemplates,
+  
 } from "./resume_Controller.js";
 import { upload } from "./resume_upload.js";
 import { protect } from "../auth/auth_Middleware.js";
@@ -24,7 +24,7 @@ const router = Router();
 
 router.use(protect);
 
-router.get("/templates", getResumeTemplates);
+
 
 router.post(
   "/upload",

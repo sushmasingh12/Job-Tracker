@@ -62,4 +62,11 @@ export const interviewService = {
     });
     return handleResponse(res);
   },
+
+  getHistory: async (token) => {
+    const res = await fetch(`${API_BASE}/interview/history`, {
+      headers: getHeaders(token),
+    });
+    return handleResponse(res);
+  },
 };

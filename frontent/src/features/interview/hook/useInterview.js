@@ -12,7 +12,8 @@ import {
   setActiveTab,
   setError,
   setExpandedQuestion,
-  setInterviewDate,
+  setHistory,
+  setHistoryLoading,
   setProfiles,
   setProfilesLoading,
   setQuestions,
@@ -25,6 +26,8 @@ import {
   tickMockTimer,
   toggleBookmark,
   unmarkQuestionComplete,
+  setInterviewDate,
+  resetInterview,
 } from '../store/interviewSlice';
 
 
@@ -131,6 +134,21 @@ export const useInterview = () => {
     },
     [dispatch, token]
   );
+  
+  const loadHistory = useCallback(async () => {
+    try {
+      dispatch(setHistoryLoading(true));
+      const response = await interviewService.getHistory(token);
+      // History should be an array of sessions
+      const historyData = response?.data || (Array.isArray(response) ? response : []);
+      dispatch(setHistory(historyData));
+    } catch (error) {
+      console.error('Failed to load history:', error);
+      dispatch(setHistory([]));
+    } finally {
+      dispatch(setHistoryLoading(false));
+    }
+  }, [dispatch, token]);
 
   const openProfileModal = useCallback(() => {
     dispatch(setShowProfileModal(true));
@@ -281,6 +299,7 @@ export const useInterview = () => {
   );
   const handleEndMock = useCallback(() => dispatch(endMockSession()), [dispatch]);
   const handleResetMock = useCallback(() => dispatch(resetMockSession()), [dispatch]);
+  const handleBack = useCallback(() => dispatch(resetInterview()), [dispatch]);
 
   const filteredQuestions = useMemo(() => {
     const { questions, activeFilter, bookmarkedQuestions } = interview;
@@ -310,6 +329,7 @@ export const useInterview = () => {
     sessionStats,
     loadProfiles,
     loadSavedAnswers,
+    loadHistory,
     openProfileModal,
     closeProfileModal,
     handleSelectProfile,
@@ -329,5 +349,6 @@ export const useInterview = () => {
     handleNextMockQuestion,
     handleEndMock,
     handleResetMock,
+    handleBack,
   };
 };

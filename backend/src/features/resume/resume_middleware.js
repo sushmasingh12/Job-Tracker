@@ -42,15 +42,9 @@ export const validateAnalyzeResume = (req, res, next) => {
 };
 
 export const validateOptimizeResume = (req, res, next) => {
-  const { resumeId, jobDescription, template } = req.body;
+  const { resumeId, jobDescription,  } = req.body;
 
-  const allowedTemplates = [
-    "modern",
-    "classic",
-    "minimal",
-    "executive",
-    "compact",
-  ];
+ 
 
   if (!resumeId || !jobDescription?.trim()) {
     return res.status(400).json({
@@ -66,12 +60,7 @@ export const validateOptimizeResume = (req, res, next) => {
     });
   }
 
-  if (template && !allowedTemplates.includes(template)) {
-    return res.status(400).json({
-      success: false,
-      message: `Invalid template. Allowed values: ${allowedTemplates.join(", ")}`,
-    });
-  }
+  
 
   next();
 };

@@ -9,7 +9,7 @@ const ManualProfileModal = ({
     jobTitle: '',
     techStack: '',
     count: 10,
-    questionTypes: ['behavioral', 'technical'],
+    questionTypes: ['technical'],
   });
 
   const handleSubmit = (e) => {
@@ -35,11 +35,22 @@ const ManualProfileModal = ({
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col border border-neutral-border overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-border">
-          <div>
-            <h2 className="text-lg font-bold text-neutral-text">Manual Practice</h2>
-            <p className="text-xs text-neutral-muted mt-0.5">
-              Enter details for a custom mock interview
-            </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors text-neutral-text group"
+              title="Go Back"
+            >
+              <span className="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">
+                arrow_back
+              </span>
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-text leading-tight">Manual Practice</h2>
+              <p className="text-xs text-neutral-muted mt-0.5">
+                Enter details for a custom mock interview
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}

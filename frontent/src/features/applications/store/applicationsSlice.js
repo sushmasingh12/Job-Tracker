@@ -88,11 +88,11 @@ export const saveApplicationCoverLetterThunk = createAsyncThunk(
 
 export const saveApplicationResumeThunk = createAsyncThunk(
   "applications/saveResume",
-  async ({ id, content, templateId }, { rejectWithValue }) => {
+  async ({ id, content,  }, { rejectWithValue }) => {
     try {
       return await applicationService.saveResumeToApplication(id, {
         content,
-        templateId,
+        
       });
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
