@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import applicationService from "../../applications/services/applicationService";
@@ -21,6 +21,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import useResume from "../hooks/useResume";
 import { getResumeFileService } from "../services/resumeServices";
 import ResumePreviewView from "./Resumepreviewview ";
+import { fillPDFDoc } from "../utils/resumePdfExport";
 
 
 const ScoreRing = ({ score }) => {
@@ -257,7 +258,7 @@ const Details = ({ feedback }) => {
       <h2 className="text-xl md:text-xl font-bold text-slate-900">
         Detailed Analysis
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5">
         {sections.map(({ title, key }) => (
           <Accordion
             key={key}
@@ -271,209 +272,6 @@ const Details = ({ feedback }) => {
   );
 };
 
-// ─── jsPDF helper: fills a jsPDF doc instance with resume section data ────────
-const fillPDFDoc = (doc, sections) => {
-  if (!sections) return;
-
-  const basics = sections?.basics || {};
-  const dynamicSections = sections?.sections || {};
-  const sectionOrder =
-    sections?.sectionOrder?.length > 0
-      ? sections.sectionOrder
-      : Object.keys(dynamicSections);
-  //   const defaultSectionOrder = [
-  //   "summary",
-  //   "experience",
-  //   "projects",
-  //   "skills",
-  //   "education",
-  //   "certifications",
-  //   "achievements",
-  //   "volunteer",
-  //   "languages",
-  // ];
-
-  // const extraSections = Object.keys(dynamicSections || {}).filter(
-  //   (key) =>
-  //     !["name", "title", "email", "phone", "location"].includes(key) &&
-  //     !defaultSectionOrder.includes(key)
-  // );
-  const margin = 50;
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const contentWidth = pageWidth - margin * 2;
-  let y = margin;
-
-  const checkY = (needed = 30) => {
-    if (y + needed > pageHeight - margin) {
-      doc.addPage();
-      y = margin;
-    }
-  };
-
-  const addSectionHeading = (heading) => {
-    y += 8;
-    checkY(28);
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(100, 100, 100);
-    const text = heading
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
-    doc.text(text.toUpperCase(), margin, y);
-    y += 4;
-    doc.setDrawColor(220, 220, 220);
-    doc.line(margin, y, margin + contentWidth, y);
-    y += 13;
-    doc.setTextColor(20, 20, 20);
-  };
-
-  const renderSection = (key) => {
-    const data = dynamicSections[key];
-    if (!data) return;
-
-    if (typeof data === "string") {
-      addSectionHeading(key);
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(50, 50, 50);
-      const lines = doc.splitTextToSize(data, contentWidth);
-      checkY(lines.length * 14);
-      doc.text(lines, margin, y);
-      y += lines.length * 14 + 8;
-      return;
-    }
-
-    if (Array.isArray(data) && data.length > 0) {
-      if (typeof data[0] === "string") {
-        addSectionHeading(key);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(50, 50, 50);
-        const skillLines = doc.splitTextToSize(data.join(" • "), contentWidth);
-        checkY(skillLines.length * 12);
-        doc.text(skillLines, margin, y);
-        y += skillLines.length * 12 + 8;
-        return;
-      }
-
-      addSectionHeading(key);
-      data.forEach((item) => {
-        checkY(40);
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(20, 20, 20);
-
-        const title =
-          item.role ||
-          item.name ||
-          item.degree ||
-          item.title ||
-          (typeof item === "object" && Object.keys(item).length > 0
-            ? item[Object.keys(item)[0]]
-            : "") ||
-          "";
-        doc.text(title || "", margin, y);
-
-        const date = item.duration || item.year || item.date || "";
-        if (date) {
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.setTextColor(120, 120, 120);
-          doc.text(String(date), pageWidth - margin, y, { align: "right" });
-        }
-        y += 14;
-
-        const subtitleFields = [
-          "company",
-          "school",
-          "org",
-          "issuer",
-          "location",
-        ];
-        const subtitle = subtitleFields
-          .map((f) => item[f])
-          .filter(Boolean)
-          .join(" · ");
-        const desc = item.description || item.grade || item.summary || "";
-        const combinedSub = [subtitle, desc].filter(Boolean).join(" - ");
-
-        if (combinedSub) {
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.setTextColor(100, 100, 100);
-
-          const lines = doc.splitTextToSize(combinedSub, contentWidth);
-          doc.text(lines, margin, y);
-          y += lines.length * 14;
-        }
-
-        const bullets = Array.isArray(item.bullets)
-          ? item.bullets
-          : Array.isArray(item.achievements)
-            ? item.achievements
-            : [];
-        if (bullets.length > 0) {
-          doc.setTextColor(50, 50, 50);
-          bullets.forEach((bullet) => {
-            const bLines = doc.splitTextToSize(
-              `•  ${bullet}`,
-              contentWidth - 10,
-            );
-            checkY(bLines.length * 12);
-            doc.text(bLines, margin + 6, y);
-            y += bLines.length * 12 + 2;
-          });
-        }
-
-        const tags = Array.isArray(item.tech)
-          ? item.tech
-          : Array.isArray(item.skills)
-            ? item.skills
-            : [];
-        if (tags.length > 0) {
-          doc.setTextColor(100, 100, 100);
-          doc.setFontSize(8);
-          const tagLines = doc.splitTextToSize(
-            `Tags: ${tags.join(", ")}`,
-            contentWidth,
-          );
-          doc.text(tagLines, margin, y);
-          y += tagLines.length * 12 + 2;
-        }
-
-        y += 6;
-      });
-    }
-  };
-
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(20, 20, 20);
-  doc.text(basics.name || "Your Name", margin, y);
-  y += 24;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(80, 80, 80);
-  if (basics.title) {
-    doc.text(basics.title, margin, y);
-    y += 16;
-  }
-
-  const contact = [basics.email, basics.phone, basics.location]
-    .filter(Boolean)
-    .join(" • ");
-  if (contact) {
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text(contact, margin, y);
-    y += 20;
-  }
-
-  sectionOrder.forEach((key) => renderSection(key));
-};
-
 // ─── Original PDF Viewer — fetches uploaded PDF via authenticated API ─────────
 const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
   const [fileBlob, setFileBlob] = useState(null);
@@ -485,7 +283,6 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
     if (!resumeId || fileType !== "pdf") return;
 
     let objectUrl;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setFetchError("");
 
@@ -515,7 +312,18 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
         <span className="material-symbols-outlined text-4xl animate-spin text-primary">
           progress_activity
         </span>
-        <p className="text-sm">Loading original format…</p>
+        <p className="text-sm">Loading original resume…</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 text-slate-500 min-h-[500px]">
+        <span className="material-symbols-outlined text-4xl text-amber-500">
+          warning
+        </span>
+        <p className="text-sm text-red-400">{fetchError}</p>
       </div>
     );
   }
@@ -548,19 +356,19 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
     );
   }
 
-  // Fallback to structured view for DOCX or if PDF fails
-  if (!sections) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
-        <span className="material-symbols-outlined text-4xl text-amber-500">
-          warning
-        </span>
-        <p className="text-sm">No preview content available.</p>
-      </div>
-    );
+  // Fallback to structured view for DOCX or if PDF blob unavailable
+  if (sections) {
+    return <ResumePreviewView sections={sections} />;
   }
 
-  return <ResumePreviewView sections={sections} />;
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+      <span className="material-symbols-outlined text-4xl text-amber-500">
+        warning
+      </span>
+      <p className="text-sm">No preview content available.</p>
+    </div>
+  );
 };
 
 
@@ -600,7 +408,6 @@ const buildDetailedFeedback = (analysisResult, optimizedResult) => {
     };
   });
 
-  // Supplement with existing strengths/suggestions if specific category tips are low
   if (feedback.contentStrength.tips.length === 0 && analysisResult?.strengths) {
     feedback.contentStrength.tips = analysisResult.strengths.slice(0, 2).map((s) => ({
       type: "good",
@@ -637,7 +444,6 @@ const OptimizeResume = () => {
     optimizeSuccess,
     downloadLoading,
     handleOptimize,
-    
     listLoading,
   } = useResume();
 
@@ -649,15 +455,19 @@ const OptimizeResume = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // ── FIX: track whether we've already auto-switched once ──────────────────
+  // Without this ref, the useEffect below re-runs every time activeView changes,
+  // forcing the user back to "after" whenever they try to click "Before".
+  const hasAutoSwitchedToAfter = useRef(false);
+
   const handleSaveToApplication = async () => {
     if (!optimizedResult?.optimizedSections) return;
 
     if (!applicationId) {
-      // If not from an application, treat "Save" as a download per user request
       handleDownloadPdf();
       return;
     }
-    
+
     setSaveLoading(true);
     setError("");
     try {
@@ -665,10 +475,9 @@ const OptimizeResume = () => {
         saveApplicationResumeThunk({
           id: applicationId,
           content: optimizedResult.optimizedSections,
-          
         }),
       ).unwrap();
-      
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
@@ -690,14 +499,25 @@ const OptimizeResume = () => {
     }
   }, [optimizeError]);
 
- 
-
+  // ── FIX: removed `activeView` from dependency array + guard with ref ──────
+  // Before: [optimizeSuccess, optimizedResult, activeView]
+  // Problem: every time user clicked "Before", activeView changed → effect ran
+  //          again → optimizeSuccess was still true → forced back to "after"
+  // Fix: run only when optimizeSuccess/optimizedResult change, and only
+  //      auto-switch a single time using a ref flag.
   useEffect(() => {
-    // Only auto-switch to "after" if we just successfully optimized
-    if (optimizeSuccess && optimizedResult && activeView !== "after") {
+    if (optimizeSuccess && optimizedResult && !hasAutoSwitchedToAfter.current) {
+      hasAutoSwitchedToAfter.current = true;
       setActiveView("after");
     }
-  }, [optimizeSuccess, optimizedResult, activeView]);
+  }, [optimizeSuccess, optimizedResult]);
+
+  // Reset the flag when user starts a new optimization
+  useEffect(() => {
+    if (optimizeLoading) {
+      hasAutoSwitchedToAfter.current = false;
+    }
+  }, [optimizeLoading]);
 
   const selectedResume = useMemo(() => {
     return resumes.find(
@@ -708,23 +528,21 @@ const OptimizeResume = () => {
   const breakdown = analysisResult?.scoreBreakdown || {};
   const breakdownItems = [
     { label: "Relevance", value: breakdown.relevance?.score || analysisResult?.atsScore || 0 },
+    { label: "Section Quality", value: breakdown.sectionQuality?.score || analysisResult?.atsScore || 0 },
     { label: "Content Strength", value: breakdown.contentStrength?.score || analysisResult?.atsScore || 0 },
+    { label: "Experience", value: breakdown.experience?.score || analysisResult?.atsScore || 0 },
     { label: "Skills Alignment", value: breakdown.skills?.score || analysisResult?.atsScore || 0 },
     { label: "Formatting", value: breakdown.formatting?.score || analysisResult?.atsScore || 0 },
+    { label: "Structure & Flow", value: breakdown.structure?.score || analysisResult?.atsScore || 0 },
+    { label: "Keyword Match", value: breakdown.keywordMatch?.score || analysisResult?.atsScore || 0 },
   ];
 
-  const currentFeedback = buildDetailedFeedback(
-    analysisResult,
-    optimizedResult,
-  );
+  const currentFeedback = buildDetailedFeedback(analysisResult, optimizedResult);
 
   const handleToggleView = (view) => {
-   
-
     if (view === "after" && !optimizedResult) {
-      return; // Can't switch to after if not optimized yet
+      return; // Can't switch to "after" before optimization
     }
-
     setActiveView(view);
   };
 
@@ -741,13 +559,8 @@ const OptimizeResume = () => {
       return;
     }
 
-    handleOptimize(
-      analysisResult.resumeId,
-      currentJobDescription,
-      
-    );
+    handleOptimize(analysisResult.resumeId, currentJobDescription);
   };
-
 
   const optimizedSections = optimizedResult?.optimizedSections || null;
   const resumeIdToDownload = analysisResult?.resumeId || activeResumeId;
@@ -790,6 +603,7 @@ const OptimizeResume = () => {
       )}
 
       <div className="flex flex-1 min-h-0 items-start">
+        {/* ── Sidebar ── */}
         <div className="w-80 shrink-0 p-5 space-y-5 sticky top-0 self-start max-h-screen overflow-y-auto">
           <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 flex flex-col items-center gap-4">
             <ScoreRing
@@ -801,14 +615,9 @@ const OptimizeResume = () => {
                 Score Breakdown
               </p>
               {breakdownItems.map((item) => (
-                <ScoreBar
-                  key={item.label}
-                  label={item.label}
-                  value={item.value}
-                />
+                <ScoreBar key={item.label} label={item.label} value={item.value} />
               ))}
             </div>
-
 
             {Array.isArray(analysisResult?.missingKeywords) &&
               analysisResult.missingKeywords.length > 0 && (
@@ -875,8 +684,10 @@ const OptimizeResume = () => {
             )}
         </div>
 
+        {/* ── Main content ── */}
         <div className="flex-1 min-w-0 h-full overflow-y-auto">
           <div className="flex flex-col px-7 py-4 min-h-full">
+            {/* Toggle bar */}
             <div className="flex items-center justify-between pb-4 shrink-0">
               <div className="flex bg-neutral-surface rounded-lg border border-neutral-border overflow-hidden">
                 <button
@@ -905,27 +716,29 @@ const OptimizeResume = () => {
 
               {showAfter && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-400 font-medium tracking-wide">Template:</span>
+                  <span className="text-sm text-slate-400 font-medium tracking-wide">
+                    Template:
+                  </span>
                   <div className="flex bg-neutral-surface rounded-lg border border-neutral-border p-1 gap-1">
                     {["modern", "professional", "minimal"].map((tpl) => (
-                       <button
-                         key={tpl}
-                         onClick={() => setActiveTemplate(tpl)}
-                         className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all capitalize ${
-                           activeTemplate === tpl
-                             ? "bg-primary text-white shadow-md"
-                             : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                         }`}
-                         type="button"
-                       >
-                         {tpl}
-                       </button>
+                      <button
+                        key={tpl}
+                        onClick={() => setActiveTemplate(tpl)}
+                        className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all capitalize ${activeTemplate === tpl
+                            ? "bg-primary text-white shadow-md"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                          }`}
+                        type="button"
+                      >
+                        {tpl}
+                      </button>
                     ))}
                   </div>
                 </div>
               )}
             </div>
 
+            {/* Preview area */}
             <div className="space-y-8 pr-1 pb-6">
               <div className="border border-neutral-border rounded-2xl p-8 flex justify-center bg-white min-h-[500px]">
                 {listLoading || optimizeLoading ? (
@@ -934,7 +747,9 @@ const OptimizeResume = () => {
                       progress_activity
                     </span>
                     <p className="text-sm">
-                      {listLoading ? "Loading your resume..." : "AI is optimizing your resume..."}
+                      {listLoading
+                        ? "Loading your resume..."
+                        : "AI is optimizing your resume..."}
                     </p>
                     {!listLoading && (
                       <p className="text-xs text-slate-600">
@@ -943,8 +758,12 @@ const OptimizeResume = () => {
                     )}
                   </div>
                 ) : showAfter ? (
-                  <ResumePreviewView sections={optimizedSections} template={activeTemplate} />
+                  <ResumePreviewView
+                    sections={optimizedSections}
+                    template={activeTemplate}
+                  />
                 ) : (
+                  // "Before" tab — always shows the original uploaded resume
                   <OriginalPDFViewer
                     resumeId={resumeIdToDownload}
                     fileType={selectedResume?.fileType}
@@ -964,6 +783,7 @@ const OptimizeResume = () => {
         </div>
       </div>
 
+      {/* ── Footer action bar ── */}
       <div className="flex items-center justify-between px-7 h-16 border-t border-blue-400/10 shrink-0">
         <div className="flex items-center gap-2 text-xs text-slate-500">
           <span className="material-symbols-outlined text-green-400 text-sm">
@@ -979,11 +799,10 @@ const OptimizeResume = () => {
           <button
             onClick={handleSaveToApplication}
             disabled={!optimizedResult || saveLoading}
-            className={`px-4 py-2 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${
-              saveSuccess
+            className={`px-2 py-1 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${saveSuccess
                 ? "bg-green-600 text-white"
                 : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20"
-            } disabled:opacity-40 disabled:cursor-not-allowed`}
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
             type="button"
           >
             {saveLoading ? (
@@ -1009,7 +828,7 @@ const OptimizeResume = () => {
           <button
             onClick={handleDownloadPdf}
             disabled={!optimizedResult || downloadLoading}
-            className="px-4 py-2 text-sm border border-blue-400/20 rounded-lg text-slate-400 hover:text-white hover:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
             type="button"
           >
             {downloadLoading ? "Downloading…" : "Download PDF"}
@@ -1018,7 +837,7 @@ const OptimizeResume = () => {
           <button
             onClick={handleDownloadDocx}
             disabled={!optimizedResult || downloadLoading}
-            className="px-4 py-2 text-sm border border-blue-400/20 rounded-lg text-slate-400 hover:text-white hover:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
             type="button"
           >
             Download DOCX
@@ -1027,7 +846,7 @@ const OptimizeResume = () => {
           <button
             onClick={handleStartOptimize}
             disabled={optimizeLoading}
-            className="px-5 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
+            className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
             type="button"
           >
             {optimizeLoading ? (

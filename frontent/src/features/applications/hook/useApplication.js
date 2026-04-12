@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { createApplicationThunk } from "../store/applicationsSlice";
+import {
+  createApplicationThunk,
+  updateApplicationThunk,
+} from "../store/applicationsSlice";
 
 export const RULES = {
   jobTitle: {
@@ -50,9 +53,22 @@ export const RULES = {
   },
 };
 
-export const useApplicationForm = (onClose) => {
+// Converts ISO date string → "YYYY-MM-DD" for <input type="date">
+const toDateInputValue = (dateStr) => {
+  if (!dateStr) return new Date().toISOString().split("T")[0];
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return new Date().toISOString().split("T")[0];
+  return d.toISOString().split("T")[0];
+};
+
+/**
+ * @param {Function} onClose   - callback to close the modal
+ * @param {Object}  [editData] - pre-filled app object (transformed) when editing
+ */
+export const useApplicationForm = (onClose, editData = null) => {
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
+  const isEditMode = Boolean(editData?.id);
 
   const {
     register,
@@ -62,34 +78,61 @@ export const useApplicationForm = (onClose) => {
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm({
     mode: "onChange",
-    defaultValues: {
-      jobTitle: "",
-      company: "",
-      location: "",
-      applicationDate: new Date().toISOString().split("T")[0],
-      status: "Applied",
-      salaryMin: "",
-      salaryMax: "",
-      jobPostUrl: "",
-      jobDescription: "",
-      notes: "",
-    },
+    defaultValues: isEditMode
+      ? {
+        jobTitle: editData.role || "",
+        company: editData.company || "",
+        location: editData.location !== "Not specified" ? editData.location : "",
+        workType: editData.workType || "On-site",
+        applicationDate: toDateInputValue(editData.applicationDate),
+        status: editData.status || "Applied",
+        // salaryRange is stored as a formatted string on the backend;
+        // individual min/max cannot be reliably recovered — left blank
+        salaryMin: "",
+        salaryMax: "",
+        jobPostUrl: editData.jobPostUrl || "",
+        jobDescription: editData.jobDescription || "",
+        notes: editData.notes || "",
+      }
+      : {
+        jobTitle: "",
+        company: "",
+        location: "",
+        workType: "On-site",
+        applicationDate: new Date().toISOString().split("T")[0],
+        status: "Applied",
+        salaryMin: "",
+        salaryMax: "",
+        jobPostUrl: "",
+        jobDescription: "",
+        notes: "",
+      },
   });
 
   const onSubmit = useCallback(
     async (data) => {
-      const resultAction = await dispatch(createApplicationThunk(data));
+      let resultAction;
 
-      if (createApplicationThunk.fulfilled.match(resultAction)) {
+      if (isEditMode) {
+        resultAction = await dispatch(
+          updateApplicationThunk({ id: editData.id, formData: data })
+        );
+      } else {
+        resultAction = await dispatch(createApplicationThunk(data));
+      }
+
+      const thunk = isEditMode ? updateApplicationThunk : createApplicationThunk;
+
+      if (thunk.fulfilled.match(resultAction)) {
         reset();
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
           onClose?.();
-        }, 3000);
+        }, 2000);
       }
     },
-    [dispatch, reset, onClose]
+    [dispatch, reset, onClose, isEditMode, editData]
   );
 
   return {
@@ -102,5 +145,6 @@ export const useApplicationForm = (onClose) => {
     isDirty,
     isValid,
     showToast,
+    isEditMode,
   };
 };

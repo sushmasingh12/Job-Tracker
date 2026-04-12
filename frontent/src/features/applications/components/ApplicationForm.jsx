@@ -4,19 +4,26 @@ import { RULES, useApplicationForm } from "../hook/useApplication";
 import { FormField } from "../../../shared/components/ui/FormField";
 import { STATUS_CONFIG } from "../contants/Applicationconstants";
 import { createPortal } from "react-dom";
+
 const STATUS_OPTIONS = Object.entries(STATUS_CONFIG).map(([value, cfg]) => ({
   value,
   label: cfg.label,
 }));
 
-const ApplicationForm = ({ onClose }) => {
-  const { register, handleSubmit, control, errors, isSubmitting, showToast } =
-    useApplicationForm(onClose);
+const WORK_TYPE_OPTIONS = ["On-site", "Remote", "Hybrid"];
+
+/**
+ * @param {Function} onClose    - close modal callback
+ * @param {Object}  [editData]  - pass the transformed app object to enable edit mode
+ */
+const ApplicationForm = ({ onClose, editData = null }) => {
+  const { register, handleSubmit, control, errors, isSubmitting, showToast, isEditMode } =
+    useApplicationForm(onClose, editData);
 
   const watchedStatus = useWatch({
     control,
     name: "status",
-    defaultValue: "Applied",
+    defaultValue: editData?.status || "Applied",
   });
 
   const statusCfg =
@@ -30,45 +37,52 @@ const ApplicationForm = ({ onClose }) => {
   const watchedDesc = useWatch({
     control,
     name: "jobDescription",
-    defaultValue: "",
+    defaultValue: editData?.jobDescription || "",
   });
 
   const watchedNotes = useWatch({
     control,
     name: "notes",
-    defaultValue: "",
+    defaultValue: editData?.notes || "",
   });
 
   return (
     <div className="flex items-center justify-center z-50 p-4">
       <div className="bg-neutral-surface w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col">
+        {/* ── Header ────────────────────────────────────────────── */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-border top-0 bg-neutral-surface z-10 rounded-t-2xl">
           <h2 className="text-xl font-bold text-neutral-text">
-            Add New Application
+            {isEditMode ? "Edit Application" : "Add New Application"}
           </h2>
         </div>
 
         {/* ── Success Toast ──────────────────────────────────────── */}
-        {showToast && createPortal(
-  <div className="fixed bottom-10 right-6  flex items-center gap-3 px-5 py-4 rounded-2xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-500/30 shadow-2xl shadow-emerald-100/50 dark:shadow-black/40 animate-fade-in">
-    <div className="h-10 w-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-      <span className="material-symbols-outlined text-emerald-500 text-[22px]">
-        check_circle
-      </span>
-    </div>
-    <div>
-      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-        Application added successfully!
-      </p>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-        Your application has been saved.
-      </p>
-    </div>
-  </div>,
-  document.body
-)}
+        {showToast &&
+          createPortal(
+            <div className="fixed bottom-10 right-6 flex items-center gap-3 px-5 py-4 rounded-2xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-500/30 shadow-2xl shadow-emerald-100/50 dark:shadow-black/40 animate-fade-in">
+              <div className="h-10 w-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-emerald-500 text-[22px]">
+                  check_circle
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  {isEditMode
+                    ? "Application updated successfully!"
+                    : "Application added successfully!"}
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  {isEditMode
+                    ? "Your changes have been saved."
+                    : "Your application has been saved."}
+                </p>
+              </div>
+            </div>,
+            document.body
+          )}
 
-        <div className="p-6">
+        {/* ── Form Body ─────────────────────────────────────────── */}
+        <div className="p-6 overflow-y-auto max-h-[70vh]">
           <form
             id="app-form"
             onSubmit={handleSubmit}
@@ -77,6 +91,7 @@ const ApplicationForm = ({ onClose }) => {
           >
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* ── Left column ── */}
                 <div className="space-y-1">
                   <FormField
                     label="Job Title"
@@ -111,21 +126,25 @@ const ApplicationForm = ({ onClose }) => {
                     required
                     icon="calendar_today"
                     type="date"
-                    registration={register("applicationDate", RULES.applicationDate)}
+                    registration={register(
+                      "applicationDate",
+                      RULES.applicationDate
+                    )}
                     error={errors.applicationDate}
                   />
                 </div>
 
+                {/* ── Right column ── */}
                 <div className="space-y-1">
+                  {/* Status */}
                   <FormField label="Status" required error={errors.status}>
                     <div className="relative">
                       <select
                         {...register("status", RULES.status)}
-                        className={`inpttext w-full appearance-none pr-36 ${
-                          errors.status
+                        className={`inpttext w-full appearance-none pr-36 ${errors.status
                             ? "border-red-400"
                             : "focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                          }`}
                       >
                         {STATUS_OPTIONS.map(({ value, label }) => (
                           <option key={value} value={value}>
@@ -153,6 +172,28 @@ const ApplicationForm = ({ onClose }) => {
                     </div>
                   </FormField>
 
+                  {/* Work Type */}
+                  <FormField label="Work Type" error={errors.workType}>
+                    <div className="relative">
+                      <select
+                        {...register("workType")}
+                        className="inpttext w-full appearance-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      >
+                        {WORK_TYPE_OPTIONS.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-neutral-muted">
+                        <span className="material-symbols-outlined text-[20px]">
+                          expand_more
+                        </span>
+                      </span>
+                    </div>
+                  </FormField>
+
+                  {/* Salary Range */}
                   <div className="mb-5">
                     <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text mb-1.5">
                       Salary Range
@@ -164,18 +205,17 @@ const ApplicationForm = ({ onClose }) => {
                     <div className="flex gap-2">
                       <div className="relative flex-1">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-muted text-sm font-semibold">
-                          $
+                          ₹
                         </span>
                         <input
                           {...register("salaryMin", RULES.salaryMin)}
                           type="number"
                           min="0"
                           placeholder="Min"
-                          className={`inpttext w-full pl-7 ${
-                            errors.salaryMin
+                          className={`inpttext w-full pl-7 ${errors.salaryMin
                               ? "border-red-400"
                               : "focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
+                            }`}
                         />
                         {errors.salaryMin && (
                           <p className="text-[11px] text-red-500 mt-1">
@@ -190,18 +230,17 @@ const ApplicationForm = ({ onClose }) => {
 
                       <div className="relative flex-1">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-muted text-sm font-semibold">
-                          $
+                          ₹
                         </span>
                         <input
                           {...register("salaryMax", RULES.salaryMax)}
                           type="number"
                           min="0"
                           placeholder="Max"
-                          className={`inpttext w-full pl-7 ${
-                            errors.salaryMax
+                          className={`inpttext w-full pl-7 ${errors.salaryMax
                               ? "border-red-400"
                               : "focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
+                            }`}
                         />
                         {errors.salaryMax && (
                           <p className="text-[11px] text-red-500 mt-1">
@@ -220,24 +259,24 @@ const ApplicationForm = ({ onClose }) => {
                     registration={register("jobPostUrl", RULES.jobPostUrl)}
                     error={errors.jobPostUrl}
                   />
-
                 </div>
               </div>
 
+              {/* ── Full-width fields ── */}
               <div className="space-y-5 pt-2">
+                {/* Job Description */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text">
                       Job Description <span className="text-danger">*</span>
                     </label>
                     <span
-                      className={`text-[10px] font-medium tabular-nums ${
-                        watchedDesc.length > 4800
+                      className={`text-[10px] font-medium tabular-nums ${watchedDesc.length > 4800
                           ? "text-red-400"
                           : watchedDesc.length > 4000
-                          ? "text-amber-400"
-                          : "text-neutral-muted"
-                      }`}
+                            ? "text-amber-400"
+                            : "text-neutral-muted"
+                        }`}
                     >
                       {watchedDesc.length} / 5000
                     </span>
@@ -248,11 +287,10 @@ const ApplicationForm = ({ onClose }) => {
                     rows={4}
                     maxLength={5000}
                     placeholder="Paste the full job description here..."
-                    className={`inpttext w-full resize-none ${
-                      errors.jobDescription
+                    className={`inpttext w-full resize-none ${errors.jobDescription
                         ? "border-red-400 focus:border-red-500"
                         : "focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    }`}
+                      }`}
                   />
                   {errors.jobDescription && (
                     <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
@@ -273,6 +311,7 @@ const ApplicationForm = ({ onClose }) => {
                   )}
                 </div>
 
+                {/* Notes */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-[10px] font-semibold tracking-widest uppercase text-neutral-text">
@@ -282,11 +321,10 @@ const ApplicationForm = ({ onClose }) => {
                       </span>
                     </label>
                     <span
-                      className={`text-[10px] font-medium tabular-nums ${
-                        watchedNotes.length > 900
+                      className={`text-[10px] font-medium tabular-nums ${watchedNotes.length > 900
                           ? "text-amber-400"
                           : "text-neutral-muted"
-                      }`}
+                        }`}
                     >
                       {watchedNotes.length} / 1000
                     </span>
@@ -297,11 +335,10 @@ const ApplicationForm = ({ onClose }) => {
                     rows={3}
                     maxLength={1000}
                     placeholder="Add any personal notes, referral info, etc."
-                    className={`inpttext w-full resize-none ${
-                      errors.notes
+                    className={`inpttext w-full resize-none ${errors.notes
                         ? "border-red-400"
                         : "focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    }`}
+                      }`}
                   />
                   {errors.notes && (
                     <p className="text-[11px] text-red-500 mt-1">
@@ -314,7 +351,8 @@ const ApplicationForm = ({ onClose }) => {
           </form>
         </div>
 
-        <div className="p-6 border-t border-neutral-border bg-neutral-surface rounded-b-2xl bottom-0 flex justify-end gap-3 z-10">
+        {/* ── Footer ────────────────────────────────────────────── */}
+        <div className="p-6 border-t border-neutral-border bg-neutral-surface rounded-b-2xl flex justify-end gap-3 z-10">
           <button
             type="button"
             onClick={onClose}
@@ -334,7 +372,7 @@ const ApplicationForm = ({ onClose }) => {
                 progress_activity
               </span>
             )}
-            Add Application
+            {isEditMode ? "Save Changes" : "Add Application"}
           </button>
         </div>
       </div>

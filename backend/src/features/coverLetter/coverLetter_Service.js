@@ -29,8 +29,7 @@ const buildPrompt = ({ jobDetails, experience, tone }) => {
     .filter((e) => e.title || e.company)
     .map(
       (e, i) =>
-        `${i + 1}. ${e.title} at ${e.company}${e.duration ? ` (${e.duration})` : ""}${
-          e.achievement ? ` – Key achievement: ${e.achievement}` : ""
+        `${i + 1}. ${e.title} at ${e.company}${e.duration ? ` (${e.duration})` : ""}${e.achievement ? ` – Key achievement: ${e.achievement}` : ""
         }`
     )
     .join("\n");
@@ -41,9 +40,8 @@ const buildPrompt = ({ jobDetails, experience, tone }) => {
   const { degree, institution, graduationYear, gpa } = experience.education || {};
   const educationLine =
     degree || institution
-      ? `${degree || ""}${institution ? ` from ${institution}` : ""}${
-          graduationYear ? ` (${graduationYear})` : ""
-        }${gpa ? `, GPA: ${gpa}` : ""}`
+      ? `${degree || ""}${institution ? ` from ${institution}` : ""}${graduationYear ? ` (${graduationYear})` : ""
+      }${gpa ? `, GPA: ${gpa}` : ""}`
       : "Not specified";
 
   const toneInstructions = {
@@ -105,7 +103,7 @@ ${toneInstructions[tone] || toneInstructions.professional}
  * @returns {Promise<string>} generated letter text
  */
 export const generateCoverLetterService = async (payload) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
   const prompt = buildPrompt(payload);
 
   const result = await model.generateContent(prompt);

@@ -82,6 +82,10 @@ const applicationSchema = new mongoose.Schema(
       content: { type: Object },
       savedAt: { type: Date, default: Date.now },
     },
+    coverLetter: {
+      content:     { type: String },
+      generatedAt: { type: Date },
+    },
     // ─────────────────────────────────────────────────────────────────────────
   },
   { timestamps: true }

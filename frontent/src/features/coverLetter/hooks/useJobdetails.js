@@ -54,9 +54,7 @@ const useJobDetails = () => {
     minLength: { value: 2, message: "At least 2 characters" },
   });
 
-  const companyNameReg = register("companyName", {
-    required: { value: true, message: "Company name is required" },
-  });
+  const companyNameReg = register("companyName");
 
   const locationReg = register("location");
 
@@ -65,7 +63,7 @@ const useJobDetails = () => {
   const jobDescriptionReg = register("jobDescription", {
     required: { value: true, message: "Job description is required" },
     minLength: { value: 50, message: "Please add more detail (min 50 chars)" },
-    maxLength: { value: 2000, message: "Max 2000 characters" },
+    maxLength: { value: 5000, message: "Max 5000 characters" },
   });
 
   const hiringManagerNameReg = register("hiringManagerName");

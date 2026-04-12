@@ -25,7 +25,7 @@ const EducationSchema = new mongoose.Schema(
 const JobDetailsSchema = new mongoose.Schema(
   {
     jobTitle:          { type: String, trim: true, required: true },
-    companyName:       { type: String, trim: true, required: true },
+    companyName:       { type: String, trim: true, },
     location:          { type: String, trim: true },
     industry:          { type: String, trim: true },
     jobType: {

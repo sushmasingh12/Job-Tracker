@@ -107,10 +107,6 @@ const Sidebar = () => {
           </div>
 
          
-          <NavLink to="/analytics" onClick={close} className={navClass}>
-            <span className="material-symbols-outlined">analytics</span>
-            Analytics
-          </NavLink>
 
           <NavLink to="/settings" onClick={close} className={navClass}>
             <span className="material-symbols-outlined">settings</span>

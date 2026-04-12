@@ -8,65 +8,70 @@ const settingsSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+
+    // ── Profile ──────────────────────────────────────────────────────────────
     profile: {
-      fullName: { type: String, default: "" },
-      email: { type: String, default: "" },
-      phone: { type: String, default: "" },
-      location: { type: String, default: "" },
-      jobTitle: { type: String, default: "" },
+      fullName:        { type: String, default: "", trim: true },
+      email:           { type: String, default: "", trim: true, lowercase: true },
+      phone:           { type: String, default: "", trim: true },
+      location:        { type: String, default: "", trim: true },
+      jobTitle:        { type: String, default: "", trim: true },
+      bio:             { type: String, default: "", trim: true, maxlength: 500 },
+      avatar:          { type: String, default: null },
+
+      // Job-search preferences
+      openToWork:       { type: Boolean, default: true },
+      experienceLevel:  { type: String, default: "mid", enum: ["entry", "mid", "senior", "lead", "executive"] },
+      workMode:         { type: String, default: "remote", enum: ["remote", "hybrid", "onsite"] },
+      employmentType:   { type: String, default: "full-time" },
+      noticePeriod:     { type: String, default: "" },
+      expectedSalary:   { type: String, default: "" },
+      skills:           { type: [String], default: [] },
+
       links: {
-        linkedin: { type: String, default: "" },
-        github: { type: String, default: "" },
+        linkedin:  { type: String, default: "" },
+        github:    { type: String, default: "" },
         portfolio: { type: String, default: "" },
+        twitter:   { type: String, default: "" },
       },
-      avatar: { type: String, default: null },
     },
+
+    // ── Account / Security ───────────────────────────────────────────────────
     account: {
       twoFactorEnabled: { type: Boolean, default: false },
-      emailVerified: { type: Boolean, default: false },
-      activeSessions: { type: Array, default: [] },
+      emailVerified:    { type: Boolean, default: false },
+      activeSessions:   { type: Array,   default: [] },
     },
-    resume: {
-      defaultResumeId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Resume",
-        default: null,
-      },
-      visibility: { type: String, default: "private" },
-      parsingPreferences: {
-        autoUpdate: { type: Boolean, default: true },
-        extractSkills: { type: Boolean, default: true },
-      },
+
+    // ── Email change OTP (temporary, cleared after success) ──────────────────
+    pendingEmailChange: {
+      newEmail:   { type: String, default: null },
+      otp:        { type: String, default: null },         // hashed OTP
+      otpExpires: { type: Date,   default: null },
     },
-    preferences: {
-      preferredRole: { type: String, default: "" },
-      preferredLocation: { type: String, default: "" },
-      workMode: { type: String, default: "remote" },
-      employmentType: { type: String, default: "full-time" },
-      salaryExpectation: { type: String, default: "" },
-      defaultStatus: { type: String, default: "applied" },
-    },
+
+    // ── Notifications ────────────────────────────────────────────────────────
     notifications: {
-      email: { type: Boolean, default: true },
-      interviewReminders: { type: Boolean, default: true },
-      followUpReminders: { type: Boolean, default: true },
-      deadlineAlerts: { type: Boolean, default: true },
-      inApp: { type: Boolean, default: true },
+      email:                   { type: Boolean, default: true  },
+      interviewReminders:      { type: Boolean, default: true  },
+      followUpReminders:       { type: Boolean, default: true  },
+      deadlineAlerts:          { type: Boolean, default: true  },
+      inApp:                   { type: Boolean, default: true  },
+      applicationStatusChange: { type: Boolean, default: true  },
+      weeklyDigest:            { type: Boolean, default: true  },
+      aiInsights:              { type: Boolean, default: false },
+      marketTrends:            { type: Boolean, default: false },
+      reminderFrequency:       { type: String,  default: "daily", enum: ["immediate", "daily", "weekly"] },
     },
-    ai: {
-      enableSuggestions: { type: Boolean, default: true },
-      optimizationMode: { type: String, default: "balanced" },
-      autoSaveOptimized: { type: Boolean, default: false },
-      saveHistory: { type: Boolean, default: true },
-    },
-    appearance: {
-      theme: { type: String, default: "light" },
-      density: { type: String, default: "comfortable" },
-      fontSize: { type: String, default: "md" },
-    },
+
+    // ── Privacy ──────────────────────────────────────────────────────────────
     privacy: {
-      shareData: { type: Boolean, default: false },
-      trackHistory: { type: Boolean, default: true },
+      shareData:             { type: Boolean, default: false },
+      trackHistory:          { type: Boolean, default: true  },
+      publicProfile:         { type: Boolean, default: false },
+      showSalaryExpectation: { type: Boolean, default: false },
+      allowRecruiterContact: { type: Boolean, default: true  },
+      dataRetentionMonths:   { type: Number,  default: 12    }, // 0 = forever
     },
   },
   { timestamps: true }

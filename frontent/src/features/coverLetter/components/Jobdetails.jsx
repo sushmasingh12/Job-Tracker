@@ -179,7 +179,7 @@ const JobDetails = () => {
                   Tip: Include responsibilities, required skills, and company values.
                 </p>
               )}
-              <span className="text-xs text-neutral-muted">{charCount} / 2000</span>
+              <span className="text-xs text-neutral-muted">{charCount} / 5000</span>
             </div>
           </div>
 

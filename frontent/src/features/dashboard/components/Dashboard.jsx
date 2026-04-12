@@ -16,7 +16,7 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-         <StatsCard/>
+        <StatsCard />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-6">
             <div className="flex items-center justify-between">
@@ -254,25 +254,7 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-blue-600 rounded-xl p-5 text-white shadow-lg relative overflow-hidden">
-              <div className="relative z-10">
-                <h4 className="font-bold mb-1">Pro Tip</h4>
-                <p className="text-sm text-blue-100 mb-3">
-                  Following up within 3 days increases response rates by 15%.
-                </p>
-                <a
-                  className="text-xs font-bold underline decoration-blue-300 hover:text-blue-100"
-                  href="#"
-                >
-                  View follow-up templates
-                </a>
-              </div>
-              <div className="absolute -bottom-6 -right-6 text-blue-500 opacity-30 rotate-12">
-                <span className="material-symbols-outlined text-9xl">
-                  lightbulb
-                </span>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
