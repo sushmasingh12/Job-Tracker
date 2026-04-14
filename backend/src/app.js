@@ -56,6 +56,12 @@ app.use("/api/interview", interviewRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/dashboard", dashboardRouter);
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Server is running",
+  });
+});
 // Centralized Error Handling
 app.use(notFound);
 app.use(errorHandler);
