@@ -4,6 +4,8 @@ import {
   evaluateAnswer,
 } from "./Interview_Services.js";
 import Application from "../applications/app_Model.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import ApiError from "../../shared/utils/ApiError.js";
 
 const MANUAL_JOB_ID = "manual";
 
@@ -23,365 +25,318 @@ const findPrepSession = async (user, jobId, jobTitleManual = "") => {
 };
 
 // ── POST /api/interview/generate ─────────────────────────────────
-export const generateQuestions = async (req, res) => {
-  try {
-    const {
-      jobId,
-      jobTitle,
-      company,
-      techStack,
-      questionTypes,
-      count,
-    } = req.body;
+export const generateQuestions = asyncHandler(async (req, res) => {
+  const {
+    jobId,
+    jobTitle,
+    company,
+    techStack,
+    questionTypes,
+    count,
+  } = req.body;
 
-    let finalJobTitle = "";
-    let finalCompany = "";
-    let finalJobDescription = "";
-    let isManual = !jobId || jobId === MANUAL_JOB_ID;
+  let finalJobTitle = "";
+  let finalCompany = "";
+  let finalJobDescription = "";
+  let isManual = !jobId || jobId === MANUAL_JOB_ID;
 
-    if (!Array.isArray(questionTypes) || questionTypes.length === 0) {
-      return res.status(400).json({
-        message: "questionTypes must be a non-empty array.",
-      });
+  if (!Array.isArray(questionTypes) || questionTypes.length === 0) {
+    throw new ApiError(400, "questionTypes must be a non-empty array.");
+  }
+
+  // Application mode
+  if (!isManual) {
+    const application = await Application.findById(jobId);
+
+    if (!application) {
+      throw new ApiError(404, "Linked application not found.");
     }
 
-    // Application mode
-    if (!isManual) {
-      const application = await Application.findById(jobId);
+    finalJobTitle = jobTitle?.trim() || application.jobTitle || "";
+    finalCompany = company?.trim() || application.company || "Generic";
+    finalJobDescription = application.jobDescription || "";
+  } else {
+    // Manual mode
+    finalJobTitle = jobTitle?.trim() || "";
+    finalCompany = company?.trim() || "Generic";
+    finalJobDescription = "";
+  }
 
-      if (!application) {
-        return res.status(404).json({
-          message: "Linked application not found.",
-        });
-      }
+  if (!finalJobTitle) {
+    throw new ApiError(400, "Job title is required.");
+  }
 
-      finalJobTitle = jobTitle?.trim() || application.jobTitle || "";
-      finalCompany = company?.trim() || application.company || "Generic";
-      finalJobDescription = application.jobDescription || "";
-    } else {
-      // Manual mode
-      finalJobTitle = jobTitle?.trim() || "";
-      finalCompany = company?.trim() || "Generic";
-      finalJobDescription = "";
-    }
+  const questions = await generateInterviewQuestions({
+    jobTitle: finalJobTitle,
+    company: finalCompany,
+    jobDescription: finalJobDescription,
+    techStack: techStack || "",
+    questionTypes,
+    count: count || 8,
+  });
 
-    if (!finalJobTitle) {
-      return res.status(400).json({
-        message: "Job title is required.",
-      });
-    }
+  const query = isManual
+    ? { user: req.user._id, isManual: true, jobTitleManual: finalJobTitle }
+    : { user: req.user._id, job: jobId };
 
-    const questions = await generateInterviewQuestions({
-      jobTitle: finalJobTitle,
-      company: finalCompany,
-      jobDescription: finalJobDescription,
+  const update = {
+    $set: {
+      questions,
+      isManual,
+      job: isManual ? null : jobId,
+      jobTitleManual: isManual ? finalJobTitle : "",
       techStack: techStack || "",
-      questionTypes,
-      count: count || 8,
-    });
+    },
+    $setOnInsert: {
+      answers: [],
+    },
+  };
 
-    const query = isManual
-      ? { user: req.user._id, isManual: true, jobTitleManual: finalJobTitle }
-      : { user: req.user._id, job: jobId };
+  const prep = await InterviewPrep.findOneAndUpdate(query, update, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  });
 
-    const update = {
-      $set: {
-        questions,
-        isManual,
-        job: isManual ? null : jobId,
-        jobTitleManual: isManual ? finalJobTitle : "",
-        techStack: techStack || "",
-      },
-      $setOnInsert: {
-        answers: [],
-      },
-    };
-
-    const prep = await InterviewPrep.findOneAndUpdate(query, update, {
-      upsert: true,
-      new: true,
-      runValidators: true,
-    });
-
-    return res.status(200).json({
-      message: "Questions generated successfully.",
+  res.status(200).json({
+    success: true,
+    message: "Questions generated successfully.",
+    data: {
       questions,
       prepId: prep._id,
-    });
-  } catch (error) {
-    console.error("Interview generate error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to generate questions.",
-    });
-  }
-};
+    },
+  });
+});
 
 // ── POST /api/interview/answers ──────────────────────────────────
-export const saveAnswer = async (req, res) => {
-  try {
-    const {
-      jobId,
-      questionId,
-      questionText,
-      questionType,
-      text,
-      notes,
-      rating,
-    } = req.body;
+export const saveAnswer = asyncHandler(async (req, res) => {
+  const {
+    jobId,
+    questionId,
+    questionText,
+    questionType,
+    text,
+    notes,
+    rating,
+  } = req.body;
 
-    if (!questionId) {
-      return res.status(400).json({
-        message: "questionId is required.",
-      });
-    }
-
-    const { jobTitleManual } = req.body;
-    const prep = await findPrepSession(req.user._id, jobId, jobTitleManual);
-
-    if (!prep) {
-      return res.status(404).json({
-        message: "Interview prep session not found. Generate questions first.",
-      });
-    }
-
-    const existingIndex = prep.answers.findIndex(
-      (answer) => answer.questionId === questionId
-    );
-
-    const answerData = {
-      questionId,
-      questionText: questionText || "",
-      questionType: questionType || "behavioral",
-      text: text || "",
-      notes: notes || "",
-      rating: rating || null,
-      savedAt: new Date(),
-    };
-
-    if (existingIndex >= 0) {
-      prep.answers[existingIndex] = {
-        ...prep.answers[existingIndex].toObject(),
-        ...answerData,
-      };
-    } else {
-      prep.answers.push(answerData);
-    }
-
-    await prep.save();
-
-    return res.status(200).json({
-      message: "Answer saved successfully.",
-      answer: answerData,
-    });
-  } catch (error) {
-    console.error("Save answer error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to save answer.",
-    });
+  if (!questionId) {
+    throw new ApiError(400, "questionId is required.");
   }
-};
+
+  const { jobTitleManual } = req.body;
+  const prep = await findPrepSession(req.user._id, jobId, jobTitleManual);
+
+  if (!prep) {
+    throw new ApiError(404, "Interview prep session not found. Generate questions first.");
+  }
+
+  const existingIndex = prep.answers.findIndex(
+    (answer) => answer.questionId === questionId
+  );
+
+  const answerData = {
+    questionId,
+    questionText: questionText || "",
+    questionType: questionType || "behavioral",
+    text: text || "",
+    notes: notes || "",
+    rating: rating || null,
+    savedAt: new Date(),
+  };
+
+  if (existingIndex >= 0) {
+    prep.answers[existingIndex] = {
+      ...prep.answers[existingIndex].toObject(),
+      ...answerData,
+    };
+  } else {
+    prep.answers.push(answerData);
+  }
+
+  await prep.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Answer saved successfully.",
+    data: { answer: answerData },
+  });
+});
 
 // ── GET /api/interview/answers/:jobId ────────────────────────────
-export const getAnswers = async (req, res) => {
-  try {
-    const { jobId } = req.params;
+export const getAnswers = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
 
-    const prep = await findPrepSession(req.user._id, jobId);
+  const prep = await findPrepSession(req.user._id, jobId);
 
-    if (!prep) {
-      return res.status(200).json({
+  if (!prep) {
+    return res.status(200).json({
+      success: true,
+      message: "No interview prep found",
+      data: {
         questions: [],
         answers: [],
         interviewDate: null,
         techStack: "",
         jobTitle: "",
-      });
-    }
+      },
+    });
+  }
 
-    return res.status(200).json({
+  res.status(200).json({
+    success: true,
+    message: "Answers fetched successfully",
+    data: {
       questions: prep.questions || [],
       answers: prep.answers || [],
       interviewDate: prep.interviewDate || null,
       techStack: prep.techStack || "",
       jobTitle: prep.isManual ? prep.jobTitleManual || "" : "",
-    });
-  } catch (error) {
-    console.error("Get answers error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to fetch answers.",
-    });
-  }
-};
+    },
+  });
+});
 
 // ── PUT /api/interview/date ──────────────────────────────────────
-export const setInterviewDate = async (req, res) => {
-  try {
-    const { jobId, interviewDate } = req.body;
+export const setInterviewDate = asyncHandler(async (req, res) => {
+  const { jobId, interviewDate } = req.body;
 
-    const isManual = !jobId || jobId === MANUAL_JOB_ID;
+  const isManual = !jobId || jobId === MANUAL_JOB_ID;
 
-    const query = isManual
-      ? { user: req.user._id, isManual: true }
-      : { user: req.user._id, job: jobId };
+  const query = isManual
+    ? { user: req.user._id, isManual: true }
+    : { user: req.user._id, job: jobId };
 
-    const update = {
-      $set: {
-        interviewDate: interviewDate || null,
-        isManual,
-        job: isManual ? null : jobId,
-      },
-      $setOnInsert: {
-        answers: [],
-        questions: [],
-        jobTitleManual: "",
-        techStack: "",
-      },
-    };
+  const update = {
+    $set: {
+      interviewDate: interviewDate || null,
+      isManual,
+      job: isManual ? null : jobId,
+    },
+    $setOnInsert: {
+      answers: [],
+      questions: [],
+      jobTitleManual: "",
+      techStack: "",
+    },
+  };
 
-    const prep = await InterviewPrep.findOneAndUpdate(query, update, {
-      upsert: true,
-      new: true,
-      runValidators: true,
-    });
+  const prep = await InterviewPrep.findOneAndUpdate(query, update, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  });
 
-    return res.status(200).json({
-      interviewDate: prep.interviewDate,
-    });
-  } catch (error) {
-    console.error("Set interview date error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to save interview date.",
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: "Interview date updated successfully.",
+    data: { interviewDate: prep.interviewDate },
+  });
+});
 
 // ── DELETE /api/interview/:jobId ─────────────────────────────────
-export const deletePrep = async (req, res) => {
-  try {
-    const { jobId } = req.params;
+export const deletePrep = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
 
-    const isManual = !jobId || jobId === MANUAL_JOB_ID;
+  const isManual = !jobId || jobId === MANUAL_JOB_ID;
 
-    const query = isManual
-      ? { user: req.user._id, isManual: true }
-      : { user: req.user._id, job: jobId };
+  const query = isManual
+    ? { user: req.user._id, isManual: true }
+    : { user: req.user._id, job: jobId };
 
-    await InterviewPrep.findOneAndDelete(query);
+  await InterviewPrep.findOneAndDelete(query);
 
-    return res.status(200).json({
-      message: "Interview prep session deleted successfully.",
-    });
-  } catch (error) {
-    console.error("Delete prep error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to delete prep session.",
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: "Interview prep session deleted successfully.",
+    data: {},
+  });
+});
 
 // ── POST /api/interview/feedback ─────────────────────────────────
-export const getFeedback = async (req, res) => {
-  try {
-    const { jobId, questionId, text } = req.body;
+export const getFeedback = asyncHandler(async (req, res) => {
+  const { jobId, questionId, text } = req.body;
 
-    if (!questionId || !text?.trim()) {
-      return res.status(400).json({
-        message: "questionId and text are required.",
-      });
+  if (!questionId || !text?.trim()) {
+    throw new ApiError(400, "questionId and text are required.");
+  }
+
+  const prep = await findPrepSession(req.user._id, jobId);
+
+  if (!prep) {
+    throw new ApiError(404, "Interview prep session not found.");
+  }
+
+  const questionObj = prep.questions.find((q) => q.id === questionId);
+
+  if (!questionObj) {
+    throw new ApiError(404, "Question not found in this prep session.");
+  }
+
+  let contextData = {
+    jobTitle: prep.isManual ? prep.jobTitleManual || "Candidate" : "Candidate",
+    company: "Generic",
+    jobDescription: prep.techStack ? `Tech Stack: ${prep.techStack}` : "",
+  };
+
+  if (prep.job) {
+    const application = await Application.findById(prep.job);
+
+    if (application) {
+      contextData = {
+        jobTitle: application.jobTitle || contextData.jobTitle,
+        company: application.company || "Generic",
+        jobDescription: application.jobDescription || "",
+      };
     }
+  }
 
-    const prep = await findPrepSession(req.user._id, jobId);
+  const feedback = await evaluateAnswer({
+    question: questionObj.question,
+    answer: text,
+    jobTitle: contextData.jobTitle,
+    company: contextData.company,
+    jobDescription: contextData.jobDescription,
+  });
 
-    if (!prep) {
-      return res.status(404).json({
-        message: "Interview prep session not found.",
-      });
-    }
+  const answerIndex = prep.answers.findIndex(
+    (answer) => answer.questionId === questionId
+  );
 
-    const questionObj = prep.questions.find((q) => q.id === questionId);
-
-    if (!questionObj) {
-      return res.status(404).json({
-        message: "Question not found in this prep session.",
-      });
-    }
-
-    let contextData = {
-      jobTitle: prep.isManual ? prep.jobTitleManual || "Candidate" : "Candidate",
-      company: "Generic",
-      jobDescription: prep.techStack ? `Tech Stack: ${prep.techStack}` : "",
-    };
-
-    if (prep.job) {
-      const application = await Application.findById(prep.job);
-
-      if (application) {
-        contextData = {
-          jobTitle: application.jobTitle || contextData.jobTitle,
-          company: application.company || "Generic",
-          jobDescription: application.jobDescription || "",
-        };
-      }
-    }
-
-    const feedback = await evaluateAnswer({
-      question: questionObj.question,
-      answer: text,
-      jobTitle: contextData.jobTitle,
-      company: contextData.company,
-      jobDescription: contextData.jobDescription,
-    });
-
-    const answerIndex = prep.answers.findIndex(
-      (answer) => answer.questionId === questionId
-    );
-
-    if (answerIndex >= 0) {
-      prep.answers[answerIndex].text = text;
-      prep.answers[answerIndex].feedback = feedback;
-      prep.answers[answerIndex].savedAt = new Date();
-    } else {
-      prep.answers.push({
-        questionId,
-        questionText: questionObj.question,
-        questionType: questionObj.type,
-        text,
-        notes: "",
-        rating: null,
-        feedback,
-        savedAt: new Date(),
-      });
-    }
-
-    await prep.save();
-
-    return res.status(200).json({
-      message: "Feedback generated successfully.",
+  if (answerIndex >= 0) {
+    prep.answers[answerIndex].text = text;
+    prep.answers[answerIndex].feedback = feedback;
+    prep.answers[answerIndex].savedAt = new Date();
+  } else {
+    prep.answers.push({
+      questionId,
+      questionText: questionObj.question,
+      questionType: questionObj.type,
+      text,
+      notes: "",
+      rating: null,
       feedback,
-    });
-  } catch (error) {
-    console.error("Get feedback error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to generate feedback.",
+      savedAt: new Date(),
     });
   }
-};
+
+  await prep.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Feedback generated successfully.",
+    data: { feedback },
+  });
+});
 
 // ── GET /api/interview/history ───────────────────────────────────
-export const getInterviewHistory = async (req, res) => {
-  try {
-    const history = await InterviewPrep.find({ user: req.user._id })
-      .populate("job", "jobTitle company jobDescription")
-      .sort({ updatedAt: -1 });
+export const getInterviewHistory = asyncHandler(async (req, res) => {
+  const history = await InterviewPrep.find({ user: req.user._id })
+    .populate("job", "jobTitle company jobDescription")
+    .sort({ updatedAt: -1 });
 
-    return res.status(200).json({
-      success: true,
-      data: history,
-    });
-  } catch (error) {
-    console.error("Get history error:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to fetch interview history.",
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: "Interview history fetched successfully",
+    data: history,
+  });
+});

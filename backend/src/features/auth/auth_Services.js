@@ -69,9 +69,7 @@ export const registerUser = async (res, { firstname, lastname, email, password }
 };
 
 // ── Login ─────────────────────────────────────────────────────────────────
-// ✅ FIX: `token` ab return object mein include kiya
-// Pehle sirf cookie mein tha — frontend ko response body mein nahi milta tha
-// js-cookie mein save karne ke liye token body mein bhejna zaroori hai
+
 export const loginUser = async (res, { email, password }) => {
   try {
     const { error } = loginSchema.validate(
@@ -91,14 +89,13 @@ export const loginUser = async (res, { email, password }) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) throw new Error("Invalid email or password");
  
-    const token = generateToken(res, user._id);
+    generateToken(res, user._id);
     
     return {
       id: user._id,
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
-      token, // ✅ FIX: Ab frontend ko milega → js-cookie mein save hoga
     };
   } catch (error) {
     console.error("Login Error:", error.message);
@@ -110,6 +107,8 @@ export const loginUser = async (res, { email, password }) => {
 export const logoutUser = (res) => {
   res.cookie("auth_token", "", {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
     expires: new Date(0),
     path: "/",
   });

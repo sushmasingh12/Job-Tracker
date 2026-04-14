@@ -6,200 +6,182 @@ import {
   analyzeResumeVsJob,
   optimizeResumeContent,
 } from "./resume_Services.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import ApiError from "../../shared/utils/ApiError.js";
 
-
-
-export const uploadResume = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const ext = path.extname(req.file.originalname).toLowerCase().replace(".", "");
-
-    const parsedText = await parseResume(req.file.buffer, req.file.originalname);
-
-    let originalStructuredContent = null;
-    try {
-      originalStructuredContent = await extractStructuredResume(parsedText);
-    } catch (err) {
-      throw new Error("Failed to extract structured resume: " + err.message);
-    }
-
-    const resume = await Resume.create({
-      user: req.user._id,
-      originalName: req.file.originalname,
-      fileType: ext,
-      fileSize: req.file.size,
-      parsedText,
-      originalStructuredContent,
-      fileBuffer: req.file.buffer,
-      fileContentType: req.file.mimetype,
-    });
-
-    res.status(201).json(resume.toSafeObject());
-  } catch (err) {
-    console.error("Upload error:", err);
-    res.status(500).json({ message: err.message || "Upload failed" });
+export const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(400, "No file uploaded");
   }
-};
 
-export const getUserResumes = async (req, res) => {
+  const ext = path.extname(req.file.originalname).toLowerCase().replace(".", "");
+
+  const parsedText = await parseResume(req.file.buffer, req.file.originalname);
+
+  let originalStructuredContent = null;
   try {
-    const resumes = await Resume.find({ user: req.user._id })
-      .select("-parsedText -fileBuffer")
-      .sort({ createdAt: -1 });
-
-    res.json(resumes);
+    originalStructuredContent = await extractStructuredResume(parsedText);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    throw new ApiError(500, "Failed to extract structured resume: " + err.message);
   }
-};
 
-export const analyzeResume = async (req, res) => {
-  try {
-    const { resumeId, jobDescription, jobTitle } = req.body;
+  const resume = await Resume.create({
+    user: req.user._id,
+    originalName: req.file.originalname,
+    fileType: ext,
+    fileSize: req.file.size,
+    parsedText,
+    originalStructuredContent,
+    fileBuffer: req.file.buffer,
+    fileContentType: req.file.mimetype,
+  });
 
-    if (!resumeId || !jobDescription?.trim()) {
-      return res.status(400).json({
-        message: "resumeId and jobDescription are required",
-      });
-    }
+  res.status(201).json({
+    success: true,
+    message: "Resume uploaded successfully",
+    data: resume.toSafeObject(),
+  });
+});
 
-    const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
-    if (!resume) {
-      return res.status(404).json({ message: "Resume not found" });
-    }
+export const getUserResumes = asyncHandler(async (req, res) => {
+  const resumes = await Resume.find({ user: req.user._id })
+    .select("-parsedText -fileBuffer")
+    .sort({ createdAt: -1 });
 
-    const analysis = await analyzeResumeVsJob(resume.parsedText, jobDescription);
+  res.status(200).json({
+    success: true,
+    message: "Resumes fetched successfully",
+    data: resumes,
+  });
+});
 
-    resume.analysis = {
-      ...analysis,
-      jobTitle: jobTitle || "",
-      analyzedAt: new Date(),
-    };
-    await resume.save();
+export const analyzeResume = asyncHandler(async (req, res) => {
+  const { resumeId, jobDescription, jobTitle } = req.body;
 
-    res.json({
+  if (!resumeId || !jobDescription?.trim()) {
+    throw new ApiError(400, "resumeId and jobDescription are required");
+  }
+
+  const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
+  }
+
+  const analysis = await analyzeResumeVsJob(resume.parsedText, jobDescription);
+
+  resume.analysis = {
+    ...analysis,
+    jobTitle: jobTitle || "",
+    analyzedAt: new Date(),
+  };
+  await resume.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Resume analyzed successfully",
+    data: {
       resumeId: resume._id,
       originalName: resume.originalName,
       jobTitle: jobTitle || "",
       ...analysis,
-    });
-  } catch (err) {
-    console.error("Analyze error:", err);
-    res.status(500).json({ message: err.message || "Analysis failed" });
+    },
+  });
+});
+
+export const optimizeResume = asyncHandler(async (req, res) => {
+  const { resumeId, jobDescription } = req.body;
+
+  if (!resumeId || !jobDescription?.trim()) {
+    throw new ApiError(400, "resumeId and jobDescription are required");
   }
-};
 
-export const optimizeResume = async (req, res) => {
-  try {
-    const { resumeId, jobDescription,  } = req.body;
+  const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
+  }
 
-    if (!resumeId || !jobDescription?.trim()) {
-      return res.status(400).json({
-        message: "resumeId and jobDescription are required",
-      });
-    }
+  const optimized = await optimizeResumeContent(
+    resume.originalStructuredContent,
+    jobDescription
+  );
 
-    
+  resume.optimizedContent = {
+    sections: optimized.optimizedSections,
+    changesExplained: optimized.changesExplained,
+    newAtsScore: optimized.newAtsScore,
+    createdAt: new Date(),
+  };
+  await resume.save();
 
-    const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
-    if (!resume) {
-      return res.status(404).json({ message: "Resume not found" });
-    }
-
-    const optimized = await optimizeResumeContent(
-      resume.originalStructuredContent,
-      jobDescription,
-      
-    );
-
-    resume.optimizedContent = {
-      sections: optimized.optimizedSections,
-      changesExplained: optimized.changesExplained,
-      newAtsScore: optimized.newAtsScore,
-      
-      createdAt: new Date(),
-    };
-    await resume.save();
-
-    res.json({
-      success: true,
+  res.status(200).json({
+    success: true,
+    message: "Resume optimized successfully",
+    data: {
       resumeId: resume._id,
-     
       optimizedSections: optimized.optimizedSections,
       changesExplained: optimized.changesExplained || [],
       newAtsScore: optimized.newAtsScore || 0,
-    });
-  } catch (err) {
-    console.error("Optimize error:", err);
-    res.status(500).json({ message: err.message || "Optimization failed" });
+    },
+  });
+});
+
+export const downloadResume = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { format = "pdf" } = req.query;
+
+  const resume = await Resume.findOne({ _id: id, user: req.user._id });
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
   }
-};
 
-export const downloadResume = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { format = "pdf" } = req.query;
+  if (!resume.optimizedContent?.sections) {
+    throw new ApiError(400, "No optimized version found. Please optimize first.");
+  }
 
-    const resume = await Resume.findOne({ _id: id, user: req.user._id });
-    if (!resume) return res.status(404).json({ message: "Resume not found" });
-
-    if (!resume.optimizedContent?.sections) {
-      return res.status(400).json({
-        message: "No optimized version found. Please optimize first.",
-      });
-    }
-
-    res.json({
+  res.status(200).json({
+    success: true,
+    message: "Resume ready for download",
+    data: {
       format,
       sections: resume.optimizedContent.sections,
-     
       filename: resume.originalName.replace(/\.[^.]+$/, ""),
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    },
+  });
+});
+
+export const getResumeFile = asyncHandler(async (req, res) => {
+  const resume = await Resume.findOne(
+    { _id: req.params.id, user: req.user._id },
+    { fileBuffer: 1, fileContentType: 1, originalName: 1 }
+  );
+
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
   }
-};
 
-export const getResumeFile = async (req, res) => {
-  try {
-    const resume = await Resume.findOne(
-      { _id: req.params.id, user: req.user._id },
-      { fileBuffer: 1, fileContentType: 1, originalName: 1 }
-    );
-
-    if (!resume) {
-      return res.status(404).json({ message: "Resume not found" });
-    }
-
-    if (!resume.fileBuffer) {
-      return res.status(404).json({
-        message: "Original file not stored. Re-upload the resume to enable PDF preview.",
-      });
-    }
-
-    res.set("Content-Type", resume.fileContentType || "application/pdf");
-    res.set("Content-Disposition", `inline; filename="${resume.originalName}"`);
-    res.set("Cache-Control", "private, max-age=3600");
-    res.send(resume.fileBuffer);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  if (!resume.fileBuffer) {
+    throw new ApiError(404, "Original file not stored. Re-upload the resume to enable PDF preview.");
   }
-};
 
-export const deleteResume = async (req, res) => {
-  try {
-    const resume = await Resume.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user._id,
-    });
+  res.set("Content-Type", resume.fileContentType || "application/pdf");
+  res.set("Content-Disposition", `inline; filename="${resume.originalName}"`);
+  res.set("Cache-Control", "private, max-age=3600");
+  res.send(resume.fileBuffer);
+});
 
-    if (!resume) return res.status(404).json({ message: "Resume not found" });
+export const deleteResume = asyncHandler(async (req, res) => {
+  const resume = await Resume.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user._id,
+  });
 
-    res.json({ message: "Resume deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
   }
-};
+
+  res.status(200).json({
+    success: true,
+    message: "Resume deleted successfully",
+    data: {},
+  });
+});

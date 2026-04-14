@@ -2,18 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "./auth_Model.js";
 
 export const protect = async (req, res, next) => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-
-  if (!token && req.cookies?.auth_token) {
-    token = req.cookies.auth_token;
-  }
+  const token = req.cookies?.auth_token;
 
   if (!token) {
     return res.status(401).json({

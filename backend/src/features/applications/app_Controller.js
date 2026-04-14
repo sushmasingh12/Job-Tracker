@@ -1,239 +1,164 @@
 import mongoose from "mongoose";
 import * as appService from "./app_Services.js";
-
 import { generatePDFBuffer, generateDOCXBuffer } from "../coverLetter/coverLetter_Service.js";
-
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import ApiError from "../../shared/utils/ApiError.js";
 
 const getUserId = (req) => req.user?._id || req.user?.id;
 
-export const getAllApplications = async (req, res) => {
-  try {
-    const userId = new mongoose.Types.ObjectId(getUserId(req));
-    const { applications, total, stats } = await appService.getApplications(
-      userId,
-      req.query
-    );
+export const getAllApplications = asyncHandler(async (req, res) => {
+  const userId = new mongoose.Types.ObjectId(getUserId(req));
+  const { applications, total, stats } = await appService.getApplications(
+    userId,
+    req.query
+  );
 
-    res.status(200).json({
-      success: true,
-      count: applications.length,
-      total,
-      stats,
-      data: applications,
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+  res.status(200).json({
+    success: true,
+    message: "Applications fetched successfully",
+    count: applications.length,
+    total,
+    stats,
+    data: applications,
+  });
+});
+
+export const getApplication = asyncHandler(async (req, res) => {
+  const application = await appService.getApplicationById(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id
+  );
+
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
   }
-};
 
-export const getApplication = async (req, res) => {
-  try {
-    const application = await appService.getApplicationById(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id
-    );
+  res.status(200).json({
+    success: true,
+    message: "Application fetched successfully",
+    data: application,
+  });
+});
 
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
+export const createApplication = asyncHandler(async (req, res) => {
+  const application = await appService.createApplication(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.body
+  );
 
-    res.status(200).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "CastError") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid application ID" });
-    }
+  res.status(201).json({
+    success: true,
+    message: "Application created successfully",
+    data: application,
+  });
+});
 
-    res.status(500).json({ success: false, message: err.message });
+export const updateApplication = asyncHandler(async (req, res) => {
+  const application = await appService.updateApplication(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id,
+    req.body
+  );
+
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
   }
-};
 
-export const createApplication = async (req, res) => {
-  try {
-    const application = await appService.createApplication(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.body
-    );
+  res.status(200).json({
+    success: true,
+    message: "Application updated successfully",
+    data: application,
+  });
+});
 
-    res.status(201).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "ValidationError") {
-      const messages = Object.values(err.errors).map((e) => e.message);
-      return res
-        .status(400)
-        .json({ success: false, message: messages.join(", ") });
-    }
+export const patchStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
 
-    res.status(500).json({ success: false, message: err.message });
+  if (!status) {
+    throw new ApiError(400, "Status required hai");
   }
-};
 
-export const updateApplication = async (req, res) => {
-  try {
-    const application = await appService.updateApplication(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id,
-      req.body
-    );
+  const application = await appService.updateStatus(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id,
+    status
+  );
 
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
-
-    res.status(200).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "ValidationError") {
-      const messages = Object.values(err.errors).map((e) => e.message);
-      return res
-        .status(400)
-        .json({ success: false, message: messages.join(", ") });
-    }
-
-    if (err.name === "CastError") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid application ID" });
-    }
-
-    res.status(500).json({ success: false, message: err.message });
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
   }
-};
 
-export const patchStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
+  res.status(200).json({
+    success: true,
+    message: "Status updated successfully",
+    data: application,
+  });
+});
 
-    if (!status) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Status required hai" });
-    }
+export const saveCoverLetter = asyncHandler(async (req, res) => {
+  const { content } = req.body;
 
-    const application = await appService.updateStatus(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id,
-      status
-    );
-
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
-
-    res.status(200).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "ValidationError") {
-      const messages = Object.values(err.errors).map((e) => e.message);
-      return res
-        .status(400)
-        .json({ success: false, message: messages.join(", ") });
-    }
-
-    res.status(500).json({ success: false, message: err.message });
+  if (!content?.trim()) {
+    throw new ApiError(400, "Cover letter content required hai");
   }
-};
 
-export const saveCoverLetter = async (req, res) => {
-  try {
-    const { content } = req.body;
- 
-    if (!content?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Cover letter content required hai" });
-    }
- 
-    const application = await appService.saveCoverLetter(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id,
-      content
-    );
- 
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
- 
-    res.status(200).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "CastError") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid application ID" });
-    }
-    res.status(500).json({ success: false, message: err.message });
+  const application = await appService.saveCoverLetter(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id,
+    content
+  );
+
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
   }
-};
 
-export const saveResume = async (req, res) => {
-  try {
-    const { content,  } = req.body;
+  res.status(200).json({
+    success: true,
+    message: "Cover letter saved successfully",
+    data: application,
+  });
+});
 
-    if (!content) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Resume content required hai" });
-    }
+export const saveResume = asyncHandler(async (req, res) => {
+  const { content } = req.body;
 
-    const application = await appService.saveResume(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id,
-      { content,  }
-    );
-
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
-
-    res.status(200).json({ success: true, data: application });
-  } catch (err) {
-    if (err.name === "CastError") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid application ID" });
-    }
-    res.status(500).json({ success: false, message: err.message });
+  if (!content) {
+    throw new ApiError(400, "Resume content required hai");
   }
-};
 
+  const application = await appService.saveResume(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id,
+    { content }
+  );
 
-export const deleteApplication = async (req, res) => {
-  try {
-    const application = await appService.deleteApplication(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id
-    );
-
-    if (!application) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Application nahi mili" });
-    }
-
-    res
-      .status(200)
-      .json({ success: true, message: "Application delete ho gayi" });
-  } catch (err) {
-    if (err.name === "CastError") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid application ID" });
-    }
-
-    res.status(500).json({ success: false, message: err.message });
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
   }
-};
 
+  res.status(200).json({
+    success: true,
+    message: "Resume saved successfully",
+    data: application,
+  });
+});
 
+export const deleteApplication = asyncHandler(async (req, res) => {
+  const application = await appService.deleteApplication(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id
+  );
+
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Application delete ho gayi",
+    data: {},
+  });
+});
 
 // Helper to convert structured optimizedResume.content into a printable string
 const formatResumeObject = (data) => {
@@ -298,72 +223,58 @@ const formatResumeObject = (data) => {
   return output;
 };
 
+export const downloadApplicationMaterial = asyncHandler(async (req, res) => {
+  const application = await appService.getApplicationById(
+    new mongoose.Types.ObjectId(getUserId(req)),
+    req.params.id
+  );
 
-export const downloadApplicationMaterial = async (req, res) => {
-  try {
-    const application = await appService.getApplicationById(
-      new mongoose.Types.ObjectId(getUserId(req)),
-      req.params.id
-    );
+  if (!application) {
+    throw new ApiError(404, "Application nahi mili");
+  }
 
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application nahi mili",
-      });
-    }
+  const { type } = req.params;
+  const format = req.query.format === "docx" ? "docx" : "pdf";
 
-    const { type } = req.params;
-    const format = req.query.format === "docx" ? "docx" : "pdf";
+  let content = "";
+  let filename = "document";
 
-    let content = "";
-    let filename = "document";
-
-    if (type === "cover-letter") {
-      content = application.coverLetter?.content || "";
-      filename = "cover-letter";
-    } else if (type === "resume") {
-      if (application.optimizedResume?.content) {
-        content = formatResumeObject(application.optimizedResume.content);
-      } else {
-        content = application.jobDescription || "Job description (no resume available).";
-      }
-      filename = "resume";
+  if (type === "cover-letter") {
+    content = application.coverLetter?.content || "";
+    filename = "cover-letter";
+  } else if (type === "resume") {
+    if (application.optimizedResume?.content) {
+      content = formatResumeObject(application.optimizedResume.content);
     } else {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid download type",
-      });
+      content = application.jobDescription || "Job description (no resume available).";
     }
+    filename = "resume";
+  } else {
+    throw new ApiError(400, "Invalid download type");
+  }
 
-    if (!content || !content.trim() || content === "No content.") {
-      return res.status(400).json({
-        success: false,
-        message: `${type} content available nahi hai. Please generate/save it first.`,
-      });
-    }
+  if (!content || !content.trim() || content === "No content.") {
+    throw new ApiError(400, `${type} content available nahi hai. Please generate/save it first.`);
+  }
 
-    if (format === "pdf") {
-      const buffer = await generatePDFBuffer(content);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${filename}.pdf"`
-      );
-      return res.send(buffer);
-    }
-
-    const buffer = await generateDOCXBuffer(content);
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    );
+  if (format === "pdf") {
+    const buffer = await generatePDFBuffer(content);
+    res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${filename}.docx"`
+      `attachment; filename="${filename}.pdf"`
     );
     return res.send(buffer);
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
   }
-};
+
+  const buffer = await generateDOCXBuffer(content);
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  );
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${filename}.docx"`
+  );
+  return res.send(buffer);
+});

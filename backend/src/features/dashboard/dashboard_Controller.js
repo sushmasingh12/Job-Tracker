@@ -1,27 +1,20 @@
 import dashboardService from "./dashboard_Service.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import ApiError from "../../shared/utils/ApiError.js";
 
-export const getDashboardSummary = async (req, res) => {
-  try {
-    const userId = req.user._id;
+export const getDashboardSummary = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
 
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
-
-    const dashboardData = await dashboardService.getDashboardData(userId);
-
-    res.status(200).json({
-      success: true,
-      data: dashboardData,
-    });
-  } catch (error) {
-    console.error("Dashboard Summary Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message || "Server error",
-    });
+  if (!userId) {
+    throw new ApiError(401, "User not authenticated");
   }
-};
+
+  const dashboardData = await dashboardService.getDashboardData(userId);
+
+  res.status(200).json({
+    success: true,
+    message: "Dashboard summary fetched successfully",
+    data: dashboardData,
+  });
+});
+

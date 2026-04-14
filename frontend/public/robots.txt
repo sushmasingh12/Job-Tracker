@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /signin
+Allow: /signup
+
+# Protected areas
+Disallow: /dashboard
+Disallow: /application/
+Disallow: /ai/
+Disallow: /settings
+Disallow: /analytics
+
+# Sitemap
+Sitemap: https://your-domain.com/sitemap.xml

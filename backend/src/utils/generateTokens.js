@@ -22,9 +22,9 @@ const generateToken = (res, userId, options ={}) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             path: options.path || '/',
-            maxAge: options.maxAge || (7 * 24 * 60 * 60 * 1000) // 7 days in seconds
+            maxAge: options.maxAge || (7 * 24 * 60 * 60 * 1000) // 7 days
         }
-        res.cookie('token', token, cookies)
+        res.cookie('auth_token', token, cookies)
         return token
     } catch (error) {
         console.error('JWT Token Generation Error:', error.message)

@@ -5,170 +5,151 @@ import {
   generatePDFBuffer,
   generateDOCXBuffer,
 } from "./coverLetter_Service.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import ApiError from "../../shared/utils/ApiError.js";
 
-export const generateCoverLetterController = async (req, res) => {
-  try {
-    const { jobDetails, experience, tone, applicationId } = req.body;
+export const generateCoverLetterController = asyncHandler(async (req, res) => {
+  const { jobDetails, experience, tone, applicationId } = req.body;
 
-    if (!jobDetails?.jobTitle || !jobDetails?.companyName) {
-      return res.status(400).json({ message: "jobTitle and companyName are required." });
-    }
+  if (!jobDetails?.jobTitle || !jobDetails?.companyName) {
+    throw new ApiError(400, "jobTitle and companyName are required.");
+  }
 
-    if (!jobDetails?.jobDescription || jobDetails.jobDescription.trim().length < 50) {
-      return res.status(400).json({ message: "jobDescription must be at least 50 characters." });
-    }
+  if (!jobDetails?.jobDescription || jobDetails.jobDescription.trim().length < 50) {
+    throw new ApiError(400, "jobDescription must be at least 50 characters.");
+  }
 
-    const letter = await generateCoverLetterService({ jobDetails, experience, tone });
+  const letter = await generateCoverLetterService({ jobDetails, experience, tone });
 
-    const savedDoc = await CoverLetter.findOneAndUpdate(
+  const savedDoc = await CoverLetter.findOneAndUpdate(
+    applicationId
+      ? { user: req.user._id, application: applicationId }
+      : { user: req.user._id },
+    {
+      user: req.user._id,
+      application: applicationId || null,
+      jobDetails,
+      experience,
+      tone: tone || "professional",
+      generatedLetter: letter,
+    },
+    { upsert: true, new: true, sort: { createdAt: -1 } }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Cover letter generated successfully",
+    data: {
+      letter,
+      letterId: savedDoc._id,
+    },
+  });
+});
+
+export const saveCoverLetterController = asyncHandler(async (req, res) => {
+  const { content, letterId, applicationId } = req.body;
+
+  if (!content || content.trim().length === 0) {
+    throw new ApiError(400, "Letter content is required.");
+  }
+
+  let saved;
+
+  if (letterId) {
+    saved = await CoverLetter.findOneAndUpdate(
+      { _id: letterId, user: req.user._id },
+      {
+        generatedLetter: content,
+        ...(applicationId ? { application: applicationId } : {}),
+      },
+      { new: true }
+    );
+  } else {
+    saved = await CoverLetter.findOneAndUpdate(
       applicationId
         ? { user: req.user._id, application: applicationId }
         : { user: req.user._id },
       {
-        user: req.user._id,
-        application: applicationId || null,
-        jobDetails,
-        experience,
-        tone: tone || "professional",
-        generatedLetter: letter,
+        generatedLetter: content,
+        ...(applicationId ? { application: applicationId } : {}),
       },
       { upsert: true, new: true, sort: { createdAt: -1 } }
     );
-
-    return res.status(200).json({
-      letter,
-      letterId: savedDoc._id,
-    });
-  } catch (err) {
-    console.error("[CoverLetter] Generate error:", err.message);
-    return res.status(500).json({ message: err.message || "Failed to generate cover letter." });
   }
-};
 
-export const saveCoverLetterController = async (req, res) => {
-  try {
-    const { content, letterId, applicationId } = req.body;
-
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ message: "Letter content is required." });
-    }
-
-    let saved;
-
-    if (letterId) {
-      saved = await CoverLetter.findOneAndUpdate(
-        { _id: letterId, user: req.user._id },
-        {
-          generatedLetter: content,
-          ...(applicationId ? { application: applicationId } : {}),
-        },
-        { new: true }
-      );
-    } else {
-      saved = await CoverLetter.findOneAndUpdate(
-        applicationId
-          ? { user: req.user._id, application: applicationId }
-          : { user: req.user._id },
-        {
-          generatedLetter: content,
-          ...(applicationId ? { application: applicationId } : {}),
-        },
-        { upsert: true, new: true, sort: { createdAt: -1 } }
-      );
-    }
-
-    if (!saved) {
-      return res.status(404).json({ message: "Cover letter not found." });
-    }
-
-    if (applicationId) {
-      await Application.findOneAndUpdate(
-        { _id: applicationId, user: req.user._id },
-        {
-          $set: {
-            "coverLetter.content": content,
-            "coverLetter.generatedAt": new Date(),
-          },
-        }
-      );
-    }
-
-    return res.status(200).json({
-      id: saved._id,
-      message: "Cover letter saved.",
-    });
-  } catch (err) {
-    console.error("[CoverLetter] Save error:", err.message);
-    return res.status(500).json({ message: err.message || "Save failed." });
+  if (!saved) {
+    throw new ApiError(404, "Cover letter not found.");
   }
-};
 
-export const downloadCoverLetterController = async (req, res) => {
-  try {
-    const { format = "pdf" } = req.query;
+  if (applicationId) {
+    await Application.findOneAndUpdate(
+      { _id: applicationId, user: req.user._id },
+      {
+        $set: {
+          "coverLetter.content": content,
+          "coverLetter.generatedAt": new Date(),
+        },
+      }
+    );
+  }
 
-    const content = req.coverLetter?.generatedLetter || req.body?.content || "";
+  res.status(200).json({
+    success: true,
+    message: "Cover letter saved.",
+    data: { id: saved._id },
+  });
+});
 
-    if (!content.trim()) {
-      return res.status(400).json({
-        message: "No cover letter content available for download.",
-      });
-    }
+export const downloadCoverLetterController = asyncHandler(async (req, res) => {
+  const { format = "pdf" } = req.query;
 
-    if (format === "docx") {
-      const buffer = await generateDOCXBuffer(content);
+  const content = req.coverLetter?.generatedLetter || req.body?.content || "";
 
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      );
-      res.setHeader(
-        "Content-Disposition",
-        'attachment; filename="cover-letter.docx"'
-      );
+  if (!content.trim()) {
+    throw new ApiError(400, "No cover letter content available for download.");
+  }
 
-      return res.send(buffer);
-    }
+  if (format === "docx") {
+    const buffer = await generateDOCXBuffer(content);
 
-    const buffer = await generatePDFBuffer(content);
-
-    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    );
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="cover-letter.pdf"'
+      'attachment; filename="cover-letter.docx"'
     );
 
     return res.send(buffer);
-  } catch (error) {
-    console.error("[CoverLetter] Download error:", error.message);
-    return res.status(500).json({
-      message: error.message || "Failed to download cover letter.",
-    });
   }
-};
 
+  const buffer = await generatePDFBuffer(content);
 
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    'attachment; filename="cover-letter.pdf"'
+  );
 
-export const getCoverLetterByIdController = async (req, res) => {
-  try {
-    const { id } = req.params;
+  return res.send(buffer);
+});
 
-    const letter = await CoverLetter.findOne({
-      _id: id,
-      user: req.user._id,
-    });
+export const getCoverLetterByIdController = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    if (!letter) {
-      return res.status(404).json({
-        message: "Cover letter not found.",
-      });
-    }
+  const letter = await CoverLetter.findOne({
+    _id: id,
+    user: req.user._id,
+  });
 
-    return res.status(200).json(letter);
-  } catch (error) {
-    console.error("[CoverLetter] Get by id error:", error.message);
-    return res.status(500).json({
-      message: error.message || "Failed to fetch cover letter.",
-    });
+  if (!letter) {
+    throw new ApiError(404, "Cover letter not found.");
   }
-};
+
+  res.status(200).json({
+    success: true,
+    message: "Cover letter fetched successfully",
+    data: letter,
+  });
+});
