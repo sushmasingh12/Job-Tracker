@@ -5,12 +5,9 @@ import { protect } from "../auth/auth_Middleware.js";
 
 const router = Router();
 
-// Protect all dashboard routes
+
 router.use(protect);
-
-// Apply our feature-specific middleware
 router.use(validateDashboardRequest);
-
 router.route("/summary").get(getDashboardSummary);
 
 export default router;

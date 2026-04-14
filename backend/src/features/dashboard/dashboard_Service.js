@@ -2,31 +2,19 @@ import DashboardPreference from "./dashboard_Model.js";
 import Application from "../applications/app_Model.js";
 
 const getDashboardData = async (userId) => {
-  // Aggregate Applications
   const apps = await Application.find({ user: userId }).sort({ applicationDate: -1 });
-
-  // 1. Total Applications
   const totalApplications = apps.length;
-
-  // 2. This Week Applications
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
   const thisWeekApplications = apps.filter(
     (app) => new Date(app.applicationDate) >= oneWeekAgo
   ).length;
-
-  // 3. Interviews
   const upcomingInterviewsCount = apps.filter((app) => app.status === "Interview").length;
-
-  // 4. Response Rate
   const respondedApps = apps.filter(
     (app) => ["Interview", "Offer", "Hired", "Rejected"].includes(app.status)
   ).length;
   const responseRate = totalApplications > 0 ? ((respondedApps / totalApplications) * 100).toFixed(1) : "0";
-
-  // 5. Recent Applications
   const recentApplications = apps.slice(0, 5).map((app) => {
-    // Determine icon based on status
     let icon = "domain";
     if (app.status === "Interview") icon = "business";
     else if (app.status === "Offer" || app.status === "Hired") icon = "apartment";
@@ -43,7 +31,6 @@ const getDashboardData = async (userId) => {
     };
   });
 
-  // 6. Trend Data (Last 7 days)
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
@@ -61,7 +48,6 @@ const getDashboardData = async (userId) => {
     last7Days.push({
       label: d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" }),
       apps: count,
-      // Calculate height percentage relative to a max (e.g. 10 if we want to scale, or max in set)
       height: count > 0 ? `${Math.min(100, (count / 5) * 100)}%` : "5%", 
       active: i === 0
     });

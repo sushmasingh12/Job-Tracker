@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import Settings from "./settings_Model.js";
 import User from "../auth/auth_Model.js";
 
-// ── Keys allowed for bulk update (PATCH /settings) ───────────────────────────
+
 const ALLOWED_KEYS = ["profile", "account", "notifications", "privacy"];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -19,7 +19,6 @@ const deepMergeSection = (target, incoming) => {
       typeof target[key] === "object" &&
       target[key] !== null
     ) {
-      // one level deeper (e.g. profile.links)
       Object.assign(target[key], val);
     } else {
       target[key] = val;
@@ -40,7 +39,7 @@ export const fetchUserSettings = async (userId) => {
 
   let modified = false;
 
-  // Seed from auth user on first load
+  
   if (user) {
     if (!settings.profile.fullName && (user.firstname || user.lastname)) {
       settings.profile.fullName = `${user.firstname || ""} ${user.lastname || ""}`.trim();
@@ -109,7 +108,7 @@ export const createEmailChangeOtp = async (userId, newEmail) => {
   if (existingUser || existingSettings)
     throw Object.assign(new Error("Email is already in use"), { status: 409 });
 
-  // Generate a 6-digit OTP
+  
   const plainOtp = String(Math.floor(100000 + Math.random() * 900000));
   const hashedOtp = await bcrypt.hash(plainOtp, 10);
 
@@ -125,7 +124,6 @@ export const createEmailChangeOtp = async (userId, newEmail) => {
     { upsert: true, new: true }
   );
 
-  // Return plain OTP so the controller can email it
   return { plainOtp, pendingEmail: newEmail };
 };
 

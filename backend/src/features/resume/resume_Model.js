@@ -23,20 +23,19 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // Original file buffer — used to serve back the actual PDF/DOCX to frontend
     fileBuffer: {
       type: Buffer,
     },
     fileContentType: {
-      type: String, // 'application/pdf' or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      type: String,
     },
-    // Original AI mapped structure representing user's exact uploaded resume content
+   
     originalStructuredContent: {
       basics: mongoose.Schema.Types.Mixed,
       sectionOrder: [String],
       sections: mongoose.Schema.Types.Mixed,
     },
-    // Last analysis result
+    
     analysis: {
       atsScore: Number,
       matchedKeywords: [String],
@@ -53,7 +52,7 @@ const resumeSchema = new mongoose.Schema(
       jobTitle: String,
       analyzedAt: Date,
     },
-    // Last optimized content
+    
     optimizedContent: {
       sections: mongoose.Schema.Types.Mixed, // flexible structure from Gemini
       changesExplained: [String],

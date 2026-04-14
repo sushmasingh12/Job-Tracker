@@ -36,13 +36,11 @@ const applicationSchema = new mongoose.Schema(
       minlength: [2, "Location must be at least 2 characters"],
       maxlength: [50, "Location cannot exceed 50 characters"],
     },
-    // ── NEW ──────────────────────────────────────────────────────────────────
     workType: {
       type: String,
       enum: ["Remote", "Hybrid", "On-site"],
       default: "On-site",
     },
-    // ─────────────────────────────────────────────────────────────────────────
     applicationDate: {
       type: Date,
       required: [true, "Application date is required"],
@@ -72,8 +70,7 @@ const applicationSchema = new mongoose.Schema(
       trim: true,
       maxlength: [1000, "Notes cannot exceed 1000 characters"],
     },
-    // ── NEW ──────────────────────────────────────────────────────────────────
-    // Each status change gets logged here automatically by the service layer
+    
     statusHistory: {
       type: [statusHistoryEntrySchema],
       default: [],
@@ -86,7 +83,7 @@ const applicationSchema = new mongoose.Schema(
       content:     { type: String },
       generatedAt: { type: Date },
     },
-    // ─────────────────────────────────────────────────────────────────────────
+    
   },
   { timestamps: true }
 );

@@ -9,7 +9,6 @@ import ApiError from "../../shared/utils/ApiError.js";
 
 const MANUAL_JOB_ID = "manual";
 
-// Helper to find prep session
 const findPrepSession = async (user, jobId, jobTitleManual = "") => {
   if (jobId && jobId !== MANUAL_JOB_ID) {
     return InterviewPrep.findOne({ user, job: jobId });
@@ -19,8 +18,6 @@ const findPrepSession = async (user, jobId, jobTitleManual = "") => {
   if (jobTitleManual) {
     query.jobTitleManual = jobTitleManual;
   }
-
-  // If no title provided but we have multiple, this will return the latest one
   return InterviewPrep.findOne(query).sort({ updatedAt: -1 });
 };
 
@@ -44,7 +41,6 @@ export const generateQuestions = asyncHandler(async (req, res) => {
     throw new ApiError(400, "questionTypes must be a non-empty array.");
   }
 
-  // Application mode
   if (!isManual) {
     const application = await Application.findById(jobId);
 
@@ -56,7 +52,6 @@ export const generateQuestions = asyncHandler(async (req, res) => {
     finalCompany = company?.trim() || application.company || "Generic";
     finalJobDescription = application.jobDescription || "";
   } else {
-    // Manual mode
     finalJobTitle = jobTitle?.trim() || "";
     finalCompany = company?.trim() || "Generic";
     finalJobDescription = "";
@@ -339,4 +334,4 @@ export const getInterviewHistory = asyncHandler(async (req, res) => {
     message: "Interview history fetched successfully",
     data: history,
   });
-});
+});

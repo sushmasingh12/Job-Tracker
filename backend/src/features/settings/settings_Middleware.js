@@ -67,8 +67,6 @@ export const validateVerifyEmailOtp = (req, res, next) => {
 
 // ── POST /avatar ──────────────────────────────────────────────────────────────
 export const validateAvatarUpload = (req, res, next) => {
-  // If using multer this will be set by the upload middleware before this runs.
-  // We also allow passing a URL in body for flexibility.
   if (!req.file && !req.body?.avatarUrl?.trim()) {
     return res.status(400).json({ success: false, message: "Avatar file or URL is required." });
   }

@@ -159,8 +159,7 @@ const optimizeResumeContent = async (
 ) => {
  
 
-  // Extract the candidate's actual skills list from the original resume
-  // so Gemini knows exactly what skills this person has
+  
   const originalSkills =
     structuredResume?.sections?.skills
       ? JSON.stringify(structuredResume.sections.skills)

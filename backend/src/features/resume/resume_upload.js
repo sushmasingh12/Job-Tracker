@@ -3,7 +3,7 @@ import path from "path";
 const ALLOWED_EXTENSIONS = [".pdf", ".docx"];
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
-const storage = multer.memoryStorage(); // keep in memory for parsing, no disk write needed
+const storage = multer.memoryStorage(); 
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();

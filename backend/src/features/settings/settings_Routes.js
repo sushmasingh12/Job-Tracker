@@ -18,10 +18,7 @@ import {
   validateDeleteAccount,
 } from "./settings_Middleware.js";
 
-// Avatar upload middleware — swap with your multer/cloudinary setup.
-// Example using multer-storage-cloudinary:
-//   import { avatarUpload } from "../utils/cloudinaryUpload.js";
-// For now we use a no-op so the route file is importable without the dependency.
+
 import multer from "multer";
 const avatarUpload = multer({ storage: multer.memoryStorage() });
 

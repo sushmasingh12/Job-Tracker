@@ -79,14 +79,13 @@ const CoverLetterSchema = new mongoose.Schema(
       required: true,
     },
 
-    // The actual generated letter
     generatedLetter: {
       type: String,
       default: "",
       required: true,
     },
 
-    // Optional: link to a specific job application
+    
     application: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Application",
@@ -96,7 +95,7 @@ const CoverLetterSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ─── Index for fast user-level listing ───────────────────────────────────────
+
 CoverLetterSchema.index({ user: 1, createdAt: -1 });
 
 const CoverLetter = mongoose.model("CoverLetter", CoverLetterSchema);

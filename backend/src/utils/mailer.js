@@ -1,12 +1,6 @@
 import nodemailer from "nodemailer";
 
-// ── Transporter setup ─────────────────────────────────────────────────────────
-// Reads credentials from .env — set these in your environment:
-//   MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS, MAIL_FROM
-//
-// For Gmail: MAIL_HOST=smtp.gmail.com  MAIL_PORT=587
-//            MAIL_USER=you@gmail.com   MAIL_PASS=<App Password>
-// For development/testing: leave all empty → falls back to Ethereal (auto-creates a test account)
+
 
 let transporter;
 

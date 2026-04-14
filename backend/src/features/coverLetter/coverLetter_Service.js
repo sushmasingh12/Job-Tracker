@@ -2,14 +2,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import PDFDocument from "pdfkit";
 import { Document, Packer, Paragraph, TextRun } from "docx";
-// ─── Gemini Client (singleton) ────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-// ─── Build Prompt ─────────────────────────────────────────────────────────────
 
-/**
- * Builds a detailed prompt for Gemini based on all wizard data.
- */
+// ─── Build Prompt ─────────────────────────────────────────────────────────────
 const buildPrompt = ({ jobDetails, experience, tone }) => {
   const {
     jobTitle,

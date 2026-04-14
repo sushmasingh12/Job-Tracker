@@ -10,8 +10,6 @@ const buildSalaryRange = (salaryMin, salaryMax) => {
   return undefined;
 };
 
-// Maps each status to the Material Symbol icon + Tailwind color used in the
-// statusHistory timeline on the frontend (ApplicationDetails.jsx)
 const STATUS_HISTORY_CONFIG = {
   Applied:   { icon: "send",               color: "bg-blue-500"    },
   Interview: { icon: "chat_bubble",         color: "bg-amber-500"   },
@@ -26,8 +24,6 @@ const makeHistoryEntry = (status) => ({
   icon:  STATUS_HISTORY_CONFIG[status]?.icon  ?? "circle",
   color: STATUS_HISTORY_CONFIG[status]?.color ?? "bg-slate-400",
 });
-
-// ── CREATE ───────────────────────────────────────────────────────────────────
 
 export const createApplication = async (userId, body) => {
   const {
