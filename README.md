@@ -18,7 +18,7 @@ Track every job you apply to, manage application statuses, and get AI-powered re
 **Backend**
 - Node.js + Express
 - MongoDB + Mongoose
-- JWT (Access + Refresh tokens)
+- JWT 
 - express-validator
 
 ---
