@@ -1,4 +1,4 @@
-import InterviewPrep from "./Interview_Model.js";
+
 import {
   generateInterviewQuestions,
   evaluateAnswer,
@@ -6,6 +6,7 @@ import {
 import Application from "../applications/app_Model.js";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 import ApiError from "../../shared/utils/ApiError.js";
+import InterviewPrep from "./interview.model.js";
 
 const MANUAL_JOB_ID = "manual";
 
