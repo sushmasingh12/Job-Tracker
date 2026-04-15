@@ -43,6 +43,11 @@ export const verifyEmailOtpService = async ({ newEmail, otp }) => {
   return data; // { email: confirmedEmail }
 };
 
+export const directChangeEmailService = async ({ newEmail }) => {
+  const { data } = await settingsApi.post("/email/direct-change", { newEmail });
+  return data;
+};
+
 // ── Account deletion ──────────────────────────────────────────────────────────
 
 export const deleteAccountService = async ({ password }) => {

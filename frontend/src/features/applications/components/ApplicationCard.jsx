@@ -19,15 +19,12 @@ const DeleteModal = ({ app, onConfirm, onCancel, isDeleting }) => (
     aria-modal="true"
     aria-labelledby="delete-modal-title"
   >
-    {/* Backdrop */}
     <div
       className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       onClick={onCancel}
     />
-
-    {/* Panel */}
     <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-200 dark:border-slate-700 p-6 animate-fade-in">
-      {/* Icon */}
+      
       <div className="flex items-center justify-center mb-4">
         <div className="h-14 w-14 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
           <span className="material-symbols-outlined text-red-500 text-[28px]">
@@ -36,7 +33,7 @@ const DeleteModal = ({ app, onConfirm, onCancel, isDeleting }) => (
         </div>
       </div>
 
-      {/* Text */}
+      
       <h3
         id="delete-modal-title"
         className="text-base font-bold text-slate-900 dark:text-white text-center mb-1"
@@ -53,10 +50,10 @@ const DeleteModal = ({ app, onConfirm, onCancel, isDeleting }) => (
         </span>
       </p>
       <p className="text-xs text-slate-400 dark:text-slate-500 text-center mb-6">
-        Yeh action undo nahi ho sakti.
+        This action cannot be undone.
       </p>
 
-      {/* Actions */}
+     
       <div className="flex gap-3">
         <button
           onClick={onCancel}
@@ -88,7 +85,6 @@ const DeleteModal = ({ app, onConfirm, onCancel, isDeleting }) => (
 
 const EditModal = ({ app, onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-    {/* Backdrop */}
     <div
       className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       onClick={onClose}
@@ -138,7 +134,7 @@ const ApplicationCard = ({ app }) => {
   return (
     <>
       <div
-        className={`group relative flex flex-col md:flex-row md:items-center p-4 rounded-2xl bg-white/60 dark:bg-sidebar/40 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-sidebar/60 transition-all shadow-sm hover:shadow-md overflow-hidden ${app.status === "Rejected" ? "opacity-75 hover:opacity-100" : ""
+        className={`group relative flex flex-col md:flex-row md:items-center p-4 rounded-2xl bg-white/60  border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-sidebar/60 transition-all shadow-sm hover:shadow-md overflow-hidden ${app.status === "Rejected" ? "opacity-75 hover:opacity-100" : ""
           }`}
       >
         {/* Left accent bar */}

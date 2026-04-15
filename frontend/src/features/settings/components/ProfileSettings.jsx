@@ -151,31 +151,6 @@ const ProfileSettings = () => {
 
       {/* ── Avatar + Basic Info ── */}
       <div className="flex flex-col md:flex-row gap-8 items-start">
-        {/* Avatar */}
-        <div className="relative group shrink-0">
-          <div
-            onClick={() => avatarInputRef.current?.click()}
-            className="w-28 h-28 rounded-3xl bg-primary/10 border-2 border-dashed border-primary/30 flex items-center justify-center overflow-hidden transition-all group-hover:border-primary/60 cursor-pointer"
-          >
-            {avatarLoading ? (
-              <span className="material-symbols-outlined text-primary animate-spin">progress_activity</span>
-            ) : profile.avatar ? (
-              <>
-                <img src={profile.avatar} alt="Profile" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-3xl transition-opacity">
-                  <i className="fa-solid fa-camera text-white text-xl" />
-                </div>
-              </>
-            ) : (
-              <i className="fa-solid fa-camera text-2xl text-primary/50 group-hover:text-primary transition-colors" />
-            )}
-          </div>
-          <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-          <p className="text-[10px] text-center mt-2 font-semibold uppercase tracking-wider text-neutral-muted">
-            {profile.avatar ? 'Change Photo' : 'Upload Photo'}
-          </p>
-        </div>
-
         {/* Basic fields */}
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div className="space-y-1.5">

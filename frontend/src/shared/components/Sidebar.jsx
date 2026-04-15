@@ -141,7 +141,7 @@ const Sidebar = () => {
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{fullName}</p>
+              <p className="text-sm font-medium text-white truncate text-capitalize">{fullName}</p>
               <p className="text-xs text-slate-400 truncate">{userEmail}</p>
             </div>
             <button 

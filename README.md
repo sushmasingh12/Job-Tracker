@@ -61,6 +61,28 @@ git clone https://github.com/your-username/jobtrackr.git
 cd jobtrackr
 ```
 
+### 2. Backend setup
+
+> **Note:** Node.js v18+ is required.
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend` directory (you can use `.env.example` as a template) with these variables:
+- `PORT`
+- `MONGO_URI`
+- `JWT_SECRET`
+- `NODE_ENV`
+- `ALLOWED_ORIGINS`
+- `Any AI API keys used`
+
+Start the development server:
+```bash
+npm run dev
+```
+
 ### 3. Frontend setup
 
 ```bash

@@ -6,6 +6,7 @@ import {
   changePassword,
   sendEmailOtp,
   verifyEmailOtp,
+  directChangeEmail,
   uploadAvatar,
   deleteAccount,
 } from "./settings_Controller.js";
@@ -14,6 +15,7 @@ import {
   validatePasswordChange,
   validateSendEmailOtp,
   validateVerifyEmailOtp,
+  validateDirectEmailChange,
   validateAvatarUpload,
   validateDeleteAccount,
 } from "./settings_Middleware.js";
@@ -34,9 +36,11 @@ router.put("/",    validateSettingsPayload, updateSettings);
 // ── Password change ───────────────────────────────────────────────────────────
 router.post("/change-password", validatePasswordChange, changePassword);
 
-// ── Email change (2-step OTP flow) ───────────────────────────────────────────
-router.post("/email/send-otp",   validateSendEmailOtp,   sendEmailOtp);
-router.post("/email/verify-otp", validateVerifyEmailOtp, verifyEmailOtp);
+// ── Email change (Direct update - NO OTP) ──────────────────────────────────
+router.post("/email/direct-change", validateDirectEmailChange, directChangeEmail);
+
+// router.post("/email/send-otp",   validateSendEmailOtp,   sendEmailOtp);
+// router.post("/email/verify-otp", validateVerifyEmailOtp, verifyEmailOtp);
 
 // ── Avatar upload ─────────────────────────────────────────────────────────────
 // avatarUpload.single("avatar") parses multipart/form-data

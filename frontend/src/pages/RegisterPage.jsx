@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../features/auth/components/AuthLayout";
 import {
@@ -11,13 +12,23 @@ const RegisterPage = () => {
     navigate("/");
   };
   return (
-    <AuthLayout>
+    <>
+      <Helmet>
+        <title>Create Your Account | JobTracker</title>
+        <meta
+          name="description"
+          content="Create a JobTracker account to start tracking applications and landing more interviews with AI-powered tools."
+        />
+        <meta name="robots" content="index,follow" />
+      </Helmet>
+      <AuthLayout>
       <div className="absolute inset-0 grid grid-cols-2">
         <div className="bg-white" />
         <SignUpForm onSignIn={handleSignUp} />
       </div>
       <SignUpOverlay onSignIn={handleSignUp} />
     </AuthLayout>
+    </>
   );
 };
 

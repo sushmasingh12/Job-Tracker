@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import * as appService from "./app_Services.js";
-import { generatePDFBuffer, generateDOCXBuffer } from "../coverLetter/coverLetter_Service.js";
+import { generatePDFBuffer, generateDOCXBuffer } from "../../shared/utils/documentHelper.js";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 import ApiError from "../../shared/utils/ApiError.js";
 
@@ -30,7 +30,7 @@ export const getApplication = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
@@ -61,7 +61,7 @@ export const updateApplication = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
@@ -75,7 +75,7 @@ export const patchStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
   if (!status) {
-    throw new ApiError(400, "Status required hai");
+    throw new ApiError(400, "Status required ");
   }
 
   const application = await appService.updateStatus(
@@ -85,7 +85,7 @@ export const patchStatus = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
@@ -99,7 +99,7 @@ export const saveCoverLetter = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
   if (!content?.trim()) {
-    throw new ApiError(400, "Cover letter content required hai");
+    throw new ApiError(400, "Cover letter content required ");
   }
 
   const application = await appService.saveCoverLetter(
@@ -109,7 +109,7 @@ export const saveCoverLetter = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
@@ -123,7 +123,7 @@ export const saveResume = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
   if (!content) {
-    throw new ApiError(400, "Resume content required hai");
+    throw new ApiError(400, "Resume content required");
   }
 
   const application = await appService.saveResume(
@@ -133,7 +133,7 @@ export const saveResume = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
@@ -150,12 +150,12 @@ export const deleteApplication = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   res.status(200).json({
     success: true,
-    message: "Application delete ho gayi",
+    message: "Application deleted",
     data: {},
   });
 });
@@ -163,7 +163,7 @@ export const deleteApplication = asyncHandler(async (req, res) => {
 // Helper to convert structured optimizedResume.content into a printable string
 const formatResumeObject = (data) => {
   if (!data) return "No content.";
-  
+
   const isDynamic = !!data.sectionOrder;
   const basics = isDynamic ? (data.basics || {}) : data;
   const sections = isDynamic ? (data.sections || {}) : data;
@@ -176,14 +176,14 @@ const formatResumeObject = (data) => {
   // 1. Header
   output += `${(basics.name || "RESUME").toUpperCase()}\n`;
   if (basics.title) output += `${basics.title}\n`;
-  
+
   const contact = [
     basics.email,
     basics.phone,
     basics.location,
     basics.linkedin
   ].filter(Boolean).join(" | ");
-  
+
   if (contact) output += `${contact}\n`;
   output += "\n" + "=".repeat(40) + "\n\n";
 
@@ -205,10 +205,10 @@ const formatResumeObject = (data) => {
           const title = item.role || item.name || item.degree || item.title || "";
           const subtitle = [item.company, item.school, item.org, item.location].filter(Boolean).join(", ");
           const date = item.duration || item.year || item.date || "";
-          
+
           if (title) output += `[${title}]\n`;
           if (subtitle) output += `${subtitle}${date ? ` (${date})` : ""}\n`;
-          
+
           const bullets = Array.isArray(item.bullets) ? item.bullets : Array.isArray(item.achievements) ? item.achievements : [];
           bullets.forEach(b => {
             output += `  • ${String(b).replace(/^[•▪♦◦\-–]\s*/, "")}\n`;
@@ -230,7 +230,7 @@ export const downloadApplicationMaterial = asyncHandler(async (req, res) => {
   );
 
   if (!application) {
-    throw new ApiError(404, "Application nahi mili");
+    throw new ApiError(404, "Application not found");
   }
 
   const { type } = req.params;
@@ -254,7 +254,7 @@ export const downloadApplicationMaterial = asyncHandler(async (req, res) => {
   }
 
   if (!content || !content.trim() || content === "No content.") {
-    throw new ApiError(400, `${type} content available nahi hai. Please generate/save it first.`);
+    throw new ApiError(400, `${type} content not available. Please generate/save it first.`);
   }
 
   if (format === "pdf") {
@@ -277,4 +277,4 @@ export const downloadApplicationMaterial = asyncHandler(async (req, res) => {
     `attachment; filename="${filename}.docx"`
   );
   return res.send(buffer);
-});
+});

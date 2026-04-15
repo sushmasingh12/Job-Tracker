@@ -53,12 +53,12 @@ function ProTip({ tip, linkText, linkHref }) {
       <div className="relative z-10">
         <h4 className="font-bold mb-1">Pro Tip</h4>
         <p className="text-sm text-blue-100 mb-3">{tip}</p>
-        <a
-          href={linkHref}
-          className="text-xs font-bold underline decoration-blue-300 hover:text-blue-100"
+        <button
+          type="button"
+          className="text-xs font-bold underline decoration-blue-300 hover:text-blue-100 bg-transparent border-none p-0 cursor-pointer"
         >
           {linkText}
-        </a>
+        </button>
       </div>
       <div className="absolute -bottom-6 -right-6 text-blue-500 opacity-30 rotate-12">
         <span className="material-symbols-outlined text-9xl">lightbulb</span>

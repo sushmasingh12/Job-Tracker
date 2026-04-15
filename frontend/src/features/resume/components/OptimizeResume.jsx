@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import applicationService from "../../applications/services/applicationService";
@@ -20,7 +21,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 import useResume from "../hooks/useResume";
 import { getResumeFileService } from "../services/resumeServices";
-import ResumePreviewView from "./Resumepreviewview ";
+import ResumePreviewView from "./Resumepreviewview";
 import { fillPDFDoc } from "../utils/resumePdfExport";
 
 
@@ -590,284 +591,294 @@ const OptimizeResume = () => {
   const showAfter = activeView === "after";
 
   return (
-    <div className="flex-1 h-full flex flex-col min-h-0">
-      {error && (
-        <div className="mx-6 mt-4 flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 shrink-0">
-          <p className="text-sm text-red-400">{error}</p>
-          <button onClick={() => setError("")} type="button">
-            <span className="material-symbols-outlined text-red-400 text-base">
-              close
-            </span>
-          </button>
-        </div>
-      )}
-
-      <div className="flex flex-1 min-h-0 items-start">
-        {/* ── Sidebar ── */}
-        <div className="w-80 shrink-0 p-5 space-y-5 sticky top-0 self-start max-h-screen overflow-y-auto">
-          <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 flex flex-col items-center gap-4">
-            <ScoreRing
-              score={optimizedResult?.newAtsScore || analysisResult?.atsScore}
-            />
-
-            <div className="w-full bg-neutral-surface border border-neutral-border rounded-xl p-4 space-y-3">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500">
-                Score Breakdown
-              </p>
-              {breakdownItems.map((item) => (
-                <ScoreBar key={item.label} label={item.label} value={item.value} />
-              ))}
-            </div>
-
-            {Array.isArray(analysisResult?.missingKeywords) &&
-              analysisResult.missingKeywords.length > 0 && (
-                <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 space-y-3 w-full">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">
-                    Missing Keywords
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {analysisResult.missingKeywords.map((kw) => (
-                      <span
-                        key={kw}
-                        className="text-xs px-2 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20"
-                      >
-                        {kw}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+    <>
+      <Helmet>
+        <title>Resume Analysis & Optimization | JobTracker</title>
+        <meta
+          name="description"
+          content="Review your AI-optimized resume, see ATS match scores, and get detailed feedback on how to improve your job application."
+        />
+        <meta name="robots" content="index,follow" />
+      </Helmet>
+      <div className="flex-1 h-full flex flex-col min-h-0">
+        {error && (
+          <div className="mx-6 mt-4 flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 shrink-0">
+            <p className="text-sm text-red-400">{error}</p>
+            <button onClick={() => setError("")} type="button">
+              <span className="material-symbols-outlined text-red-400 text-base">
+                close
+              </span>
+            </button>
           </div>
+        )}
 
-          {Array.isArray(optimizedResult?.changesExplained) &&
-            optimizedResult.changesExplained.length > 0 && (
-              <div className="bg-neutral-surface border border-green-500/20 rounded-2xl p-5 space-y-4">
-                <p className="text-xs uppercase tracking-widest text-green-400">
-                  AI Improvements
-                </p>
-                <ul className="space-y-2">
-                  {optimizedResult.changesExplained.map((c, i) => (
-                    <li key={i} className="text-xs text-slate-400 flex gap-2">
-                      <span className="text-green-400 shrink-0">✓</span>
-                      {c}
-                    </li>
-                  ))}
-                </ul>
-
-                {optimizedResult.improvementData && (
-                  <div className="pt-2 border-t border-white/5 space-y-3">
-                    <p className="text-[10px] uppercase tracking-widest text-slate-500">
-                      Improvement Rationale
-                    </p>
-                    {Object.entries(optimizedResult.improvementData).map(
-                      ([key, val]) => (
-                        <div key={key} className="space-y-1">
-                          <p className="text-[10px] font-bold text-slate-300 capitalize">
-                            {key}:
-                          </p>
-                          <p className="text-[10px] text-slate-500 leading-relaxed">
-                            {val}
-                          </p>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
-
-                <div className="mt-3 flex items-center gap-2 text-sm pt-2">
-                  <span className="text-slate-400">New Score:</span>
-                  <span className="text-green-400 font-mono font-bold">
-                    {optimizedResult.newAtsScore}/100
-                  </span>
-                </div>
-              </div>
-            )}
-        </div>
-
-        {/* ── Main content ── */}
-        <div className="flex-1 min-w-0 h-full overflow-y-auto">
-          <div className="flex flex-col px-7 py-4 min-h-full">
-            {/* Toggle bar */}
-            <div className="flex items-center justify-between pb-4 shrink-0">
-              <div className="flex bg-neutral-surface rounded-lg border border-neutral-border overflow-hidden">
-                <button
-                  onClick={() => handleToggleView("before")}
-                  className={`px-5 py-2 text-sm font-medium transition-colors ${showBefore
-                      ? "bg-primary text-white"
-                      : "text-slate-400 hover:text-slate-200"
-                    }`}
-                  type="button"
-                >
-                  Before
-                </button>
-
-                <button
-                  onClick={() => handleToggleView("after")}
-                  disabled={!optimizedResult}
-                  className={`px-5 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${showAfter
-                      ? "bg-primary text-white"
-                      : "text-slate-400 hover:text-slate-200"
-                    }`}
-                  type="button"
-                >
-                  After
-                </button>
-              </div>
-
-              {showAfter && (
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-400 font-medium tracking-wide">
-                    Template:
-                  </span>
-                  <div className="flex bg-neutral-surface rounded-lg border border-neutral-border p-1 gap-1">
-                    {["modern", "professional", "minimal"].map((tpl) => (
-                      <button
-                        key={tpl}
-                        onClick={() => setActiveTemplate(tpl)}
-                        className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all capitalize ${activeTemplate === tpl
-                            ? "bg-primary text-white shadow-md"
-                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                          }`}
-                        type="button"
-                      >
-                        {tpl}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Preview area */}
-            <div className="space-y-8 pr-1 pb-6">
-              <div className="border border-neutral-border rounded-2xl p-8 flex justify-center bg-white min-h-[500px]">
-                {listLoading || optimizeLoading ? (
-                  <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
-                    <span className="material-symbols-outlined text-4xl animate-spin text-primary">
-                      progress_activity
-                    </span>
-                    <p className="text-sm">
-                      {listLoading
-                        ? "Loading your resume..."
-                        : "AI is optimizing your resume..."}
-                    </p>
-                    {!listLoading && (
-                      <p className="text-xs text-slate-600">
-                        This may take a few seconds
-                      </p>
-                    )}
-                  </div>
-                ) : showAfter ? (
-                  <ResumePreviewView
-                    sections={optimizedSections}
-                    template={activeTemplate}
-                  />
-                ) : (
-                  // "Before" tab — always shows the original uploaded resume
-                  <OriginalPDFViewer
-                    resumeId={resumeIdToDownload}
-                    fileType={selectedResume?.fileType}
-                    sections={selectedResume?.originalStructuredContent}
-                  />
-                )}
-              </div>
-
-              <ATS
-                score={currentFeedback.atsScore}
-                suggestions={currentFeedback.atsSuggestions}
+        <div className="flex flex-1 min-h-0 items-start">
+          {/* ── Sidebar ── */}
+          <div className="w-80 shrink-0 p-5 space-y-5 sticky top-0 self-start max-h-screen overflow-y-auto">
+            <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 flex flex-col items-center gap-4">
+              <ScoreRing
+                score={optimizedResult?.newAtsScore || analysisResult?.atsScore}
               />
 
-              <Details feedback={currentFeedback} />
+              <div className="w-full bg-neutral-surface border border-neutral-border rounded-xl p-4 space-y-3">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                  Score Breakdown
+                </p>
+                {breakdownItems.map((item) => (
+                  <ScoreBar key={item.label} label={item.label} value={item.value} />
+                ))}
+              </div>
+
+              {Array.isArray(analysisResult?.missingKeywords) &&
+                analysisResult.missingKeywords.length > 0 && (
+                  <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 space-y-3 w-full">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">
+                      Missing Keywords
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {analysisResult.missingKeywords.map((kw) => (
+                        <span
+                          key={kw}
+                          className="text-xs px-2 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20"
+                        >
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+
+            {Array.isArray(optimizedResult?.changesExplained) &&
+              optimizedResult.changesExplained.length > 0 && (
+                <div className="bg-neutral-surface border border-green-500/20 rounded-2xl p-5 space-y-4">
+                  <p className="text-xs uppercase tracking-widest text-green-400">
+                    AI Improvements
+                  </p>
+                  <ul className="space-y-2">
+                    {optimizedResult.changesExplained.map((c, i) => (
+                      <li key={i} className="text-xs text-slate-400 flex gap-2">
+                        <span className="text-green-400 shrink-0">✓</span>
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {optimizedResult.improvementData && (
+                    <div className="pt-2 border-t border-white/5 space-y-3">
+                      <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                        Improvement Rationale
+                      </p>
+                      {Object.entries(optimizedResult.improvementData).map(
+                        ([key, val]) => (
+                          <div key={key} className="space-y-1">
+                            <p className="text-[10px] font-bold text-slate-300 capitalize">
+                              {key}:
+                            </p>
+                            <p className="text-[10px] text-slate-500 leading-relaxed">
+                              {val}
+                            </p>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center gap-2 text-sm pt-2">
+                    <span className="text-slate-400">New Score:</span>
+                    <span className="text-green-400 font-mono font-bold">
+                      {optimizedResult.newAtsScore}/100
+                    </span>
+                  </div>
+                </div>
+              )}
+          </div>
+
+          {/* ── Main content ── */}
+          <div className="flex-1 min-w-0 h-full overflow-y-auto">
+            <div className="flex flex-col px-7 py-4 min-h-full">
+              {/* Toggle bar */}
+              <div className="flex items-center justify-between pb-4 shrink-0">
+                <div className="flex bg-neutral-surface rounded-lg border border-neutral-border overflow-hidden">
+                  <button
+                    onClick={() => handleToggleView("before")}
+                    className={`px-5 py-2 text-sm font-medium transition-colors ${showBefore
+                      ? "bg-primary text-white"
+                      : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    type="button"
+                  >
+                    Before
+                  </button>
+
+                  <button
+                    onClick={() => handleToggleView("after")}
+                    disabled={!optimizedResult}
+                    className={`px-5 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${showAfter
+                      ? "bg-primary text-white"
+                      : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    type="button"
+                  >
+                    After
+                  </button>
+                </div>
+
+                {showAfter && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-400 font-medium tracking-wide">
+                      Template:
+                    </span>
+                    <div className="flex bg-neutral-surface rounded-lg border border-neutral-border p-1 gap-1">
+                      {["modern", "professional", "minimal"].map((tpl) => (
+                        <button
+                          key={tpl}
+                          onClick={() => setActiveTemplate(tpl)}
+                          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all capitalize ${activeTemplate === tpl
+                            ? "bg-primary text-white shadow-md"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                            }`}
+                          type="button"
+                        >
+                          {tpl}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Preview area */}
+              <div className="space-y-8 pr-1 pb-6">
+                <div className="border border-neutral-border rounded-2xl p-8 flex justify-center bg-white min-h-[500px]">
+                  {listLoading || optimizeLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+                      <span className="material-symbols-outlined text-4xl animate-spin text-primary">
+                        progress_activity
+                      </span>
+                      <p className="text-sm">
+                        {listLoading
+                          ? "Loading your resume..."
+                          : "AI is optimizing your resume..."}
+                      </p>
+                      {!listLoading && (
+                        <p className="text-xs text-slate-600">
+                          This may take a few seconds
+                        </p>
+                      )}
+                    </div>
+                  ) : showAfter ? (
+                    <ResumePreviewView
+                      sections={optimizedSections}
+                      template={activeTemplate}
+                    />
+                  ) : (
+                    // "Before" tab — always shows the original uploaded resume
+                    <OriginalPDFViewer
+                      resumeId={resumeIdToDownload}
+                      fileType={selectedResume?.fileType}
+                      sections={selectedResume?.originalStructuredContent}
+                    />
+                  )}
+                </div>
+
+                <ATS
+                  score={currentFeedback.atsScore}
+                  suggestions={currentFeedback.atsSuggestions}
+                />
+
+                <Details feedback={currentFeedback} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Footer action bar ── */}
-      <div className="flex items-center justify-between px-7 h-16 border-t border-blue-400/10 shrink-0">
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span className="material-symbols-outlined text-green-400 text-sm">
-            check_circle
-          </span>
-          {analysisResult
-            ? `Analysis complete • ${optimizedResult?.newAtsScore || analysisResult.atsScore
-            }/100 ATS Score`
-            : "Analyzing…"}
-        </div>
+        {/* ── Footer action bar ── */}
+        <div className="flex items-center justify-between px-7 h-16 border-t border-blue-400/10 shrink-0">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span className="material-symbols-outlined text-green-400 text-sm">
+              check_circle
+            </span>
+            {analysisResult
+              ? `Analysis complete • ${optimizedResult?.newAtsScore || analysisResult.atsScore
+              }/100 ATS Score`
+              : "Analyzing…"}
+          </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleSaveToApplication}
-            disabled={!optimizedResult || saveLoading}
-            className={`px-2 py-1 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${saveSuccess
+          <div className="flex gap-3">
+            <button
+              onClick={handleSaveToApplication}
+              disabled={!optimizedResult || saveLoading}
+              className={`px-2 py-1 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${saveSuccess
                 ? "bg-green-600 text-white"
                 : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20"
-              } disabled:opacity-40 disabled:cursor-not-allowed`}
-            type="button"
-          >
-            {saveLoading ? (
-              <>
-                <span className="material-symbols-outlined text-sm animate-spin">
-                  progress_activity
-                </span>
-                Saving...
-              </>
-            ) : saveSuccess ? (
-              <>
-                <span className="material-symbols-outlined text-sm">check</span>
-                Saved
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-sm">save</span>
-                {applicationId ? "Save to App" : "Save Resume"}
-              </>
-            )}
-          </button>
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
+              type="button"
+            >
+              {saveLoading ? (
+                <>
+                  <span className="material-symbols-outlined text-sm animate-spin">
+                    progress_activity
+                  </span>
+                  Saving...
+                </>
+              ) : saveSuccess ? (
+                <>
+                  <span className="material-symbols-outlined text-sm">check</span>
+                  Saved
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-sm">save</span>
+                  {applicationId ? "Save to App" : "Save Resume"}
+                </>
+              )}
+            </button>
 
-          <button
-            onClick={handleDownloadPdf}
-            disabled={!optimizedResult || downloadLoading}
-            className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            type="button"
-          >
-            {downloadLoading ? "Downloading…" : "Download PDF"}
-          </button>
+            <button
+              onClick={handleDownloadPdf}
+              disabled={!optimizedResult || downloadLoading}
+              className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              type="button"
+            >
+              {downloadLoading ? "Downloading…" : "Download PDF"}
+            </button>
 
-          <button
-            onClick={handleDownloadDocx}
-            disabled={!optimizedResult || downloadLoading}
-            className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            type="button"
-          >
-            Download DOCX
-          </button>
+            <button
+              onClick={handleDownloadDocx}
+              disabled={!optimizedResult || downloadLoading}
+              className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              type="button"
+            >
+              Download DOCX
+            </button>
 
-          <button
-            onClick={handleStartOptimize}
-            disabled={optimizeLoading}
-            className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
-            type="button"
-          >
-            {optimizeLoading ? (
-              <>
-                <span className="material-symbols-outlined text-sm animate-spin">
-                  progress_activity
-                </span>
-                Optimizing...
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-sm">
-                  auto_awesome
-                </span>
-                Optimize Resume
-              </>
-            )}
-          </button>
+            <button
+              onClick={handleStartOptimize}
+              disabled={optimizeLoading}
+              className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
+              type="button"
+            >
+              {optimizeLoading ? (
+                <>
+                  <span className="material-symbols-outlined text-sm animate-spin">
+                    progress_activity
+                  </span>
+                  Optimizing...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-sm">
+                    auto_awesome
+                  </span>
+                  Optimize Resume
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

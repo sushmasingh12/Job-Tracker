@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutAction } from '../../auth/store/authSlice';
 import { logout as logoutService } from '../../auth/services/authService';
+import { updateSettingsThunk } from '../store/settingsSlice';
 
 // ── Password strength calculator ──────────────────────────────────────────────
 const getPasswordStrength = (password) => {
@@ -22,93 +23,24 @@ const getPasswordStrength = (password) => {
   return { score, label: 'Very Strong', color: 'bg-emerald-500', text: 'text-emerald-500' };
 };
 
-// ── OTP Input (6 boxes) ───────────────────────────────────────────────────────
-const OtpInput = ({ value, onChange, disabled }) => {
-  const inputs = useRef([]);
-  const digits = value.split('');
 
-  const handleKey = (i, e) => {
-    if (e.key === 'Backspace') {
-      const next = [...digits];
-      if (next[i]) {
-        next[i] = '';
-        onChange(next.join(''));
-      } else if (i > 0) {
-        inputs.current[i - 1]?.focus();
-      }
-    }
-  };
-
-  const handleChange = (i, e) => {
-    const char = e.target.value.replace(/\D/, '').slice(-1);
-    const next = [...digits];
-    next[i] = char;
-    onChange(next.join(''));
-    if (char && i < 5) inputs.current[i + 1]?.focus();
-  };
-
-  const handlePaste = (e) => {
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    onChange(pasted.padEnd(6, '').slice(0, 6));
-    inputs.current[Math.min(pasted.length, 5)]?.focus();
-    e.preventDefault();
-  };
-
-  return (
-    <div className="flex gap-2 justify-center" onPaste={handlePaste}>
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <input
-          key={i}
-          ref={(el) => (inputs.current[i] = el)}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digits[i] || ''}
-          onChange={(e) => handleChange(i, e)}
-          onKeyDown={(e) => handleKey(i, e)}
-          disabled={disabled}
-          className="w-11 h-12 text-center text-lg font-bold rounded-xl border-2 border-neutral-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white dark:bg-slate-800 text-neutral-text dark:text-white disabled:opacity-50"
-        />
-      ))}
-    </div>
-  );
-};
 
 // ── Email Change Section ──────────────────────────────────────────────────────
 const EmailChangeSection = () => {
-  const { settings, sendEmailOtp, verifyEmailOtp, resetEmailChange } = useSettings();
+  const { settings, directChangeEmail, resetEmailChange } = useSettings();
   const { emailChange, profile } = settings;
 
   const [newEmail, setNewEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [countdown, setCountdown] = useState(0);
 
-  // Countdown timer for resend OTP
-  useEffect(() => {
-    if (emailChange.otpSentAt) {
-      const elapsed = Math.floor((Date.now() - new Date(emailChange.otpSentAt)) / 1000);
-      const remaining = Math.max(0, 60 - elapsed);
-      setCountdown(remaining);
-      if (remaining > 0) {
-        const t = setInterval(() => setCountdown((c) => Math.max(0, c - 1)), 1000);
-        return () => clearInterval(t);
-      }
-    }
-  }, [emailChange.otpSentAt]);
-
-  const handleSendOtp = () => {
-    if (!newEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) return;
-    sendEmailOtp(newEmail.trim());
-  };
-
-  const handleVerify = () => {
-    if (otp.length !== 6) return;
-    verifyEmailOtp(emailChange.pendingEmail, otp);
+  const handleUpdateEmail = () => {
+    const emailLower = newEmail.trim().toLowerCase();
+    if (!emailLower || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLower)) return;
+    if (emailLower === (profile.email || '').toLowerCase()) return;
+    directChangeEmail(emailLower);
   };
 
   const handleReset = () => {
     setNewEmail('');
-    setOtp('');
     resetEmailChange();
   };
 
@@ -118,11 +50,11 @@ const EmailChangeSection = () => {
     <div className="space-y-4 p-5 rounded-2xl border border-neutral-border dark:border-slate-700 bg-neutral-background-light dark:bg-slate-800/40">
       <div className="flex items-center gap-2">
         <i className="fa-solid fa-envelope text-primary" />
-        <h4 className="text-sm font-semibold text-neutral-text dark:text-white">Change Email Address</h4>
+        <h4 className="text-sm font-semibold text-neutral-text dark:text-white">Email Settings</h4>
       </div>
 
       <p className="text-xs text-neutral-muted">
-        Current: <span className="font-medium text-neutral-text dark:text-slate-300">{profile.email || '—'}</span>
+        Current Address: <span className="font-medium text-neutral-text dark:text-slate-300">{profile.email || '—'}</span>
       </p>
 
       {/* ── Step: success ── */}
@@ -131,87 +63,46 @@ const EmailChangeSection = () => {
           <span className="material-symbols-outlined text-emerald-500">check_circle</span>
           <div>
             <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Email updated successfully!</p>
-            <p className="text-xs text-emerald-600 dark:text-emerald-500">Your new email: {emailChange.pendingEmail}</p>
+            <p className="text-xs text-emerald-600 dark:text-emerald-500">Your new address: {emailChange.pendingEmail}</p>
           </div>
-          <button onClick={handleReset} className="ml-auto text-xs text-emerald-600 hover:underline">Change again</button>
+          <button onClick={handleReset} className="ml-auto text-xs text-emerald-600 hover:underline">Update again</button>
         </div>
       )}
 
-      {/* ── Step: idle — enter new email ── */}
-      {(step === 'idle' || step === 'error') && step !== 'success' && (
+      {/* ── Form: idle or error ── */}
+      {step !== 'success' && (
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="Enter new email address"
               className="inpttext flex-1 focus:border-primary focus:ring-2 focus:ring-primary/20"
-              onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()}
+              onKeyDown={(e) => e.key === 'Enter' && handleUpdateEmail()}
+              disabled={step === 'verifying'} // reusing 'verifying' as 'loading'
             />
             <button
-              onClick={handleSendOtp}
-              disabled={!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)}
-              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+              onClick={handleUpdateEmail}
+              disabled={!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail) || step === 'verifying'}
+              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center justify-center gap-2"
             >
-              Send OTP
+              {step === 'verifying' && (
+                <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+              )}
+              Update Email
             </button>
           </div>
-          {step === 'error' && emailChange.error && (
+          
+          {emailChange.error && (
             <p className="text-xs text-red-500 flex items-center gap-1">
               <i className="fa-solid fa-circle-exclamation" /> {emailChange.error}
             </p>
           )}
-        </div>
-      )}
 
-      {/* ── Step: pending_otp — enter OTP ── */}
-      {(step === 'pending_otp' || step === 'verifying') && (
-        <div className="space-y-4">
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl text-center">
-            <p className="text-xs text-blue-700 dark:text-blue-400">
-              We sent a 6-digit OTP to <span className="font-bold">{emailChange.pendingEmail}</span>
-            </p>
-            <p className="text-[10px] text-blue-500 dark:text-blue-500 mt-0.5">Check your inbox (and spam folder)</p>
-          </div>
-
-          <OtpInput value={otp} onChange={setOtp} disabled={step === 'verifying'} />
-
-          {emailChange.error && (
-            <p className="text-xs text-red-500 text-center flex items-center justify-center gap-1">
-              <i className="fa-solid fa-circle-exclamation" /> {emailChange.error}
-            </p>
-          )}
-
-          <div className="flex items-center justify-between gap-2">
-            <button
-              onClick={handleReset}
-              className="text-xs text-neutral-muted hover:text-neutral-text transition-colors"
-            >
-              ← Change email
-            </button>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleSendOtp}
-                disabled={countdown > 0 || step === 'verifying'}
-                className="text-xs text-primary hover:underline disabled:text-neutral-muted disabled:no-underline disabled:cursor-not-allowed"
-              >
-                {countdown > 0 ? `Resend in ${countdown}s` : 'Resend OTP'}
-              </button>
-
-              <button
-                onClick={handleVerify}
-                disabled={otp.length !== 6 || step === 'verifying'}
-                className="px-5 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-              >
-                {step === 'verifying' && (
-                  <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                )}
-                Verify & Update
-              </button>
-            </div>
-          </div>
+          <p className="text-[10px] text-neutral-muted italic">
+            Note: Updating your email will require you to use the new address for future logins.
+          </p>
         </div>
       )}
     </div>
@@ -243,25 +134,7 @@ const PasswordChangeSection = () => {
     }
   }, [passwordChange.success]);
 
-  const PasswordInput = ({ name, placeholder, showKey }) => (
-    <div className="relative">
-      <input
-        type={showPasswords[showKey] ? 'text' : 'password'}
-        name={name}
-        value={form[name]}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="inpttext w-full pr-10 focus:border-primary focus:ring-2 focus:ring-primary/20"
-      />
-      <button
-        type="button"
-        onClick={() => toggleShow(showKey)}
-        className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-muted hover:text-neutral-text transition-colors"
-      >
-        <i className={`fa-solid ${showPasswords[showKey] ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
-      </button>
-    </div>
-  );
+
 
   return (
     <div className="space-y-4">
@@ -287,14 +160,46 @@ const PasswordChangeSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-muted">Current Password</label>
-          <PasswordInput name="currentPassword" placeholder="Enter current password" showKey="current" />
+          <div className="relative">
+            <input
+              type={showPasswords.current ? 'text' : 'password'}
+              name="currentPassword"
+              value={form.currentPassword}
+              onChange={handleChange}
+              placeholder="Enter current password"
+              className="inpttext w-full pr-10 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            <button
+              type="button"
+              onClick={() => toggleShow('current')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-muted hover:text-neutral-text transition-colors"
+            >
+              <i className={`fa-solid ${showPasswords.current ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
+            </button>
+          </div>
         </div>
 
         <div className="hidden md:block" />
 
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-muted">New Password</label>
-          <PasswordInput name="newPassword" placeholder="At least 8 characters" showKey="new" />
+          <div className="relative">
+            <input
+              type={showPasswords.new ? 'text' : 'password'}
+              name="newPassword"
+              value={form.newPassword}
+              onChange={handleChange}
+              placeholder="At least 8 characters"
+              className="inpttext w-full pr-10 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            <button
+              type="button"
+              onClick={() => toggleShow('new')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-muted hover:text-neutral-text transition-colors"
+            >
+              <i className={`fa-solid ${showPasswords.new ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
+            </button>
+          </div>
           {form.newPassword && (
             <div className="space-y-1 mt-1">
               <div className="flex gap-1">
@@ -312,7 +217,23 @@ const PasswordChangeSection = () => {
 
         <div className="space-y-1.5">
           <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-muted">Confirm New Password</label>
-          <PasswordInput name="confirmPassword" placeholder="Repeat new password" showKey="confirm" />
+          <div className="relative">
+            <input
+              type={showPasswords.confirm ? 'text' : 'password'}
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Repeat new password"
+              className="inpttext w-full pr-10 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            <button
+              type="button"
+              onClick={() => toggleShow('confirm')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-muted hover:text-neutral-text transition-colors"
+            >
+              <i className={`fa-solid ${showPasswords.confirm ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
+            </button>
+          </div>
           {form.confirmPassword && form.newPassword !== form.confirmPassword && (
             <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1">
               <i className="fa-solid fa-circle-exclamation" /> Passwords don't match
@@ -360,7 +281,25 @@ const PasswordChangeSection = () => {
 // ── Two-Factor Auth Toggle ────────────────────────────────────────────────────
 const TwoFactorSection = () => {
   const { settings, updateAccount } = useSettings();
+  const dispatch = useDispatch();
   const { twoFactorEnabled } = settings.account;
+
+  const handleToggle = async () => {
+    const newVal = !twoFactorEnabled;
+    // 1. Update local state for immediate feedback
+    updateAccount({ twoFactorEnabled: newVal });
+    
+    // 2. Persist to backend immediately
+    // We construct the full payload to ensure accuracy
+    const updatedSettings = {
+      ...settings,
+      account: {
+        ...settings.account,
+        twoFactorEnabled: newVal
+      }
+    };
+    dispatch(updateSettingsThunk(updatedSettings));
+  };
 
   return (
     <div className="flex items-center justify-between p-4 rounded-2xl border border-neutral-border dark:border-slate-700 bg-neutral-background-light dark:bg-slate-800/40">
@@ -378,7 +317,7 @@ const TwoFactorSection = () => {
           type="checkbox"
           className="sr-only peer"
           checked={twoFactorEnabled}
-          onChange={() => updateAccount({ twoFactorEnabled: !twoFactorEnabled })}
+          onChange={handleToggle}
         />
         <div className="w-11 h-6 bg-neutral-border peer-focus:outline-none rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
       </label>

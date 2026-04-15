@@ -24,7 +24,7 @@ const handleResponse = async (res) => {
 // ─── Download Cover Letter ────────────────────────────────────────────────────
 
 /**
- * Cover letter ko PDF ya DOCX ke roop mein download karta hai.
+ * Downloads the cover letter in PDF or DOCX format.
  * @param {{ content: string, format: "pdf"|"docx", jobTitle: string }} param0
  */
 export const downloadCoverLetterAPI = async ({ content, format, jobTitle }) => {
@@ -55,7 +55,7 @@ export const downloadCoverLetterAPI = async ({ content, format, jobTitle }) => {
 // ─── Save to Application ──────────────────────────────────────────────────────
 
 /**
- * Generated letter ko user ke application record mein save karta hai.
+ * Saves the generated letter to the user's application record.
  * @param {{ letterId?: string, content: string }} payload
  * @returns {Promise<{ id: string }>}
  */

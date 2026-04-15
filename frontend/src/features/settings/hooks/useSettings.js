@@ -4,6 +4,10 @@ import {
   updateAccount,
   updateNotifications,
   updatePrivacy,
+  updateResumeSettings,
+  updatePreferences,
+  updateAISettings,
+  updateAppearance,
   resetEmailChange,
   resetPasswordChange,
   clearSaveSuccess,
@@ -13,6 +17,7 @@ import {
   changePasswordThunk,
   sendEmailOtpThunk,
   verifyEmailOtpThunk,
+  directChangeEmailThunk,
   deleteAccountThunk,
 } from '../store/settingsSlice';
 import { uploadAvatarService } from '../services/settingsService';
@@ -30,7 +35,7 @@ export const useSettings = () => {
     setAvatarLoading(true);
     try {
       const res = await uploadAvatarService(file);
-      dispatch(updateProfile({ avatar: res.avatarUrl }));
+      dispatch(updateProfile({ avatar: res.data.avatarUrl }));
     } finally {
       setAvatarLoading(false);
     }
@@ -54,11 +59,26 @@ export const useSettings = () => {
 
   const handleResetEmailChange = () => dispatch(resetEmailChange());
 
+  const handleDirectChangeEmail = (newEmail) =>
+    dispatch(directChangeEmailThunk({ newEmail }));
+
   // ── Notifications ─────────────────────────────────────────────────────────
   const handleUpdateNotifications = (data) => dispatch(updateNotifications(data));
 
   // ── Privacy ───────────────────────────────────────────────────────────────
   const handleUpdatePrivacy = (data) => dispatch(updatePrivacy(data));
+
+  // ── Resume ────────────────────────────────────────────────────────────────
+  const handleUpdateResume = (data) => dispatch(updateResumeSettings(data));
+
+  // ── Preferences ──────────────────────────────────────────────────────────
+  const handleUpdatePreferences = (data) => dispatch(updatePreferences(data));
+
+  // ── AI ───────────────────────────────────────────────────────────────────
+  const handleUpdateAI = (data) => dispatch(updateAISettings(data));
+
+  // ── Appearance ───────────────────────────────────────────────────────────
+  const handleUpdateAppearance = (data) => dispatch(updateAppearance(data));
 
   // ── Save / Fetch ──────────────────────────────────────────────────────────
   const saveSettings = () => dispatch(updateSettingsThunk(settings));
@@ -87,12 +107,25 @@ export const useSettings = () => {
     sendEmailOtp: handleSendEmailOtp,
     verifyEmailOtp: handleVerifyEmailOtp,
     resetEmailChange: handleResetEmailChange,
+    directChangeEmail: handleDirectChangeEmail,
 
     // notifications
     updateNotifications: handleUpdateNotifications,
 
     // privacy
     updatePrivacy: handleUpdatePrivacy,
+
+    // resume
+    updateResumeSettings: handleUpdateResume,
+
+    // preferences
+    updatePreferences: handleUpdatePreferences,
+
+    // AI
+    updateAISettings: handleUpdateAI,
+
+    // appearance
+    updateAppearance: handleUpdateAppearance,
 
     // global
     saveSettings,

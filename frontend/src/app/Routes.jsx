@@ -66,19 +66,19 @@ export const router = createBrowserRouter(
         <Route path="/dashboard" element={withSuspense(DashboardPage)} />
         <Route path="/application">
           <Route
-          path="applicationform"
-          element={withSuspense(ApplicationForms)}
-        />
-        <Route
-          path="applicationspage"
-          element={withSuspense(ApplicationRouter)}
-        />
-        <Route
-          path="applicationspage/:id"
-          element={withSuspense(ApplicationRouter)}
-        />
+            path="applicationform"
+            element={withSuspense(ApplicationForms)}
+          />
+          <Route
+            path="applicationspage"
+            element={withSuspense(ApplicationRouter)}
+          />
+          <Route
+            path="applicationspage/:id"
+            element={withSuspense(ApplicationRouter)}
+          />
         </Route>
-        
+
 
         <Route path="/resume" element={withSuspense(Resume)} />
         <Route

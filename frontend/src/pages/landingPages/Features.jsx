@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const Features = () => {
   return (
     <div>
@@ -192,11 +193,11 @@ const Features = () => {
   </div>
 
   <ul className="flex gap-[26px] list-none">
-    <li><a href="#" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Features</a></li>
-    <li><a href="#" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Pricing</a></li>
-    <li><a href="#" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Blog</a></li>
-    <li><a href="#" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Privacy</a></li>
-    <li><a href="#" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Terms</a></li>
+    <li><Link to="/" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Features</Link></li>
+    <li><Link to="/" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Pricing</Link></li>
+    <li><Link to="/" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Blog</Link></li>
+    <li><Link to="/" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Privacy</Link></li>
+    <li><Link to="/" className="text-[13px] text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">Terms</Link></li>
   </ul>
 
   <div className="text-xs text-neutral-muted">© 2026 ApplyIQ. All rights reserved.</div>

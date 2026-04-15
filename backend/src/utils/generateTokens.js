@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 const generateToken = (res, userId, options ={}) => {
     try {
         const defaultOptions = {
-            expiresIn: options.expiresIn || '7d',
+            expiresIn: options.expiresIn || process.env.JWT_EXPIRE_IN || '7d',
             email: options.email || null
         }
         const payload = {

@@ -5,7 +5,7 @@ import { setCurrentPage } from "../store/applicationsSlice";
 
 const Pagination = ({ total, perPage, currentPage, totalPages }) => {
   const dispatch = useDispatch();
-  
+
   const handlePageChange = useCallback((page) => {
     if (page >= 1 && page <= totalPages) {
       dispatch(setCurrentPage(page));
@@ -26,20 +26,19 @@ const Pagination = ({ total, perPage, currentPage, totalPages }) => {
     const maxVisible = 5;
     let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
     let end = Math.min(totalPages, start + maxVisible - 1);
-    
-    // Adjust start if we're near the end
+
+
     if (end - start < maxVisible - 1) {
       start = Math.max(1, end - maxVisible + 1);
     }
-    
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   }, [currentPage, totalPages]);
 
-  // Don't render if there's only one page
   if (totalPages <= 1) {
     return null;
   }
@@ -48,7 +47,7 @@ const Pagination = ({ total, perPage, currentPage, totalPages }) => {
   const end = Math.min(currentPage * perPage, total);
 
   return (
-    <nav 
+    <nav
       className="mt-8 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-6"
       aria-label="Pagination"
     >
@@ -87,18 +86,17 @@ const Pagination = ({ total, perPage, currentPage, totalPages }) => {
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-              page === currentPage
+            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${page === currentPage
                 ? "bg-blue-600 text-white"
                 : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
-            }`}
+              }`}
             aria-current={page === currentPage ? 'page' : undefined}
           >
             {page}
           </button>
         ))}
 
-        {/* Ellipsis if needed */}
+
         {totalPages > 5 && currentPage < totalPages - 2 && (
           <span className="px-2 text-slate-400">...</span>
         )}

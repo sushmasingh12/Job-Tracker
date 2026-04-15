@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import StatsCard from "./StatsCard";
 
 const Dashboard = () => {
@@ -22,12 +23,12 @@ const Dashboard = () => {
               <h2 className="text-lg font-bold text-neutral-text">
                 Recent Applications
               </h2>
-              <a
+              <Link
                 className="text-sm font-medium text-primary hover:text-primary-dark hover:underline"
-                href="#"
+                to="/application/applicationspage"
               >
                 View All
-              </a>
+              </Link>
             </div>
             <div className="space-y-4">
               <div className="bg-neutral-surface border border-neutral-border rounded-xl p-4 flex items-center gap-4 hover:border-primary/30 transition-colors shadow-sm">

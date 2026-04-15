@@ -5,6 +5,7 @@ import {
   changeUserPassword,
   createEmailChangeOtp,
   verifyEmailChangeOtp,
+  updateUserEmailDirectly,
   updateUserAvatar,
   deleteUserAccount,
 } from "./settings_Services.js";
@@ -69,6 +70,17 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Email verified and updated successfully",
+    data: { email: confirmedEmail },
+  });
+});
+
+// ── POST /settings/email/direct-change ───────────────────────────────────────
+export const directChangeEmail = asyncHandler(async (req, res) => {
+  const { newEmail } = req.body;
+  const confirmedEmail = await updateUserEmailDirectly(getUserId(req), newEmail);
+  res.status(200).json({
+    success: true,
+    message: "Email updated successfully",
     data: { email: confirmedEmail },
   });
 });

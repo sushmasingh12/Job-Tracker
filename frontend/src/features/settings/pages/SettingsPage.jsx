@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useDispatch } from 'react-redux';
 import { fetchSettingsThunk } from '../store/settingsSlice';
 import SettingsSidebar from '../components/SettingsSidebar';
@@ -43,7 +44,16 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <>
+      <Helmet>
+        <title>Account Settings | JobTracker</title>
+        <meta
+          name="description"
+          content="Manage your profile, account preferences, notification settings, and privacy for your JobTracker account."
+        />
+        <meta name="robots" content="index,follow" />
+      </Helmet>
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <div className="lg:w-72 flex-shrink-0">
@@ -58,6 +68,7 @@ const SettingsPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

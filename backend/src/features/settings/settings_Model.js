@@ -73,6 +73,40 @@ const settingsSchema = new mongoose.Schema(
       allowRecruiterContact: { type: Boolean, default: true  },
       dataRetentionMonths:   { type: Number,  default: 12    }, // 0 = forever
     },
+
+    // ── Resume ───────────────────────────────────────────────────────────────
+    resume: {
+      visibility: { type: String, default: "private", enum: ["private", "public", "recruiter-only"] },
+      parsingPreferences: {
+        extractSkills: { type: Boolean, default: true },
+        autoUpdate:    { type: Boolean, default: false },
+      },
+    },
+
+    // ── Application Preferences ─────────────────────────────────────────────
+    preferences: {
+      preferredRole:     { type: String, default: "" },
+      preferredLocation: { type: String, default: "" },
+      workMode:          { type: String, default: "remote", enum: ["remote", "hybrid", "onsite"] },
+      employmentType:    { type: String, default: "full-time" },
+      salaryExpectation: { type: String, default: "" },
+      defaultStatus:     { type: String, default: "applied" },
+    },
+
+    // ── AI Settings ─────────────────────────────────────────────────────────
+    ai: {
+      enableSuggestions: { type: Boolean, default: true },
+      optimizationMode:  { type: String,  default: "balanced", enum: ["keywords", "content", "balanced"] },
+      autoSaveOptimized: { type: Boolean, default: false },
+      saveHistory:       { type: Boolean, default: true },
+    },
+
+    // ── Appearance ──────────────────────────────────────────────────────────
+    appearance: {
+      theme:    { type: String, default: "system", enum: ["light", "dark", "system"] },
+      density:  { type: String, default: "comfortable", enum: ["compact", "comfortable", "spacious"] },
+      fontSize: { type: String, default: "md", enum: ["sm", "md", "lg"] },
+    },
   },
   { timestamps: true }
 );

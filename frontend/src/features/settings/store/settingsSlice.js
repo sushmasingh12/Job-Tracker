@@ -5,6 +5,7 @@ import {
   changePasswordService,
   sendEmailOtpService,
   verifyEmailOtpService,
+  directChangeEmailService,
   deleteAccountService,
 } from '../services/settingsService';
 
@@ -15,7 +16,7 @@ export const fetchSettingsThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await fetchSettingsService();
-      return response.settings;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch settings');
     }
@@ -27,7 +28,7 @@ export const updateSettingsThunk = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await updateSettingsService(payload);
-      return response.settings;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to update settings');
     }
@@ -65,9 +66,21 @@ export const verifyEmailOtpThunk = createAsyncThunk(
   async ({ newEmail, otp }, { rejectWithValue }) => {
     try {
       const response = await verifyEmailOtpService({ newEmail, otp });
-      return response.email; // confirmed new email from backend
+      return response.data.email; // confirmed new email from backend
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Invalid or expired OTP');
+    }
+  }
+);
+
+export const directChangeEmailThunk = createAsyncThunk(
+  'settings/directChangeEmail',
+  async ({ newEmail }, { rejectWithValue }) => {
+    try {
+      const response = await directChangeEmailService({ newEmail });
+      return response.data.email;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update email');
     }
   }
 );
@@ -140,6 +153,36 @@ const initialState = {
     dataRetentionMonths: 12,
   },
 
+  resume: {
+    visibility: 'private',
+    parsingPreferences: {
+      extractSkills: true,
+      autoUpdate: false,
+    },
+  },
+
+  preferences: {
+    preferredRole: '',
+    preferredLocation: '',
+    workMode: 'remote',
+    employmentType: 'full-time',
+    salaryExpectation: '',
+    defaultStatus: 'applied',
+  },
+
+  ai: {
+    enableSuggestions: true,
+    optimizationMode: 'balanced',
+    autoSaveOptimized: false,
+    saveHistory: true,
+  },
+
+  appearance: {
+    theme: 'system',
+    density: 'comfortable',
+    fontSize: 'md',
+  },
+
   // ── Email change OTP flow ─────────────────────────────────────────────────
   emailChange: {
     step: 'idle',        // idle | pending_otp | verifying | success | error
@@ -179,6 +222,18 @@ const settingsSlice = createSlice({
     updatePrivacy: (state, action) => {
       state.privacy = { ...state.privacy, ...action.payload };
     },
+    updateResumeSettings: (state, action) => {
+      state.resume = { ...state.resume, ...action.payload };
+    },
+    updatePreferences: (state, action) => {
+      state.preferences = { ...state.preferences, ...action.payload };
+    },
+    updateAISettings: (state, action) => {
+      state.ai = { ...state.ai, ...action.payload };
+    },
+    updateAppearance: (state, action) => {
+      state.appearance = { ...state.appearance, ...action.payload };
+    },
     resetEmailChange: (state) => {
       state.emailChange = initialState.emailChange;
     },
@@ -195,7 +250,7 @@ const settingsSlice = createSlice({
   extraReducers: (builder) => {
     const applyPayload = (state, payload) => {
       if (payload) {
-        ['profile', 'account', 'notifications', 'privacy'].forEach((key) => {
+        ['profile', 'account', 'notifications', 'privacy', 'resume', 'preferences', 'ai', 'appearance'].forEach((key) => {
           if (payload[key]) {
             state[key] = { ...state[key], ...payload[key] };
           }
@@ -278,6 +333,19 @@ const settingsSlice = createSlice({
         state.emailChange.step = 'pending_otp'; // stay on OTP screen
         state.emailChange.error = action.payload;
       });
+
+    // ── directChangeEmail ─────────────────────────────────────────────────
+    builder
+      .addCase(directChangeEmailThunk.pending, (state) => {
+        state.emailChange = { step: 'verifying', pendingEmail: '', otpSentAt: null, error: null };
+      })
+      .addCase(directChangeEmailThunk.fulfilled, (state, action) => {
+        state.profile.email = action.payload;
+        state.emailChange = { step: 'success', pendingEmail: action.payload, otpSentAt: null, error: null };
+      })
+      .addCase(directChangeEmailThunk.rejected, (state, action) => {
+        state.emailChange = { step: 'idle', pendingEmail: '', otpSentAt: null, error: action.payload };
+      });
   },
 });
 
@@ -286,6 +354,10 @@ export const {
   updateAccount,
   updateNotifications,
   updatePrivacy,
+  updateResumeSettings,
+  updatePreferences,
+  updateAISettings,
+  updateAppearance,
   resetEmailChange,
   resetPasswordChange,
   clearSaveSuccess,

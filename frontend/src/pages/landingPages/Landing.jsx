@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 
 const Landing = () => {
@@ -6,6 +7,14 @@ const Landing = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>JobTracker | AI-Powered Job Search & Application Management</title>
+        <meta
+          name="description"
+          content="Land your dream job with less chaos. ApplyIQ centralizes every application, generates tailored resumes and cover letters, and coaches you through every stage."
+        />
+        <meta name="robots" content="index,follow" />
+      </Helmet>
       {/* <!-- ── NAV ── --> */}
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-15 py-4.5 bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]"
@@ -56,7 +65,7 @@ const Landing = () => {
               Start for free →
             </button>
             <button
-              
+
               className="flex items-center gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary"
             >
               <svg

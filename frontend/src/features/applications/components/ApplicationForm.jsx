@@ -12,8 +12,8 @@ const STATUS_OPTIONS = Object.entries(STATUS_CONFIG).map(([value, cfg]) => ({
 const WORK_TYPE_OPTIONS = ["On-site", "Remote", "Hybrid"];
 
 /**
- * @param {Function} onClose    - close modal callback
- * @param {Object}  [editData]  - pass the transformed app object to enable edit mode
+ * @param {Function} onClose   
+ * @param {Object}  [editData]  
  */
 const ApplicationForm = ({ onClose, editData = null }) => {
   const { register, handleSubmit, control, errors, isSubmitting, showToast, isEditMode } =

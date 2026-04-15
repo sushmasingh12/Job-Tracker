@@ -18,14 +18,16 @@ const PAGE_TITLE = "My Applications | Job Tracker";
 const PAGE_DESCRIPTION =
   "Track, search, filter, and manage all your job applications in one place.";
 
+const pageWrapperClass =
+  "flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-6 md:p-8 lg:p-10";
+
 const ApplicationsPage = () => {
   const dispatch = useDispatch();
 
   const paginated = useSelector(selectPaginatedApplications);
   const filtered = useSelector(selectFilteredApplications);
-  const { total, perPage, currentPage, totalPages } = useSelector(
-    selectPaginationMeta,
-  );
+  const { total, perPage, currentPage, totalPages } =
+    useSelector(selectPaginationMeta);
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
 
@@ -36,10 +38,28 @@ const ApplicationsPage = () => {
   }, [dispatch]);
 
   const isEmpty = filtered.length === 0;
-  const totalLabel = useMemo(
-    () => `${total} ${total === 1 ? "application" : "applications"}`,
-    [total],
-  );
+
+  const totalLabel = useMemo(() => {
+    return `${total} ${total === 1 ? "application" : "applications"}`;
+  }, [total]);
+
+  const handleRetry = () => {
+    dispatch(fetchApplications());
+  };
+
+  const handleOpenForm = () => {
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleCloseForm();
+    }
+  };
 
   if (isLoading && paginated.length === 0) {
     return (
@@ -50,12 +70,12 @@ const ApplicationsPage = () => {
           <meta name="robots" content="index,follow" />
         </Helmet>
 
-        <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-6 lg:p-10 flex items-center justify-center">
+        <div className={`${pageWrapperClass} flex items-center justify-center`}>
           <div className="flex flex-col items-center gap-4">
             <span className="material-symbols-outlined text-5xl text-blue-400 animate-spin">
               progress_activity
             </span>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Loading applications...
             </p>
           </div>
@@ -73,18 +93,18 @@ const ApplicationsPage = () => {
           <meta name="robots" content="index,follow" />
         </Helmet>
 
-        <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-6 lg:p-10 flex items-center justify-center">
+        <div className={`${pageWrapperClass} flex items-center justify-center`}>
           <div className="text-center">
-            <span className="material-symbols-outlined text-5xl text-red-400 mb-3 block">
+            <span className="material-symbols-outlined mb-3 block text-5xl text-red-400">
               error_outline
             </span>
-            <p className="text-slate-600 dark:text-slate-300 font-medium mb-1">
+            <p className="mb-1 font-medium text-slate-600 dark:text-slate-300">
               Failed to load applications
             </p>
-            <p className="text-slate-400 text-sm mb-4">{error}</p>
+            <p className="mb-4 text-sm text-slate-400">{error}</p>
             <button
-              onClick={() => dispatch(fetchApplications())}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              onClick={handleRetry}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
             >
               Try again
             </button>
@@ -101,66 +121,72 @@ const ApplicationsPage = () => {
         <meta name="description" content={PAGE_DESCRIPTION} />
         <meta name="robots" content="index,follow" />
       </Helmet>
-
-      <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-6 lg:p-10">
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              My Applications
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-              Track and manage all your job applications in one place.
-            </p>
-            <div className="mt-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                {totalLabel}
-              </span>
+      
+      <div className={pageWrapperClass}>
+        <div className="rounded-xl border border-neutral-border bg-neutral-surface p-7 md:p-8 lg:p-10 shadow-sm transition-shadow hover:shadow-md">
+          <div className="mb-10 flex items-start justify-between gap-4">
+            <div className="pr-2">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                My Applications
+              </h1>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Track and manage all your job applications in one place.
+              </p>
+              <div className="mt-3">
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                  {totalLabel}
+                </span>
+              </div>
             </div>
+
+            <button
+              onClick={handleOpenForm}
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Add Application
+            </button>
           </div>
 
-          <button
-            onClick={() => setShowForm(true)}
-            className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition-colors"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            Add Application
-          </button>
+          <div className="mb-6">
+            <FilterBar />
+          </div>
+
+          {isEmpty ? (
+            <div className="py-16 text-center text-slate-400">
+              <span className="material-symbols-outlined mb-3 block text-5xl">
+                search_off
+              </span>
+              <p className="text-sm">No applications found.</p>
+              <p className="mt-1 text-xs text-slate-500">
+                Try adjusting your search or filter, or add a new application.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {paginated.map((app) => (
+                <ApplicationCard key={app.id} app={app} />
+              ))}
+            </div>
+          )}
+
+          <div className="mt-8">
+            <Pagination
+              total={total}
+              perPage={perPage}
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
+          </div>
         </div>
-
-        <FilterBar />
-
-        {isEmpty ? (
-          <div className="text-center py-16 text-slate-400">
-            <span className="material-symbols-outlined text-5xl mb-3 block">
-              search_off
-            </span>
-            <p className="text-sm">No applications found.</p>
-            <p className="text-xs mt-1 text-slate-500">
-              Try adjusting your search or filter, or add a new application.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {paginated.map((app) => (
-              <ApplicationCard key={app.id} app={app} />
-            ))}
-          </div>
-        )}
-
-        <Pagination
-          total={total}
-          perPage={perPage}
-          currentPage={currentPage}
-          totalPages={totalPages}
-        />
       </div>
 
       {showForm && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          onClick={handleOverlayClick}
         >
-          <ApplicationForm onClose={() => setShowForm(false)} />
+          <ApplicationForm onClose={handleCloseForm} />
         </div>
       )}
     </>

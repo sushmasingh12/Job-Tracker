@@ -45,3 +45,6 @@ Thumbs.db
 ./src/landing1.html
 .landing.html
 .random.jsx
+
+# One-time migration scripts
+backend/scripts/fix_indexes.js

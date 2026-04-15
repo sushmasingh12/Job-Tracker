@@ -65,6 +65,22 @@ export const validateVerifyEmailOtp = (req, res, next) => {
   next();
 };
 
+// ── POST /email/direct-change ────────────────────────────────────────────────
+export const validateDirectEmailChange = (req, res, next) => {
+  const { newEmail } = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!newEmail?.trim()) {
+    return res.status(400).json({ success: false, message: "New email address is required." });
+  }
+
+  if (!emailRegex.test(newEmail.trim())) {
+    return res.status(400).json({ success: false, message: "Invalid email format." });
+  }
+
+  next();
+};
+
 // ── POST /avatar ──────────────────────────────────────────────────────────────
 export const validateAvatarUpload = (req, res, next) => {
   if (!req.file && !req.body?.avatarUrl?.trim()) {

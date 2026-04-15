@@ -4,7 +4,7 @@ import Settings from "./settings_Model.js";
 import User from "../auth/auth_Model.js";
 
 
-const ALLOWED_KEYS = ["profile", "account", "notifications", "privacy"];
+const ALLOWED_KEYS = ["profile", "account", "notifications", "privacy", "resume", "preferences", "ai", "appearance"];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: deep-merge two objects one level down (handles nested like profile.links)
@@ -89,8 +89,7 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
   if (!isMatch)
     throw Object.assign(new Error("Current password is incorrect"), { status: 400 });
 
-  const salt = await bcrypt.genSalt(12);
-  user.password = await bcrypt.hash(newPassword, salt);
+  user.password = newPassword;
   await user.save();
 };
 
@@ -101,7 +100,7 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
 export const createEmailChangeOtp = async (userId, newEmail) => {
   // Check uniqueness across Users and Settings
   const [existingUser, existingSettings] = await Promise.all([
-    User.findOne({ email: newEmail.toLowerCase() }),
+    User.findOne({ email: newEmail.toLowerCase(), _id: { $ne: userId } }),
     Settings.findOne({ "profile.email": newEmail.toLowerCase(), user: { $ne: userId } }),
   ]);
 
@@ -151,12 +150,48 @@ export const verifyEmailChangeOtp = async (userId, newEmail, otp) => {
 
   // Commit: update settings + auth user
   settings.profile.email = newEmail.toLowerCase();
+  settings.account.emailVerified = true;
   settings.pendingEmailChange = { newEmail: null, otp: null, otpExpires: null };
   settings.markModified("profile");
+  settings.markModified("account");
   settings.markModified("pendingEmailChange");
   await settings.save();
 
-  await User.findByIdAndUpdate(userId, { email: newEmail.toLowerCase() });
+  await User.findByIdAndUpdate(userId, { 
+    email: newEmail.toLowerCase(),
+    isEmailVerified: true
+  });
+
+  return newEmail.toLowerCase();
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Email change — Direct update (no OTP)
+// ─────────────────────────────────────────────────────────────────────────────
+export const updateUserEmailDirectly = async (userId, newEmail) => {
+  // Check uniqueness across Users and Settings (excluding current user)
+  const [existingUser, existingSettings] = await Promise.all([
+    User.findOne({ email: newEmail.toLowerCase(), _id: { $ne: userId } }),
+    Settings.findOne({ "profile.email": newEmail.toLowerCase(), user: { $ne: userId } }),
+  ]);
+
+  if (existingUser || existingSettings)
+    throw Object.assign(new Error("Email is already in use"), { status: 409 });
+
+  const settings = await Settings.findOne({ user: userId });
+  if (!settings) throw Object.assign(new Error("Settings not found"), { status: 404 });
+
+  // Update both Settings and User models
+  settings.profile.email = newEmail.toLowerCase();
+  settings.account.emailVerified = true; // Mark as verified since it's a direct user action
+  settings.markModified("profile");
+  settings.markModified("account");
+  await settings.save();
+
+  await User.findByIdAndUpdate(userId, { 
+    email: newEmail.toLowerCase(),
+    isEmailVerified: true 
+  });
 
   return newEmail.toLowerCase();
 };
