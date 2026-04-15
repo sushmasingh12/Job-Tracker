@@ -2,7 +2,8 @@ import "./env.js";
 import app from "./app.js";
 import connectDB from "./config/connect.js";
 
-const requiredEnvVars = ["JWT_SECRET", "MONGO_URI", "PORT"];
+const requiredEnvVars = ["JWT_SECRET", "MONGO_URI"];
+
 requiredEnvVars.forEach((envVar) => {
   if (!process.env[envVar]) {
     console.error(`[FATAL] Missing required environment variable: ${envVar}`);
@@ -10,14 +11,19 @@ requiredEnvVars.forEach((envVar) => {
   }
 });
 
-connectDB();
+const PORT = process.env.PORT || 8000;
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Server is running" });
-});
+const startServer = async () => {
+  try {
+    await connectDB();
 
-const PORT = process.env.PORT;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("[FATAL] Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+startServer();
