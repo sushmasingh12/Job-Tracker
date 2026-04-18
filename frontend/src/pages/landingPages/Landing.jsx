@@ -16,7 +16,7 @@ const Landing = () => {
       </Helmet>
 
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-[60px] bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-15 bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]">
         <Link
           to="/"
           className="flex items-center gap-2 font-playfair text-lg sm:text-[22px] font-bold tracking-tight text-neutral-text no-underline"
@@ -69,24 +69,7 @@ const Landing = () => {
               Start for free →
             </button>
 
-            <button className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polygon
-                  points="10,8 16,12 10,16"
-                  fill="currentColor"
-                  stroke="none"
-                />
-              </svg>
-              Watch demo
-            </button>
+           
           </div>
 
           <div className="anim-5 grid grid-cols-2 sm:flex sm:flex-wrap gap-6 sm:gap-9 mt-10 sm:mt-12.5 pt-8 border-t border-neutral-border">
@@ -573,9 +556,9 @@ const Landing = () => {
         </div>
       </section>
         {/* ── FOOTER ── */}
-      <footer className="border-t border-neutral-border px-5 sm:px-6 md:px-10 lg:px-[60px] py-8 md:py-[42px] flex flex-col lg:flex-row items-center justify-between gap-5 bg-white">
-        <div className="flex items-center gap-[7px] font-playfair text-lg font-bold text-neutral-text">
-          <div className="w-[7px] h-[7px] bg-primary rounded-full"></div>
+      <footer className="border-t border-neutral-border px-5 sm:px-6 md:px-10 lg:px-15 py-8 md:py-10.5 flex flex-col lg:flex-row items-center justify-between gap-5 bg-white">
+        <div className="flex items-center gap-1.75 font-playfair text-lg font-bold text-neutral-text">
+          <div className="w-1.75 h-1.75 bg-primary rounded-full"></div>
           ApplyIQ
         </div>
         <div className="text-xs text-neutral-muted text-center lg:text-right">
