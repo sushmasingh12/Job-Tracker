@@ -15,13 +15,19 @@ const AuthInitializer = ({ children }) => {
     const verifySession = async () => {
       try {
         const response = await getCurrentUser();
-        if (response.success && response.user) {
-          dispatch(setCredentials({ user: response.user }));
+        // Backend returns user data in 'data' field
+        if (response.success && response.data) {
+          dispatch(setCredentials({ user: response.data }));
         } else {
           dispatch(setInitialized(true));
         }
       } catch (error) {
-        console.error("Session verification failed:", error);
+        // If it's a 401, we just initialize without credentials (not logged in)
+        if (error.response?.status === 401) {
+          console.log("No active session found (User is not logged in)");
+        } else {
+          console.error("Session verification failed:", error);
+        }
         dispatch(setInitialized(true));
       }
     };

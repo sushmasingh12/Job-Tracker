@@ -3,6 +3,7 @@ import generateToken from "../../utils/generateTokens.js";
 import Joi from "joi";
 
 // ── Validation Schemas ────────────────────────────────────────────────────
+
 const registerSchema = Joi.object({
   firstname: Joi.string().min(2).required().messages({
     "string.min": "First name must be at least 2 characters",
@@ -39,6 +40,7 @@ const loginSchema = Joi.object({
 });
 
 // ── Register ──────────────────────────────────────────────────────────────
+
 export const registerUser = async (res, { firstname, lastname, email, password }) => {
   try {
     const { error } = registerSchema.validate(
@@ -54,7 +56,7 @@ export const registerUser = async (res, { firstname, lastname, email, password }
     if (userExists) throw new Error("User already exists");
 
     const user = await User.create({ firstname, lastname, email, password });
-    generateToken(res, user._id); // httpOnly cookie set karo
+    generateToken(res, user._id);
 
     return {
       _id: user._id,
@@ -82,15 +84,18 @@ export const loginUser = async (res, { email, password }) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
- 
+
     const user = await User.findOne({ email: normalizedEmail }).select("+password");
     if (!user) throw new Error("Invalid email or password");
- 
+
+    // Google-only account pe password login try kiya toh
+    if (!user.password) throw new Error("This account uses Google Sign-In. Please login with Google.");
+
     const isMatch = await user.matchPassword(password);
     if (!isMatch) throw new Error("Invalid email or password");
- 
+
     generateToken(res, user._id);
-    
+
     return {
       id: user._id,
       firstname: user.firstname,
@@ -104,13 +109,50 @@ export const loginUser = async (res, { email, password }) => {
 };
 
 // ── Logout ────────────────────────────────────────────────────────────────
+
 export const logoutUser = (res) => {
   res.cookie("auth_token", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0),
     path: "/",
   });
   return { message: "Logged out successfully" };
+};
+
+// ── Google Auth ───────────────────────────────────────────────────────────
+
+export const googleAuthUser = async (res, { googleId, email, firstname, lastname }) => {
+  try {
+    // Pehle googleId se dhundo, phir email se
+    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+
+    if (!user) {
+      // Bilkul naya user — Google se pehli baar aa raha hai
+      user = await User.create({
+        googleId,
+        email,
+        firstname,
+        lastname,
+        isVerified: true,        // Google verified email hai
+      });
+    } else if (!user.googleId) {
+      // Pehle email/password se register kiya tha — Google account link kar do
+      user.googleId = googleId;
+      await user.save();
+    }
+
+    generateToken(res, user._id);
+
+    return {
+      id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+    };
+  } catch (error) {
+    console.error("Google Auth Error:", error.message);
+    throw error;
+  }
 };
