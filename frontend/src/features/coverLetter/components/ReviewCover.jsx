@@ -21,8 +21,8 @@ const ReviewCover = () => {
     <div className="flex flex-col h-full overflow-hidden">
 
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="h-14 bg-neutral-surface border-b border-neutral-border flex items-center justify-between px-6 shrink-0">
-        <div className="flex items-center gap-4">
+      <div className="min-h-14 bg-neutral-surface border-b border-neutral-border flex flex-wrap items-center justify-between gap-2 px-4 md:px-6 py-2 md:py-0 shrink-0">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <button
             onClick={handleBack}
             className="flex items-center gap-1.5 text-sm text-neutral-muted hover:text-primary transition-colors"
@@ -30,20 +30,20 @@ const ReviewCover = () => {
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Back
           </button>
-          <div className="h-4 w-px bg-neutral-border" />
+          <div className="h-4 w-px bg-neutral-border hidden sm:block" />
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-success text-white flex items-center justify-center font-bold text-sm">
               4
             </div>
             <span className="font-semibold text-neutral-text">Review &amp; Edit</span>
           </div>
-          <div className="h-4 w-px bg-neutral-border" />
-          <span className="text-sm text-neutral-muted flex items-center gap-1">
+          <div className="h-4 w-px bg-neutral-border hidden sm:block" />
+          <span className="text-sm text-neutral-muted flex items-center gap-1 hidden sm:flex">
             <span className="material-symbols-outlined text-[16px] text-success">check_circle</span>
             All steps completed
           </span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <span className="text-xs text-neutral-muted flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]">cloud_done</span>
             Auto-saved
@@ -96,11 +96,11 @@ const ReviewCover = () => {
 
       {/* ── Main area (editor + sidebar) ──────────────────────────────────── */}
       {/* FIX: flex row — editor scrolls independently, sidebar is sticky */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
 
         {/* ── Editor panel ────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto bg-background-light">
-          <div className="flex justify-center py-10 px-6 min-h-full">
+          <div className="flex justify-center py-6 md:py-10 px-3 md:px-6 min-h-full">
 
             {/* FIX: removed dangerouslySetInnerHTML — content is set via
                 useEffect in useReviewCover when generatedLetter changes.
@@ -108,7 +108,7 @@ const ReviewCover = () => {
 
             {/* Loading overlay during regeneration */}
             {loading ? (
-              <div className="w-full max-w-[680px] bg-white shadow-lg min-h-[842px] px-16 py-14 flex flex-col items-center justify-center gap-4">
+              <div className="w-full max-w-[680px] bg-white shadow-lg min-h-[842px] px-6 md:px-16 py-10 md:py-14 flex flex-col items-center justify-center gap-4">
                 <div className="h-10 w-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
                 <p className="text-sm text-neutral-muted">Generating your cover letter...</p>
                 <div className="w-full space-y-3 mt-4 opacity-40">
@@ -128,7 +128,7 @@ const ReviewCover = () => {
                 contentEditable
                 suppressContentEditableWarning
                 onInput={handleEditorInput}
-                className="w-full max-w-[680px] bg-white shadow-lg min-h-[842px] px-16 py-14 text-neutral-text text-[11pt] font-serif leading-relaxed outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full max-w-[680px] bg-white shadow-lg min-h-[842px] px-6 md:px-16 py-10 md:py-14 text-neutral-text text-[11pt] font-serif leading-relaxed outline-none focus:ring-2 focus:ring-primary/20"
               />
             )}
           </div>
@@ -137,7 +137,7 @@ const ReviewCover = () => {
         {/* ── Sidebar ─────────────────────────────────────────────────────── */}
         {/* FIX: border-r → border-l (sidebar is on the RIGHT side) */}
         {/* FIX: overflow-y-auto on sidebar itself, not relying on parent height calc */}
-        <div className="w-80 bg-neutral-surface border-l border-neutral-border flex flex-col shrink-0">
+        <div className="w-full md:w-80 bg-neutral-surface border-t md:border-t-0 md:border-l border-neutral-border flex flex-col shrink-0">
 
           <div className="p-6 border-b border-neutral-border">
             <h2 className="text-lg font-bold text-neutral-text mb-1">Finalize Letter</h2>
@@ -241,10 +241,10 @@ const ReviewCover = () => {
               {saveStatus === "saving"
                 ? "Saving..."
                 : saveStatus === "saved"
-                ? "Saved!"
-                : saveStatus === "error"
-                ? "Save Failed — Retry"
-                : "Save to Application"}
+                  ? "Saved!"
+                  : saveStatus === "error"
+                    ? "Save Failed — Retry"
+                    : "Save to Application"}
             </button>
           </div>
         </div>

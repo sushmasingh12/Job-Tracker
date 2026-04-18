@@ -17,10 +17,10 @@ import {
   setCurrentStep,
 } from "../../coverLetter/store/coverSlice";
 
-const TABS = ["Overview", "Resume", "Cover Letter", "Notes", "Timeline"];
+const TABS = ["Overview", "Resume", "Cover Letter"];
 const FALLBACK_PAGE_TITLE = "Application Details | Job Tracker";
 const FALLBACK_PAGE_DESCRIPTION =
-  "View application details, resume, cover letter, notes, and timeline updates.";
+  "View application details, resume, cover letter";
 
 const ApplicationDetails = () => {
   const dispatch = useDispatch();
@@ -33,8 +33,7 @@ const ApplicationDetails = () => {
 
   const [resumePage] = useState(0);
   const [coverLetterPage] = useState(0);
-  const [noteIndex] = useState(0);
-  const [timelineIndex] = useState(0);
+  
 
   useEffect(() => {
     if (id && !app) {
@@ -107,36 +106,6 @@ const ApplicationDetails = () => {
     [app],
   );
 
-  const notesList = useMemo(
-    () =>
-      app?.notes?.length
-        ? app.notes
-        : [
-          "No notes added yet.",
-          "You can store recruiter updates here.",
-          "You can track follow-up reminders here.",
-        ],
-    [app],
-  );
-
-  const timelineList = useMemo(
-    () =>
-      app?.timeline?.length
-        ? app.timeline
-        : [
-          {
-            title: "Application Submitted",
-            date: app?.appliedDate || "N/A",
-            description: "Your application was submitted successfully.",
-          },
-          {
-            title: "Awaiting Review",
-            date: "Pending",
-            description: "The application is waiting for recruiter review.",
-          },
-        ],
-    [app],
-  );
 
   const handleRegenerateCoverLetter = () => {
     dispatch(
@@ -153,7 +122,7 @@ const ApplicationDetails = () => {
     );
 
     dispatch(setCurrentStep(1));
-    navigate("/ai/cover-letter");
+    navigate("/cover-letter");
   };
 
   const handleEditCoverLetter = () => {
@@ -197,7 +166,7 @@ const ApplicationDetails = () => {
   };
 
   const handleOptimizeResume = () => {
-    navigate("/ai/resume", {
+    navigate("/resume", {
       state: {
         jobDescription: app.jobDescription || "",
         applicationId: app.id,
@@ -277,7 +246,7 @@ const ApplicationDetails = () => {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
                 <div className="flex items-start gap-4 mb-2">
                   <div
-                    className={`h-20 w-20 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-inner border shrink-0 bg-gradient-to-br ${app.gradientFrom} ${app.gradientTo} text-white`}
+                    className={`h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-2xl flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold shadow-inner border shrink-0 bg-gradient-to-br ${app.gradientFrom} ${app.gradientTo} text-white`}
                   >
                     {app.initial}
                   </div>
@@ -317,7 +286,7 @@ const ApplicationDetails = () => {
             </div>
 
             <div className="w-full lg:w-[30%] space-y-6">
-              <div className="rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm p-6 shadow-sm">
+              <div className="rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm p-4 sm:p-5 md:p-5 lg:p-6 shadow-sm">
                 <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
                   Status History
                 </h3>
@@ -425,7 +394,7 @@ const ApplicationDetails = () => {
               ) : activeTab === "Resume" ? (
                 <div className="flex flex-col h-full">
                   <div className="flex-1 overflow-y-auto pr-2">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4 p-4">
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                         {app.optimizedResume
                           ? "Optimized Resume"
@@ -441,7 +410,7 @@ const ApplicationDetails = () => {
                     <div className="text-sm text-slate-600 dark:text-slate-300 leading-6">
                       {app.optimizedResume ? (
                         <div className="space-y-6">
-                          <div className="rounded-2xl bg-white dark:bg-slate-900/50 p-4">
+                          <div className="rounded-2xl bg-white dark:bg-slate-900/50 ">
                             <ResumePreviewView sections={app.optimizedResume.content} />
                           </div>
                         </div>
@@ -506,54 +475,7 @@ const ApplicationDetails = () => {
                     </div>
                   </div>
                 </div>
-              ) : activeTab === "Notes" ? (
-                <div className="flex flex-col justify-between h-full">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                      Note {noteIndex + 1}
-                    </h3>
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 text-sm text-slate-600 dark:text-slate-300 leading-6">
-                      {notesList[noteIndex]}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between gap-2">
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                        Add Note
-                      </button>
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
-                        Edit Note
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : activeTab === "Timeline" ? (
-                <div className="flex flex-col justify-between h-full">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                      {timelineList[timelineIndex].title}
-                    </h3>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-                      {timelineList[timelineIndex].date}
-                    </p>
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 text-sm text-slate-600 dark:text-slate-300 leading-6">
-                      {timelineList[timelineIndex].description}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between gap-2">
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                        Add Step
-                      </button>
-                      <button className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-600 text-white">
-                        Update Status
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
+              )  : (
                 <div className="flex flex-col items-center justify-center py-16 text-slate-400">
                   <span className="material-symbols-outlined text-4xl mb-2">
                     folder_open

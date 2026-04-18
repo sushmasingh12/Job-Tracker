@@ -7,8 +7,8 @@ const CircularTimer = ({ timeLeft, totalTime }) => {
   const isLow = timeLeft <= 30;
 
   return (
-    <div className="relative w-24 h-24 flex items-center justify-center">
-      <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
+    <div className="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center">
+      <svg className="w-16 h-16 sm:w-24 sm:h-24 -rotate-90" viewBox="0 0 96 96">
         {/* Track */}
         <circle
           cx="48"
@@ -33,7 +33,7 @@ const CircularTimer = ({ timeLeft, totalTime }) => {
         />
       </svg>
       <div className="absolute text-center">
-        <span className={`text-xl font-bold font-mono ${isLow ? 'text-danger' : 'text-neutral-text'}`}>
+        <span className={`text-sm sm:text-xl font-bold font-mono ${isLow ? 'text-danger' : 'text-neutral-text'}`}>
           {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
           {String(timeLeft % 60).padStart(2, '0')}
         </span>
@@ -69,13 +69,13 @@ const MockInterview = ({
   // No questions
   if (questions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-          <span className="material-symbols-outlined text-3xl text-primary">
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24 text-center px-4 sm:px-6">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+          <span className="material-symbols-outlined text-2xl sm:text-3xl text-primary">
             video_camera_front
           </span>
         </div>
-        <h3 className="text-lg font-semibold text-neutral-text mb-2">
+        <h3 className="text-base sm:text-lg font-semibold text-neutral-text mb-2">
           No questions yet
         </h3>
         <p className="text-sm text-neutral-muted max-w-sm">
@@ -90,44 +90,44 @@ const MockInterview = ({
   if (mockSession.isComplete) {
     const answeredCount = Object.keys(mockSession.responses).length;
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-        <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mb-5">
-          <span className="material-symbols-outlined text-4xl text-success">
+      <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 sm:px-6 text-center">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-success/10 rounded-full flex items-center justify-center mb-4 sm:mb-5">
+          <span className="material-symbols-outlined text-3xl sm:text-4xl text-success">
             military_tech
           </span>
         </div>
-        <h2 className="text-2xl font-bold text-neutral-text mb-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-neutral-text mb-2">
           Mock Interview Complete!
         </h2>
-        <p className="text-neutral-muted mb-8 max-w-sm">
+        <p className="text-neutral-muted mb-6 sm:mb-8 max-w-sm text-sm sm:text-base">
           You answered {answeredCount} out of {questions.length} questions.
           Great job practicing under pressure!
         </p>
 
         {/* Summary */}
-        <div className="grid grid-cols-2 gap-4 mb-8 w-full max-w-xs">
-          <div className="bg-white border border-neutral-border rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-primary">{answeredCount}</p>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 w-full max-w-[240px] sm:max-w-xs">
+          <div className="bg-white border border-neutral-border rounded-xl p-3 sm:p-4 text-center">
+            <p className="text-xl sm:text-2xl font-bold text-primary">{answeredCount}</p>
             <p className="text-xs text-neutral-muted">Answered</p>
           </div>
-          <div className="bg-white border border-neutral-border rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-neutral-text">
+          <div className="bg-white border border-neutral-border rounded-xl p-3 sm:p-4 text-center">
+            <p className="text-xl sm:text-2xl font-bold text-neutral-text">
               {questions.length - answeredCount}
             </p>
             <p className="text-xs text-neutral-muted">Skipped</p>
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap justify-center">
           <button
             onClick={onReset}
-            className="bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors"
+            className="bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors text-sm sm:text-base"
           >
             Try Again
           </button>
           <button
             onClick={onReset}
-            className="border border-neutral-border text-neutral-text font-medium py-2.5 px-6 rounded-xl hover:bg-neutral-50 transition-colors"
+            className="border border-neutral-border text-neutral-text font-medium py-2.5 px-6 rounded-xl hover:bg-neutral-50 transition-colors text-sm sm:text-base"
           >
             Back to Practice
           </button>
@@ -139,23 +139,23 @@ const MockInterview = ({
   // Not started
   if (!mockSession.isActive) {
     return (
-      <div className="p-6 max-w-2xl mx-auto">
-        <div className="bg-white border border-neutral-border rounded-2xl p-8 text-center shadow-sm">
-          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <span className="material-symbols-outlined text-3xl text-primary">
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto">
+        <div className="bg-white border border-neutral-border rounded-2xl p-6 sm:p-8 text-center shadow-sm">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-5">
+            <span className="material-symbols-outlined text-2xl sm:text-3xl text-primary">
               video_camera_front
             </span>
           </div>
-          <h2 className="text-xl font-bold text-neutral-text mb-2">
+          <h2 className="text-lg sm:text-xl font-bold text-neutral-text mb-2">
             Mock Interview Session
           </h2>
-          <p className="text-neutral-muted text-sm mb-6 max-w-sm mx-auto">
+          <p className="text-neutral-muted text-sm mb-5 sm:mb-6 max-w-sm mx-auto">
             Answer each question with a 2-minute timer. Simulate real interview
             conditions for better preparation.
           </p>
 
           {/* Rules */}
-          <div className="bg-neutral-50 rounded-xl p-4 mb-8 text-left space-y-2">
+          <div className="bg-neutral-50 rounded-xl p-3 sm:p-4 mb-6 sm:mb-8 text-left space-y-2">
             {[
               { icon: 'timer', text: `${questions.length} questions • 2 min each` },
               { icon: 'mic_off', text: 'Speak or type your answers' },
@@ -173,7 +173,7 @@ const MockInterview = ({
 
           <button
             onClick={onStart}
-            className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-10 rounded-xl transition-colors text-base"
+            className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 sm:px-10 rounded-xl transition-colors text-sm sm:text-base"
           >
             Start Mock Interview
           </button>
@@ -190,7 +190,7 @@ const MockInterview = ({
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-4">
+    <div className="p-3 sm:p-6 max-w-2xl mx-auto space-y-3 sm:space-y-4">
       {/* Progress bar */}
       <div>
         <div className="flex justify-between text-xs text-neutral-muted mb-1.5">
@@ -203,9 +203,8 @@ const MockInterview = ({
           <div
             className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{
-              width: `${
-                ((mockSession.currentIndex + 1) / questions.length) * 100
-              }%`,
+              width: `${((mockSession.currentIndex + 1) / questions.length) * 100
+                }%`,
             }}
           />
         </div>
@@ -214,14 +213,14 @@ const MockInterview = ({
       {/* Question card */}
       <div className="bg-white border border-neutral-border rounded-2xl shadow-sm overflow-hidden">
         {/* Top: type + timer */}
-        <div className="flex items-center justify-between p-5 border-b border-neutral-border">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-neutral-border">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <span
-              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${typeClass}`}
+              className={`text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap ${typeClass}`}
             >
               {currentQuestion?.type || 'General'}
             </span>
-            <span className="text-xs text-neutral-muted capitalize">
+            <span className="text-xs text-neutral-muted capitalize hidden sm:inline">
               {currentQuestion?.difficulty} difficulty
             </span>
           </div>
@@ -232,8 +231,8 @@ const MockInterview = ({
         </div>
 
         {/* Question */}
-        <div className="p-6">
-          <h2 className="text-lg font-bold text-neutral-text leading-snug mb-4">
+        <div className="p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-bold text-neutral-text leading-snug mb-4">
             {currentQuestion?.question}
           </h2>
 
@@ -261,36 +260,37 @@ const MockInterview = ({
 
           {/* Answer textarea */}
           <textarea
-            rows={6}
+            rows={5}
             value={currentResponse}
             onChange={(e) => setCurrentResponse(e.target.value)}
             placeholder="Type your answer here... (or speak aloud and note key points)"
-            className="w-full border border-neutral-border rounded-xl p-4 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            className="w-full border border-neutral-border rounded-xl p-3 sm:p-4 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
           />
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between px-6 pb-6 gap-3">
+        <div className="flex items-center justify-between px-4 sm:px-6 pb-4 sm:pb-6 gap-3">
           <button
             onClick={onEnd}
             className="text-xs text-neutral-muted hover:text-danger transition-colors flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-[15px]">stop</span>
-            End Session
+            <span className="hidden sm:inline">End Session</span>
+            <span className="sm:hidden">End</span>
           </button>
           <div className="flex gap-2">
             <button
               onClick={handleNext}
-              className="px-4 py-2.5 border border-neutral-border text-neutral-600 text-sm font-medium rounded-xl hover:bg-neutral-50 transition-colors"
+              className="px-3 sm:px-4 py-2 sm:py-2.5 border border-neutral-border text-neutral-600 text-xs sm:text-sm font-medium rounded-xl hover:bg-neutral-50 transition-colors"
             >
               Skip
             </button>
             <button
               onClick={handleNext}
-              className="bg-primary hover:bg-primary-dark text-white text-sm font-semibold py-2.5 px-5 rounded-xl transition-colors flex items-center gap-2"
+              className="bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl transition-colors flex items-center gap-1 sm:gap-2"
             >
               Next
-              <span className="material-symbols-outlined text-[16px]">
+              <span className="material-symbols-outlined text-[14px] sm:text-[16px]">
                 arrow_forward
               </span>
             </button>

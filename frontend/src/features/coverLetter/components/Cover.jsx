@@ -13,7 +13,7 @@ const StepProgressBar = ({ currentStep }) => {
   const progressPercent = ((currentStep - 1) / (STEPS.length - 1)) * 100;
   return (
     <div className="mb-10">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
         <h1 className="text-2xl font-bold text-neutral-text">
           Generate Cover Letter
         </h1>
@@ -29,15 +29,14 @@ const StepProgressBar = ({ currentStep }) => {
       </div>
       <div className="flex justify-between mt-2 text-xs font-medium">
         {STEPS.map((step, index) => {
-          const stepNumber  = index + 1;
+          const stepNumber = index + 1;
           const isCompleted = stepNumber < currentStep;
-          const isActive    = stepNumber === currentStep;
+          const isActive = stepNumber === currentStep;
           return (
             <span
               key={step}
-              className={`transition-colors duration-300 flex items-center gap-0.5 ${
-                isCompleted || isActive ? "text-primary" : "text-neutral-muted"
-              }`}
+              className={`transition-colors duration-300 flex items-center gap-0.5 text-[10px] sm:text-xs ${isCompleted || isActive ? "text-primary" : "text-neutral-muted"
+                }`}
             >
               {isCompleted && (
                 <span className="material-symbols-outlined text-xs">check</span>
@@ -65,7 +64,7 @@ const CoverLetterGenerator = () => {
   // ── Steps 1–3: Wizard chrome ──────────────────────────────────────────────
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
-      <div className="p-8 pb-32">
+      <div className="p-4 md:p-8 pb-32">
         <StepProgressBar currentStep={currentStep} />
 
         {/* Steps 1 & 2 submit their own forms internally (see Jobdetails / Experience) */}

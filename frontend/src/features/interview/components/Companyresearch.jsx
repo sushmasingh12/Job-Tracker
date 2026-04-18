@@ -42,7 +42,7 @@ const CompanyResearch = ({ profile }) => {
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center px-6">
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24 text-center px-4 sm:px-6">
         <span className="material-symbols-outlined text-4xl text-neutral-300 mb-3">
           domain
         </span>
@@ -63,11 +63,11 @@ const CompanyResearch = ({ profile }) => {
   const totalNotesLength = Object.values(notes).join('').length;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-4">
+    <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-neutral-text">
+          <h2 className="text-base sm:text-lg font-bold text-neutral-text">
             {profile.company} Research
           </h2>
           <p className="text-xs text-neutral-muted mt-0.5">
@@ -81,12 +81,13 @@ const CompanyResearch = ({ profile }) => {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-primary hover:text-primary-dark font-medium transition-colors"
+            className="flex items-center gap-1 sm:gap-1.5 text-xs text-primary hover:text-primary-dark font-medium transition-colors whitespace-nowrap shrink-0"
           >
-            <span className="material-symbols-outlined text-[15px]">
+            <span className="material-symbols-outlined text-[14px] sm:text-[15px]">
               open_in_new
             </span>
-            Search on Google
+            <span className="hidden sm:inline">Search on Google</span>
+            <span className="sm:hidden">Google</span>
           </a>
         )}
       </div>
@@ -128,13 +129,13 @@ const CompanyResearch = ({ profile }) => {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 p-3 bg-white border border-neutral-border rounded-xl hover:border-primary/30 hover:bg-blue-50 transition-all text-sm font-medium text-neutral-600 hover:text-primary"
+            className="flex items-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 bg-white border border-neutral-border rounded-xl hover:border-primary/30 hover:bg-blue-50 transition-all text-xs sm:text-sm font-medium text-neutral-600 hover:text-primary"
           >
-            <span className="material-symbols-outlined text-[16px]">
+            <span className="material-symbols-outlined text-[15px] sm:text-[16px]">
               {link.icon}
             </span>
             {link.label}
-            <span className="material-symbols-outlined text-[13px] ml-auto text-neutral-300">
+            <span className="material-symbols-outlined text-[12px] sm:text-[13px] ml-auto text-neutral-300">
               open_in_new
             </span>
           </a>
@@ -142,7 +143,7 @@ const CompanyResearch = ({ profile }) => {
       </div>
 
       {/* Research Sections */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {RESEARCH_SECTIONS.map((section) => {
           const isExpanded = expandedSection === section.id;
           const hasContent = notes[section.id]?.trim().length > 0;
@@ -150,42 +151,39 @@ const CompanyResearch = ({ profile }) => {
           return (
             <div
               key={section.id}
-              className={`bg-white border rounded-xl overflow-hidden transition-all shadow-sm ${
-                isExpanded
+              className={`bg-white border rounded-xl overflow-hidden transition-all shadow-sm ${isExpanded
                   ? 'border-primary/30 ring-2 ring-primary/10'
                   : 'border-neutral-border hover:border-neutral-300'
-              }`}
+                }`}
             >
               <button
                 onClick={() =>
                   setExpandedSection(isExpanded ? null : section.id)
                 }
-                className="w-full flex items-center justify-between p-4 text-left"
+                className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      hasContent
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${hasContent
                         ? 'bg-success/10'
                         : isExpanded
-                        ? 'bg-primary/10'
-                        : 'bg-neutral-100'
-                    }`}
+                          ? 'bg-primary/10'
+                          : 'bg-neutral-100'
+                      }`}
                   >
                     <span
-                      className={`material-symbols-outlined text-[16px] ${
-                        hasContent
+                      className={`material-symbols-outlined text-[14px] sm:text-[16px] ${hasContent
                           ? 'text-success'
                           : isExpanded
-                          ? 'text-primary'
-                          : 'text-neutral-400'
-                      }`}
+                            ? 'text-primary'
+                            : 'text-neutral-400'
+                        }`}
                     >
                       {hasContent ? 'check_circle' : section.icon}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-neutral-text">
+                    <p className="text-xs sm:text-sm font-semibold text-neutral-text">
                       {section.title}
                     </p>
                     {hasContent && (
@@ -201,15 +199,15 @@ const CompanyResearch = ({ profile }) => {
               </button>
 
               {isExpanded && (
-                <div className="px-4 pb-4">
+                <div className="px-3.5 sm:px-4 pb-3.5 sm:pb-4">
                   <textarea
-                    rows={5}
+                    rows={4}
                     value={notes[section.id] || ''}
                     onChange={(e) =>
                       handleNoteChange(section.id, e.target.value)
                     }
                     placeholder={section.placeholder}
-                    className="w-full border border-neutral-border rounded-xl p-3.5 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none leading-relaxed"
+                    className="w-full border border-neutral-border rounded-xl p-3 sm:p-3.5 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none leading-relaxed"
                   />
                 </div>
               )}

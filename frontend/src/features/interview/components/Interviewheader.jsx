@@ -16,44 +16,38 @@ const CountdownTimer = ({ countdown }) => {
 
   if (countdown.expired) {
     return (
-      <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3">
-        <span className="material-symbols-outlined text-red-500">
+      <div className="bg-red-50 border border-red-100 rounded-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+        <span className="material-symbols-outlined text-red-500 text-[20px] sm:text-[24px]">
           event_busy
         </span>
         <div>
           <p className="text-xs font-semibold text-red-600 uppercase tracking-wide">
             Interview Passed
           </p>
-          <p className="text-sm text-neutral-muted">How did it go?</p>
+          <p className="text-xs sm:text-sm text-neutral-muted">How did it go?</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-4 min-w-[270px]">
-      <div className="p-2 bg-primary/10 rounded-full text-primary shrink-0">
-        <span className="material-symbols-outlined">timer</span>
+    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 min-w-0">
+      <div className="p-1.5 sm:p-2 bg-primary/10 rounded-full text-primary shrink-0">
+        <span className="material-symbols-outlined text-[18px] sm:text-[24px]">timer</span>
       </div>
       <div>
         <p className="text-xs font-semibold text-primary uppercase tracking-wide">
           Interview In
         </p>
-        <div className="text-xl font-bold text-neutral-text font-mono flex gap-1 items-end">
+        <div className="text-base sm:text-xl font-bold text-neutral-text font-mono flex gap-0.5 sm:gap-1 items-end">
           <span>{String(countdown.days).padStart(2, "0")}</span>
-          <span className="text-sm font-normal text-neutral-muted mb-0.5">
-            d
-          </span>
+          <span className="text-xs font-normal text-neutral-muted mb-0.5">d</span>
           <span>:</span>
           <span>{String(countdown.hours).padStart(2, "0")}</span>
-          <span className="text-sm font-normal text-neutral-muted mb-0.5">
-            h
-          </span>
+          <span className="text-xs font-normal text-neutral-muted mb-0.5">h</span>
           <span>:</span>
           <span>{String(countdown.minutes).padStart(2, "0")}</span>
-          <span className="text-sm font-normal text-neutral-muted mb-0.5">
-            m
-          </span>
+          <span className="text-xs font-normal text-neutral-muted mb-0.5">m</span>
         </div>
       </div>
     </div>
@@ -67,6 +61,7 @@ const InterviewHeader = ({
   onBack,
   interviewDate,
   onSetInterviewDate,
+  countdown,
 }) => {
   const [showDateInput, setShowDateInput] = useState(false);
 
@@ -78,33 +73,33 @@ const InterviewHeader = ({
   const statusClass = STATUS_COLORS[profile?.status] || STATUS_COLORS.default;
 
   return (
-    <div className="bg-white border-b border-neutral-border p-6">
+    <div className="bg-white border-b border-neutral-border p-4 sm:p-6">
       <div className="mx-auto w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-6">
           {/* Left: Profile Info */}
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 bg-neutral-100 rounded-xl flex items-center justify-center border border-neutral-border shrink-0">
-              <span className="material-symbols-outlined text-3xl text-neutral-muted">
+          <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-neutral-100 rounded-xl flex items-center justify-center border border-neutral-border shrink-0">
+              <span className="material-symbols-outlined text-xl sm:text-3xl text-neutral-muted">
                 {profile ? "business" : "work"}
               </span>
             </div>
 
             {profile ? (
-              <div>
-                <h1 className="text-2xl font-bold text-neutral-text leading-tight">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-2xl font-bold text-neutral-text leading-tight truncate">
                   {profile.jobTitle}
                 </h1>
 
-                <div className="flex items-center gap-2 text-neutral-muted mt-1 text-sm">
-                  <span className="font-medium text-neutral-600">
+                <div className="flex items-center gap-2 text-neutral-muted mt-0.5 sm:mt-1 text-xs sm:text-sm">
+                  <span className="font-medium text-neutral-600 truncate">
                     {profile.company}
                   </span>
                 </div>
 
-                <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                <div className="mt-2 flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   {profile.status && (
                     <span
-                      className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${statusClass}`}
+                      className={`px-2 sm:px-2.5 py-0.5 text-xs font-semibold rounded-full ${statusClass}`}
                     >
                       {profile.status}
                     </span>
@@ -122,41 +117,48 @@ const InterviewHeader = ({
                   ) : (
                     <button
                       onClick={() => setShowDateInput(true)}
-                      className="px-2.5 py-0.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-full transition-colors flex items-center gap-1"
+                      className="px-2 sm:px-2.5 py-0.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-full transition-colors flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[11px]">
                         calendar_today
                       </span>
-                      {interviewDate ? "Change Date" : "Set Interview Date"}
+                      {interviewDate ? "Change Date" : "Set Date"}
                     </button>
                   )}
 
                   <button
                     onClick={onSelectProfile}
-                    className="px-2.5 py-0.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-full transition-colors flex items-center gap-1"
+                    className="px-2 sm:px-2.5 py-0.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-full transition-colors flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[11px]">
                       swap_horiz
                     </span>
-                    Change Profile
+                    Change
                   </button>
                 </div>
+
+                {/* Countdown — shown below on mobile if it exists */}
+                {countdown && (
+                  <div className="mt-3 sm:hidden">
+                    <CountdownTimer countdown={countdown} />
+                  </div>
+                )}
               </div>
             ) : (
               <div>
-                <h1 className="text-2xl font-bold text-neutral-text">
+                <h1 className="text-lg sm:text-2xl font-bold text-neutral-text">
                   Interview Prep
                 </h1>
-                <p className="text-neutral-muted text-sm mt-1">
+                <p className="text-neutral-muted text-xs sm:text-sm mt-0.5 sm:mt-1">
                   Select a job or add manually to start
                 </p>
 
-                <div className="mt-2.5 flex items-center gap-2">
+                <div className="mt-2 sm:mt-2.5 flex items-center gap-2 flex-wrap">
                   <button
                     onClick={onSelectProfile}
-                    className="px-2 py-1.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
+                    className="px-2 py-1.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-[16px]">
+                    <span className="material-symbols-outlined text-[14px] sm:text-[16px]">
                       add
                     </span>
                     Select Job Profile
@@ -164,32 +166,39 @@ const InterviewHeader = ({
 
                   <button
                     onClick={onOpenManual}
-                    className="px-2 py-1.5 bg-white border border-primary text-primary hover:bg-primary-dark hover:text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
+                    className="px-2 py-1.5 bg-white border border-primary text-primary hover:bg-primary-dark hover:text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-[16px]">
+                    <span className="material-symbols-outlined text-[14px] sm:text-[16px]">
                       add_circle
                     </span>
                     Manual Add
                   </button>
-
-
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right: Back Button */}
-          {profile && (
-            <button
-              onClick={onBack}
-              className="px-3 py-2 bg-white border border-neutral-border hover:bg-neutral-50 text-neutral-700 text-sm font-medium rounded-xl transition-colors flex items-center gap-1.5 self-start"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                arrow_back
-              </span>
-              Back
-            </button>
-          )}
+          {/* Right: Countdown (desktop) + Back Button */}
+          <div className="flex items-center gap-3 self-start shrink-0">
+            {/* Countdown — hidden on mobile (shown inline above), visible sm+ */}
+            {countdown && (
+              <div className="hidden sm:block">
+                <CountdownTimer countdown={countdown} />
+              </div>
+            )}
+
+            {profile && (
+              <button
+                onClick={onBack}
+                className="px-3 py-2 bg-white border border-neutral-border hover:bg-neutral-50 text-neutral-700 text-xs sm:text-sm font-medium rounded-xl transition-colors flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
+                  arrow_back
+                </span>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

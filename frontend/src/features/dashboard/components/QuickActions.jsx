@@ -9,7 +9,7 @@ const ACTIONS = [
     iconBg: "bg-purple-50",
     iconColor: "text-purple-600",
     iconHoverBg: "group-hover:bg-purple-600",
-    href: "/ai/cover-letter",
+    href: "/cover-letter",
   },
   {
     id: "resume",
@@ -19,7 +19,7 @@ const ACTIONS = [
     iconBg: "bg-blue-50",
     iconColor: "text-blue-600",
     iconHoverBg: "group-hover:bg-blue-600",
-    href: "/ai/resume",
+    href: "/resume",
   },
 ];
 

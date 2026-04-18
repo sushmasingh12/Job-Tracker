@@ -40,7 +40,7 @@ const CoverTone = () => {
   const { selectedTone, handleToneChange } = useCoverTone();
 
   return (
-    <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-8">
+    <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-4 md:p-8">
       <div className="mb-8 text-center">
         <h2 className="text-xl font-bold text-neutral-text mb-2">
           How should this cover letter sound?
@@ -59,17 +59,15 @@ const CoverTone = () => {
             onClick={() => handleToneChange(t.value)}
           >
             <div
-              className={`h-full p-6 rounded-xl border-2 transition-all shadow-sm ${
-                selectedTone === t.value
+              className={`h-full p-6 rounded-xl border-2 transition-all shadow-sm ${selectedTone === t.value
                   ? "border-primary bg-primary-light/10"
                   : "border-neutral-border bg-neutral-surface hover:border-primary/50"
-              }`}
+                }`}
             >
               <div className="flex items-start gap-4">
                 <div
-                  className={`shrink-0 h-12 w-12 rounded-full flex items-center justify-center transition-colors ${
-                    selectedTone === t.value ? "bg-primary text-white" : t.color
-                  }`}
+                  className={`shrink-0 h-12 w-12 rounded-full flex items-center justify-center transition-colors ${selectedTone === t.value ? "bg-primary text-white" : t.color
+                    }`}
                 >
                   <span className="material-symbols-outlined text-2xl">
                     {t.icon}
@@ -77,11 +75,10 @@ const CoverTone = () => {
                 </div>
                 <div>
                   <h3
-                    className={`font-bold ${
-                      selectedTone === t.value
+                    className={`font-bold ${selectedTone === t.value
                         ? "text-primary"
                         : "text-neutral-text"
-                    }`}
+                      }`}
                   >
                     {t.label}
                   </h3>

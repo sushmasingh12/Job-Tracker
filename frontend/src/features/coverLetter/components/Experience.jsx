@@ -33,7 +33,7 @@ const Experience = () => {
   return (
     <div className="space-y-8">
       {/* ── Work Experience Card ───────────────────────────────────────────── */}
-      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-8">
+      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-4 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-neutral-text">
@@ -148,7 +148,7 @@ const Experience = () => {
       </div>
 
       {/* ── Skills Card ───────────────────────────────────────────────────── */}
-      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-8">
+      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-4 md:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-neutral-text">
             Skills &amp; Expertise
@@ -224,7 +224,7 @@ const Experience = () => {
       </div>
 
       {/* ── Education Card ────────────────────────────────────────────────── */}
-      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-8">
+      <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-4 md:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-neutral-text">
             Education

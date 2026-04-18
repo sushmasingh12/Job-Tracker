@@ -1,6 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getGeminiModel } from "../../config/gemini.js";
 export { generatePDFBuffer, generateDOCXBuffer } from "../../shared/utils/documentHelper.js";
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 
 // ─── Build Prompt ─────────────────────────────────────────────────────────────
@@ -97,7 +96,7 @@ ${toneInstructions[tone] || toneInstructions.professional}
  * @returns {Promise<string>} generated letter text
  */
 export const generateCoverLetterService = async (payload) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
+  const model = getGeminiModel();
   const prompt = buildPrompt(payload);
 
   const result = await model.generateContent(prompt);

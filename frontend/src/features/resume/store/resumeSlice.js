@@ -45,9 +45,9 @@ export const analyzeResume = createAsyncThunk(
 
 export const optimizeResume = createAsyncThunk(
   "resume/optimize",
-  async ({ resumeId, jobDescription,  }, { rejectWithValue }) => {
+  async ({ resumeId, jobDescription, }, { rejectWithValue }) => {
     try {
-      return await optimizeResumeService({ resumeId, jobDescription,  });
+      return await optimizeResumeService({ resumeId, jobDescription, });
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -141,9 +141,12 @@ const resumeSlice = createSlice({
       state.downloadData = null;
       state.downloadError = null;
     },
+    resetAnalyzeSuccess(state) {
+      state.analyzeSuccess = false;
+    },
   },
   extraReducers: (builder) => {
-   
+
 
     builder
       .addCase(fetchResumes.pending, (state) => {
@@ -152,7 +155,7 @@ const resumeSlice = createSlice({
       })
       .addCase(fetchResumes.fulfilled, (state, action) => {
         state.listLoading = false;
-        state.resumes = Array.isArray(action.payload) ? action.payload : [];
+        state.resumes = Array.isArray(action.payload?.data) ? action.payload.data : [];
       })
       .addCase(fetchResumes.rejected, (state, action) => {
         state.listLoading = false;
@@ -170,8 +173,11 @@ const resumeSlice = createSlice({
         state.uploadSuccess = true;
         state.uploadError = null;
 
-        upsertResumeInList(state, action.payload);
-        state.activeResumeId = action.payload?._id || null;
+        const uploadedResume = action.payload?.data;
+        if (uploadedResume) {
+          upsertResumeInList(state, uploadedResume);
+          state.activeResumeId = uploadedResume._id || null;
+        }
       })
       .addCase(uploadResume.rejected, (state, action) => {
         state.uploadLoading = false;
@@ -194,8 +200,9 @@ const resumeSlice = createSlice({
         state.analyzeSuccess = true;
         state.analyzeError = null;
 
-        state.analysisResult = action.payload;
-        state.activeResumeId = action.payload?.resumeId || null;
+        const analysisData = action.payload?.data;
+        state.analysisResult = analysisData;
+        state.activeResumeId = analysisData?.resumeId || null;
         state.currentJobDescription = action.meta.arg.jobDescription || "";
 
         const existingResume = state.resumes.find(
@@ -225,10 +232,12 @@ const resumeSlice = createSlice({
         state.optimizeLoading = false;
         state.optimizeSuccess = true;
         state.optimizeError = null;
-        state.optimizedResult = action.payload;
+        
+        const optimizedData = action.payload?.data;
+        state.optimizedResult = optimizedData;
 
         const existingResume = state.resumes.find(
-          (r) => r._id === action.payload?.resumeId
+          (r) => r._id === optimizedData?.resumeId
         );
 
         if (existingResume) {
@@ -236,13 +245,13 @@ const resumeSlice = createSlice({
             ...existingResume,
             optimizedContent: {
               sections:
-                action.payload?.optimizedSections ||
-                action.payload?.optimizedContent?.sections ||
-                action.payload?.sections ||
+                optimizedData?.optimizedSections ||
+                optimizedData?.optimizedContent?.sections ||
+                optimizedData?.sections ||
                 null,
-              changesExplained: action.payload?.changesExplained || [],
-              newAtsScore: action.payload?.newAtsScore || 0,
-              
+              changesExplained: optimizedData?.changesExplained || [],
+              newAtsScore: optimizedData?.newAtsScore || 0,
+
             },
           });
         }
@@ -260,7 +269,7 @@ const resumeSlice = createSlice({
       })
       .addCase(downloadResume.fulfilled, (state, action) => {
         state.downloadLoading = false;
-        state.downloadData = action.payload;
+        state.downloadData = action.payload?.data;
       })
       .addCase(downloadResume.rejected, (state, action) => {
         state.downloadLoading = false;
@@ -274,6 +283,7 @@ export const {
   setActiveResumeId,
   clearAnalysis,
   clearOptimizeState,
+  resetAnalyzeSuccess,
 } = resumeSlice.actions;
 
 const getResumeRoot = (state) => state.resume || state.resumes || initialState;

@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { setExperiences,
+import {
+  setExperiences,
   addSkill,
   removeSkill,
   setEducation,
   nextStep,
   prevStep,
-  selectExperience, } from "../store/coverSlice";
+  selectExperience,
+} from "../store/coverSlice";
 
 
 /**
@@ -19,8 +21,8 @@ import { setExperiences,
  * - On submit everything is pushed to Redux
  */
 const useExperience = () => {
-  const dispatch    = useDispatch();
-  const savedExp    = useSelector(selectExperience);
+  const dispatch = useDispatch();
+  const savedExp = useSelector(selectExperience);
 
   const [skillInput, setSkillInput] = useState("");
 
@@ -61,7 +63,7 @@ const useExperience = () => {
   };
 
   const handleAddSuggestedSkill = (skill) => dispatch(addSkill(skill));
-  const handleRemoveSkill       = (skill) => dispatch(removeSkill(skill));
+  const handleRemoveSkill = (skill) => dispatch(removeSkill(skill));
 
   // ── Add / Remove experience row ──────────────────────────────────────────
 
@@ -90,21 +92,17 @@ const useExperience = () => {
   // ── Per-field registrations ──────────────────────────────────────────────
 
   const getExpRegistration = (index) => ({
-    titleReg: register(`experiences.${index}.title`, {
-      required: { value: true, message: "Job title required" },
-    }),
-    companyReg: register(`experiences.${index}.company`, {
-      required: { value: true, message: "Company required" },
-    }),
+    titleReg: register(`experiences.${index}.title`),
+    companyReg: register(`experiences.${index}.company`),
     durationReg: register(`experiences.${index}.duration`),
     achievementReg: register(`experiences.${index}.achievement`),
   });
 
   const educationReg = {
-    degreeReg:         register("education.degree"),
-    institutionReg:    register("education.institution"),
+    degreeReg: register("education.degree"),
+    institutionReg: register("education.institution"),
     graduationYearReg: register("education.graduationYear"),
-    gpaReg:            register("education.gpa"),
+    gpaReg: register("education.gpa"),
   };
 
   return {

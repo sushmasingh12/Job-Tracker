@@ -170,10 +170,10 @@ const coverSlice = createSlice({
         state.error = null;
       })
       .addCase(generateCoverLetter.fulfilled, (state, action) => {
-  state.loading = false;
-  state.generatedLetter = action.payload.letter ?? action.payload;
-  state.currentStep = 4;
-})
+        state.loading = false;
+        state.generatedLetter = action.payload.data?.letter || action.payload.letter || action.payload;
+        state.currentStep = 4;
+      })
       .addCase(generateCoverLetter.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

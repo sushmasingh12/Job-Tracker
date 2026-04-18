@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 
 const Landing = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -15,59 +14,62 @@ const Landing = () => {
         />
         <meta name="robots" content="index,follow" />
       </Helmet>
-      {/* <!-- ── NAV ── --> */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-15 py-4.5 bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]"
-        style={{ paddingLeft: "60px", paddingRight: "60px" }}
-      >
-        <Link className="flex items-center gap-2 font-playfair text-[22px] font-bold tracking-tight text-neutral-text no-underline">
-          <div className="w-2.25 h-2.25 bg-primary rounded-full"></div>
+
+      {/* ── NAV ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-[60px] bg-white/94 nav-blur border-b border-neutral-border shadow-[0_1px_10px_rgba(17,25,33,0.06)]">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-playfair text-lg sm:text-[22px] font-bold tracking-tight text-neutral-text no-underline"
+        >
+          <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full"></div>
           JobTracker
         </Link>
 
-        <div className="flex gap-2.5">
-          <Link to="/signin" className="inline-flex items-center px-5 py-2.25 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light">
+        <div className="flex w-full sm:w-auto gap-2.5 sm:justify-end">
+          <Link
+            to="/signin"
+            className="inline-flex flex-1 sm:flex-none justify-center items-center px-4 sm:px-5 py-2.5 text-sm font-medium text-primary bg-transparent border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-light"
+          >
             Sign In
           </Link>
-          <Link to="/signup" className="inline-flex items-center gap-1.5 px-5 py-2.25 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]">
+          <Link
+            to="/signup"
+            className="inline-flex flex-1 sm:flex-none justify-center items-center gap-1.5 px-4 sm:px-5 py-2.5 text-sm font-medium text-white bg-primary border-[1.5px] border-primary rounded-md cursor-pointer transition-all duration-200 no-underline hover:bg-primary-dark hover:border-primary-dark hover:shadow-[0_4px_14px_rgba(25,118,210,0.3)]"
+          >
             Get Started →
           </Link>
         </div>
       </nav>
 
-      {/* <!-- ── HERO ── --> */}
-      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-18 overflow-hidden">
-        {/* <!-- Hero Left --> */}
-        <div
-          className="flex flex-col justify-center relative z-10"
-          style={{ padding: "80px 56px" }}
-        >
-          <div className="anim-1 inline-flex items-center gap-1.75 text-[11px] font-semibold tracking-[2px] uppercase text-primary bg-primary-light px-3.5 py-1.5 rounded-full w-fit mb-6">
+      {/* ── HERO ── */}
+      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-24 sm:pt-28 overflow-hidden">
+        {/* Hero Left */}
+        <div className="flex flex-col justify-center relative z-10 px-4 py-12 sm:px-6 sm:py-16 lg:px-14 lg:py-20">
+          <div className="anim-1 inline-flex items-center gap-1.75 text-[10px] sm:text-[11px] font-semibold tracking-[2px] uppercase text-primary bg-primary-light px-3.5 py-1.5 rounded-full w-fit mb-6">
             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
             AI-Powered Job Search
           </div>
 
-          <h1 className="anim-2 font-playfair text-hero font-black leading-[1.05] tracking-[-2px] text-neutral-text mb-5.5">
+          <h1 className="anim-2 font-playfair text-[2.2rem] sm:text-[3rem] lg:text-hero font-black leading-[1.05] tracking-[-1px] sm:tracking-[-2px] text-neutral-text mb-5.5">
             Land your <em className="italic text-primary">dream job</em> with
             less chaos
           </h1>
 
-          <p className="anim-3 text-[17px] font-light leading-[1.72] text-neutral-muted max-w-105 mb-9.5">
+          <p className="anim-3 text-[15px] sm:text-[17px] font-light leading-[1.72] text-neutral-muted max-w-full lg:max-w-105 mb-9.5">
             ApplyIQ centralizes every application, generates tailored resumes
             and cover letters, and coaches you through every stage — so you
             spend less time organizing and more time winning offers.
           </p>
 
-          <div className="anim-4 flex gap-3.5 items-center">
-            <button onClick={() => navigate("/signin")}
-              className="inline-flex items-center gap-2 px-7.5 py-3.5 text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]"
+          <div className="anim-4 flex flex-col sm:flex-row gap-3.5 sm:items-center">
+            <button
+              onClick={() => navigate("/signin")}
+              className="inline-flex justify-center items-center gap-2 px-6 sm:px-7.5 py-3.5 text-[15px] font-medium text-white bg-primary border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 no-underline shadow-[0_4px_18px_rgba(25,118,210,0.28)] hover:bg-primary-dark hover:border-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(25,118,210,0.38)]"
             >
               Start for free →
             </button>
-            <button
 
-              className="flex items-center gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary"
-            >
+            <button className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-neutral-muted no-underline transition-colors duration-200 hover:text-primary">
               <svg
                 width="16"
                 height="16"
@@ -87,23 +89,25 @@ const Landing = () => {
             </button>
           </div>
 
-          <div className="anim-5 flex gap-9 mt-12.5 pt-8.5 border-t border-neutral-border">
+          <div className="anim-5 grid grid-cols-2 sm:flex sm:flex-wrap gap-6 sm:gap-9 mt-10 sm:mt-12.5 pt-8 border-t border-neutral-border">
             <div className="flex flex-col gap-0.75">
-              <div className="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">
+              <div className="font-playfair text-[26px] sm:text-[30px] font-bold tracking-[-1px] text-neutral-text">
                 4.2×
               </div>
               <div className="text-xs text-neutral-muted">
                 More interview invites
               </div>
             </div>
+
             <div className="flex flex-col gap-0.75">
-              <div className="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">
+              <div className="font-playfair text-[26px] sm:text-[30px] font-bold tracking-[-1px] text-neutral-text">
                 12k+
               </div>
               <div className="text-xs text-neutral-muted">Offers secured</div>
             </div>
+
             <div className="flex flex-col gap-0.75">
-              <div className="font-playfair text-[30px] font-bold tracking-[-1px] text-neutral-text">
+              <div className="font-playfair text-[26px] sm:text-[30px] font-bold tracking-[-1px] text-neutral-text">
                 38%
               </div>
               <div className="text-xs text-neutral-muted">
@@ -113,15 +117,13 @@ const Landing = () => {
           </div>
         </div>
 
-        {/* <!-- Hero Right --> */}
+        {/* Hero Right */}
         <div className="hidden lg:block relative overflow-hidden bg-sidebar border-l border-white/6">
           <div className="hero-grid-bg"></div>
 
-          {/* <!-- Glow blobs --> */}
           <div className="glow-blue absolute -bottom-20 -left-20 w-105 h-105 rounded-full pointer-events-none"></div>
           <div className="glow-purple absolute -top-15 -right-15 w-70 h-70 rounded-full pointer-events-none"></div>
 
-          {/* <!-- Main card --> */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[52%] w-85">
             <div className="animate-float bg-white border border-neutral-border rounded-[14px] p-[20px_22px] shadow-[0_12px_40px_rgba(17,25,33,0.22)]">
               <div className="flex items-center justify-between mb-3.5">
@@ -142,6 +144,7 @@ const Landing = () => {
                   Interview
                 </span>
               </div>
+
               <div className="flex gap-3.5 pt-3 border-t border-neutral-border">
                 <div className="flex items-center gap-1 text-[11px] text-neutral-muted">
                   <svg
@@ -159,6 +162,7 @@ const Landing = () => {
                   </svg>
                   Applied Feb 3
                 </div>
+
                 <div className="flex items-center gap-1 text-[11px] text-neutral-muted">
                   <svg
                     width="11"
@@ -173,6 +177,7 @@ const Landing = () => {
                   </svg>
                   Remote · SF
                 </div>
+
                 <div className="flex items-center gap-1 text-[11px] text-neutral-muted">
                   <svg
                     width="11"
@@ -191,7 +196,6 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* <!-- Score floating card --> */}
           <div
             className="animate-float-slow absolute bg-white border border-neutral-border rounded-xl p-[14px_18px] shadow-[0_8px_28px_rgba(17,25,33,0.18)] w-33"
             style={{ top: "18%", right: "36px" }}
@@ -204,7 +208,6 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* <!-- AI suggestion floating card --> */}
           <div
             className="animate-float-delay absolute bg-white border border-neutral-border rounded-xl p-[14px_18px] shadow-[0_8px_28px_rgba(17,25,33,0.18)] w-46.5"
             style={{ bottom: "22%", left: "32px" }}
@@ -219,8 +222,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* <!-- ── MARQUEE ── --> */}
-      <div className="border-t border-b border-white/5 py-3.75 bg-sidebar overflow-hidden">
+      {/* ── MARQUEE ── */}
+      <div className="border-t border-b border-white/5 py-3 bg-sidebar overflow-hidden">
         <div className="animate-marquee flex gap-14 whitespace-nowrap">
           <div className="flex items-center gap-4.5 shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">
             Application Tracking
@@ -243,7 +246,7 @@ const Landing = () => {
           <div className="flex items-center gap-4.5 shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">
             Analytics Dashboard
           </div>
-          {/* <!-- Duplicate for seamless loop --> */}
+
           <div className="flex items-center gap-4.5 shrink-0 text-[11px] font-medium tracking-[1.5px] uppercase text-white/40 marquee-item">
             Application Tracking
           </div>
@@ -268,12 +271,13 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* <!-- ── FEATURES ── --> */}
+      {/* ── FEATURES ── */}
       <section className="py-15 px-5 md:py-25 md:px-15 max-w-300 mx-auto">
         <div className="section-label-line flex items-center gap-2.5 text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
           Core Features
         </div>
-        <h2 className="font-playfair text-sec font-bold tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-130 mb-16">
+
+        <h2 className="font-playfair text-[2rem] sm:text-sec font-bold tracking-[-1px] sm:tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-130 mb-12 sm:mb-16">
           Every tool you need to <em className="italic text-primary">win</em>{" "}
           the job search
         </h2>
@@ -317,7 +321,7 @@ const Landing = () => {
             </div>
             <div className="text-sm leading-[1.7] text-neutral-muted font-light">
               Paste a job description and get a customized resume in seconds. AI
-              matches your skills to each role's requirements automatically.
+              matches your skills to each role&apos;s requirements automatically.
             </div>
           </div>
 
@@ -337,7 +341,8 @@ const Landing = () => {
             </div>
             <div className="text-sm leading-[1.7] text-neutral-muted font-light">
               Generate compelling, personalized cover letters that speak
-              directly to each company's culture and specific role requirements.
+              directly to each company&apos;s culture and specific role
+              requirements.
             </div>
           </div>
 
@@ -358,7 +363,8 @@ const Landing = () => {
             </div>
             <div className="text-sm leading-[1.7] text-neutral-muted font-light">
               Never miss the right moment. Get smart reminders for follow-ups,
-              deadlines, and check-ins based on each company's typical timeline.
+              deadlines, and check-ins based on each company&apos;s typical
+              timeline.
             </div>
           </div>
 
@@ -401,23 +407,28 @@ const Landing = () => {
             </div>
             <div className="text-sm leading-[1.7] text-neutral-muted font-light">
               Understand your job search performance. Identify patterns,
-              optimize your strategy, and see exactly where you're winning.
+              optimize your strategy, and see exactly where you&apos;re winning.
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- ── HOW IT WORKS ── --> */}
-      <section className="bg-background-dark py-25 px-15" id="how">
+
+      {/* ── HOW IT WORKS ── */}
+      <section
+        className="bg-background-dark py-16 px-5 sm:px-6 md:py-25 md:px-15"
+        id="how"
+      >
         <div className="max-w-300 mx-auto">
           <div className="section-label-line flex items-center gap-2.5 text-[11px] font-semibold tracking-[2.5px] uppercase text-blue-100/80 mb-3">
             How It Works
           </div>
-          <h2 className="font-playfair text-sec font-bold tracking-[-1.5px] text-white leading-[1.1] max-w-130 mb-16">
+
+          <h2 className="font-playfair text-[2rem] sm:text-sec font-bold tracking-[-1px] sm:tracking-[-1.5px] text-white leading-[1.1] max-w-130 mb-12 sm:mb-16">
             From application to <em className="italic text-blue-100">offer</em>{" "}
             in four steps
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-9">
             <div className="relative">
               <div className="font-playfair text-[52px] font-black text-white/5 leading-none mb-3 tracking-[-2px]">
                 01
@@ -477,16 +488,17 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* <!-- ── TESTIMONIALS ── --> */}
-      <section className="py-25 px-15 max-w-300 mx-auto">
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-16 px-5 sm:px-6 md:py-25 md:px-15 max-w-300 mx-auto">
         <div className="section-label-line flex items-center gap-2.5 text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
           Success Stories
         </div>
-        <h2 className="font-playfair text-sec font-bold tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-130">
+
+        <h2 className="font-playfair text-[2rem] sm:text-sec font-bold tracking-[-1px] sm:tracking-[-1.5px] text-neutral-text leading-[1.1] max-w-130">
           Real people, <em className="italic text-primary">real offers</em>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 mt-13">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 mt-10 md:mt-13">
           <div className="bg-white border border-neutral-border p-7.5 rounded-[14px] transition-all duration-200 hover:border-primary hover:-translate-y-0.75 hover:shadow-[0_10px_32px_rgba(25,118,210,0.1)]">
             <span className="block font-playfair text-[52px] font-black text-primary/60 leading-[0.8] mb-3.5">
               "
@@ -560,6 +572,16 @@ const Landing = () => {
           </div>
         </div>
       </section>
+        {/* ── FOOTER ── */}
+      <footer className="border-t border-neutral-border px-5 sm:px-6 md:px-10 lg:px-[60px] py-8 md:py-[42px] flex flex-col lg:flex-row items-center justify-between gap-5 bg-white">
+        <div className="flex items-center gap-[7px] font-playfair text-lg font-bold text-neutral-text">
+          <div className="w-[7px] h-[7px] bg-primary rounded-full"></div>
+          ApplyIQ
+        </div>
+        <div className="text-xs text-neutral-muted text-center lg:text-right">
+          © 2026 ApplyIQ. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 };

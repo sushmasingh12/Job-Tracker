@@ -19,7 +19,7 @@ const PAGE_DESCRIPTION =
   "Track, search, filter, and manage all your job applications in one place.";
 
 const pageWrapperClass =
-  "flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-6 md:p-8 lg:p-10";
+  "flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 p-4 md:p-8 lg:p-10";
 
 const ApplicationsPage = () => {
   const dispatch = useDispatch();
@@ -123,7 +123,7 @@ const ApplicationsPage = () => {
       </Helmet>
       
       <div className={pageWrapperClass}>
-        <div className="rounded-xl border border-neutral-border bg-neutral-surface p-7 md:p-8 lg:p-10 shadow-sm transition-shadow hover:shadow-md">
+        <div className="rounded-xl border border-neutral-border bg-neutral-surface p-5 md:p-8 lg:p-10 shadow-sm transition-shadow hover:shadow-md">
           <div className="mb-10 flex items-start justify-between gap-4">
             <div className="pr-2">
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -144,7 +144,7 @@ const ApplicationsPage = () => {
               className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
-              Add Application
+             <span className="hidden sm:inline">Add Application</span>
             </button>
           </div>
 

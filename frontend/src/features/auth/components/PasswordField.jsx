@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "../../../shared/components/ui/icons";
 import { getStrength } from "../utils/passwordStrength";
@@ -7,7 +6,7 @@ export function PasswordField({
   label,
   registration,
   error,
-  watchValue = "",   // ← strength ke liye watch("password") pass karo
+  watchValue = "",
   showStrength = false,
   placeholder = "Enter password",
 }) {
@@ -20,7 +19,6 @@ export function PasswordField({
         {label}
       </label>
 
-      {/* Input + Eye toggle */}
       <div className="relative">
         <input
           {...registration}
@@ -28,9 +26,10 @@ export function PasswordField({
           placeholder={placeholder}
           className={`inpttext w-full pr-10 ${error ? "border-red-400" : ""}`}
         />
+
         <button
           type="button"
-          className="absolute right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
+          className="absolute right-2.5 sm:right-2.75 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-neutral-muted flex p-1 hover:text-primary transition-colors"
           onClick={() => setShow((s) => !s)}
           aria-label={show ? "Hide password" : "Show password"}
         >
@@ -38,7 +37,6 @@ export function PasswordField({
         </button>
       </div>
 
-      {/* Strength bar — sirf tab dikhega jab showStrength=true */}
       {showStrength && watchValue && (
         <div className="mt-1.5">
           <div className="flex gap-1 mb-1">
@@ -52,18 +50,19 @@ export function PasswordField({
               />
             ))}
           </div>
+
           {strength.label && (
-            <p className="text-[11px] font-medium" style={{ color: strength.color }}>
+            <p
+              className="text-[11px] font-medium"
+              style={{ color: strength.color }}
+            >
               {strength.label}
             </p>
           )}
         </div>
       )}
 
-      {/* Error */}
-      {error && (
-        <p className="text-[11px] text-red-500 mt-1">{error.message}</p>
-      )}
+      {error && <p className="text-[11px] text-red-500 mt-1">{error.message}</p>}
     </div>
   );
 }

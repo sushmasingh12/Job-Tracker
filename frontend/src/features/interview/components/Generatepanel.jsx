@@ -1,31 +1,11 @@
 import { useState } from "react";
 
 const QUESTION_TYPES = [
-  {
-    id: "behavioral",
-    label: "Behavioral",
-   
-  },
-  {
-    id: "technical",
-    label: "Technical",
-    
-  },
-  {
-    id: "leadership",
-    label: "Leadership",
-    
-  },
-  {
-    id: "product",
-    label: "Product Sense",
-   
-  },
-  {
-    id: "situational",
-    label: "Situational",
-   
-  },
+  { id: "behavioral", label: "Behavioral" },
+  { id: "technical", label: "Technical" },
+  { id: "leadership", label: "Leadership" },
+  { id: "product", label: "Product Sense" },
+  { id: "situational", label: "Situational" },
 ];
 
 const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
@@ -50,28 +30,29 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
   // Collapsed state — show summary + re-generate button
   if (!isExpanded && questionsCount > 0) {
     return (
-      <div className="bg-gradient-to-r from-primary/5 to-blue-50 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary text-[18px]">
+      <div className="bg-gradient-to-r from-primary/5 to-blue-50 border border-primary/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-primary text-[16px] sm:text-[18px]">
               auto_awesome
             </span>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-neutral-text">
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm font-semibold text-neutral-text">
               {questionsCount} questions generated
             </p>
-            <p className="text-xs text-neutral-muted">
+            <p className="text-xs text-neutral-muted truncate">
               For {profile.jobTitle} at {profile.company}
             </p>
           </div>
         </div>
         <button
           onClick={() => setIsExpanded(true)}
-          className="text-xs font-medium text-primary hover:text-primary-dark flex items-center gap-1 transition-colors"
+          className="text-xs font-medium text-primary hover:text-primary-dark flex items-center gap-1 transition-colors shrink-0"
         >
           <span className="material-symbols-outlined text-[15px]">refresh</span>
-          Regenerate
+          <span className="hidden sm:inline">Regenerate</span>
+          <span className="sm:hidden">Redo</span>
         </button>
       </div>
     );
@@ -80,15 +61,15 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
   return (
     <div className="bg-white border border-neutral-border rounded-xl overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-neutral-border bg-gradient-to-r from-primary/5 to-transparent">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary text-[18px]">
+      <div className="flex items-center justify-between p-4 sm:p-5 border-b border-neutral-border bg-gradient-to-r from-primary/5 to-transparent">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary text-[16px] sm:text-[18px]">
               auto_awesome
             </span>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-neutral-text">
+            <h3 className="text-xs sm:text-sm font-bold text-neutral-text">
               Generate AI Questions
             </h3>
             <p className="text-xs text-neutral-muted">
@@ -108,13 +89,13 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
         )}
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-4 sm:p-5 space-y-4 sm:space-y-5">
         {/* Question Types */}
         <div>
-          <p className="text-xs font-semibold text-neutral-text mb-3 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-neutral-text mb-2 sm:mb-3 uppercase tracking-wider">
             Question Types
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {QUESTION_TYPES.map((type) => {
               const isActive = selectedTypes.includes(type.id);
 
@@ -123,11 +104,10 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
                   key={type.id}
                   type="button"
                   onClick={() => toggleType(type.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    isActive
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-medium transition-all ${isActive
                       ? "bg-primary text-white shadow-sm"
                       : "bg-neutral-100 text-neutral-muted hover:bg-neutral-200"
-                  }`}
+                    }`}
                 >
                   {type.label}
                 </button>
@@ -147,7 +127,7 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
             <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider">
               Number of Questions
             </p>
-            <span className="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs sm:text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
               {count}
             </span>
           </div>
@@ -172,7 +152,7 @@ const GeneratePanel = ({ profile, questionsCount, loading, onGenerate }) => {
         <button
           onClick={handleGenerate}
           disabled={loading || selectedTypes.length === 0}
-          className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 sm:py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
         >
           {loading ? (
             <>

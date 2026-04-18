@@ -41,10 +41,42 @@ const resumeSchema = new mongoose.Schema(
       matchedKeywords: [String],
       missingKeywords: [String],
       scoreBreakdown: {
-        keywordsSkills: Number,
-        formattingScore: Number,
-        structureLayout: Number,
-        contentQuality:Number,
+        relevance: {
+          score: Number,
+          tips: [String],
+        },
+        sectionQuality: {
+          score: Number,
+          tips: [String],
+        },
+        contentStrength: {
+          score: Number,
+          tips: [String],
+        },
+        experience: {
+          score: Number,
+          tips: [String],
+        },
+        projects: {
+          score: Number,
+          tips: [String],
+        },
+        skills: {
+          score: Number,
+          tips: [String],
+        },
+        formatting: {
+          score: Number,
+          tips: [String],
+        },
+        structure: {
+          score: Number,
+          tips: [String],
+        },
+        keywordMatch: {
+          score: Number,
+          tips: [String],
+        },
       },
       suggestions: [String],
       strengths: [String],
@@ -68,6 +100,7 @@ const resumeSchema = new mongoose.Schema(
 resumeSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   delete obj.parsedText;
+  delete obj.fileBuffer;
   return obj;
 };
 

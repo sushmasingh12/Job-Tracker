@@ -8,9 +8,11 @@ import {
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+
   const handleSignUp = () => {
-    navigate("/");
+    navigate("/signin");
   };
+
   return (
     <>
       <Helmet>
@@ -21,13 +23,21 @@ const RegisterPage = () => {
         />
         <meta name="robots" content="index,follow" />
       </Helmet>
-      <AuthLayout>
-      <div className="absolute inset-0 grid grid-cols-2">
-        <div className="bg-white" />
-        <SignUpForm onSignIn={handleSignUp} />
-      </div>
-      <SignUpOverlay onSignIn={handleSignUp} />
-    </AuthLayout>
+
+      <AuthLayout mode="register">
+        <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2">
+          <div className="hidden lg:block bg-white" />
+          <SignUpForm onSignIn={handleSignUp} />
+        </div>
+
+        <div className="hidden lg:block">
+          <SignUpOverlay onSignIn={handleSignUp} />
+        </div>
+
+        <div className="lg:hidden">
+          <SignUpOverlay onSignIn={handleSignUp} />
+        </div>
+      </AuthLayout>
     </>
   );
 };

@@ -2,11 +2,11 @@ import { FormField } from "../../../shared/components/ui/FormField";
 import useJobDetails from "../hooks/useJobdetails";
 
 const JOB_TYPES = [
-  { value: "full-time",  label: "Full-Time",  icon: "schedule"    },
-  { value: "part-time",  label: "Part-Time",  icon: "more_time"   },
-  { value: "contract",   label: "Contract",   icon: "description" },
-  { value: "internship", label: "Internship", icon: "school"      },
-  { value: "remote",     label: "Remote",     icon: "home_work"   },
+  { value: "full-time", label: "Full-Time", icon: "schedule" },
+  { value: "part-time", label: "Part-Time", icon: "more_time" },
+  { value: "contract", label: "Contract", icon: "description" },
+  { value: "internship", label: "Internship", icon: "school" },
+  { value: "remote", label: "Remote", icon: "home_work" },
 ];
 
 const INDUSTRIES = [
@@ -37,7 +37,7 @@ const JobDetails = () => {
   } = useJobDetails();
 
   return (
-    <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-8">
+    <div className="bg-neutral-surface rounded-xl shadow-sm border border-neutral-border p-4 md:p-8">
       <div className="mb-8 text-center">
         <h2 className="text-xl font-bold text-neutral-text mb-2">
           Tell us about the job
@@ -106,11 +106,10 @@ const JobDetails = () => {
                 </span>
                 <select
                   {...industryReg}
-                  className={`w-full pl-10 pr-8 py-3 rounded-lg border bg-neutral-surface text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all appearance-none ${
-                    errors.industry
+                  className={`w-full pl-10 pr-8 py-3 rounded-lg border bg-neutral-surface text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all appearance-none ${errors.industry
                       ? "border-red-400 focus:ring-red-200"
                       : "border-neutral-border"
-                  }`}
+                    }`}
                 >
                   <option value="">Select Industry</option>
                   {INDUSTRIES.map((ind) => (
@@ -135,11 +134,10 @@ const JobDetails = () => {
                   key={type.value}
                   type="button"
                   onClick={() => handleJobTypeChange(type.value)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
-                    jobType === type.value
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${jobType === type.value
                       ? "border-primary bg-primary-light/10 text-primary"
                       : "border-neutral-border bg-neutral-surface text-neutral-muted hover:border-primary/50 hover:text-neutral-text"
-                  }`}
+                    }`}
                 >
                   <span className="material-symbols-outlined text-lg">{type.icon}</span>
                   {type.label}
@@ -162,11 +160,10 @@ const JobDetails = () => {
               {...jobDescriptionReg}
               rows={6}
               placeholder="Paste the full job description or key requirements here..."
-              className={`w-full px-4 py-3 rounded-lg border bg-neutral-surface text-neutral-text placeholder-neutral-muted focus:outline-none focus:ring-2 transition-all resize-none ${
-                errors.jobDescription
+              className={`w-full px-4 py-3 rounded-lg border bg-neutral-surface text-neutral-text placeholder-neutral-muted focus:outline-none focus:ring-2 transition-all resize-none ${errors.jobDescription
                   ? "border-red-400 focus:ring-red-200"
                   : "border-neutral-border focus:ring-primary/40 focus:border-primary"
-              }`}
+                }`}
             />
             <div className="flex justify-between items-center">
               {errors.jobDescription ? (

@@ -1,7 +1,6 @@
-const AuthLayout =({ children, mode = "login" }) => {
+const AuthLayout = ({ children, mode = "login" }) => {
   return (
-    <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-hidden relative">
-
+    <div className="font-dm bg-sidebar min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto relative px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Background effects */}
       <div className="hero-grid-bg" />
       <div
@@ -15,15 +14,15 @@ const AuthLayout =({ children, mode = "login" }) => {
 
       {/* Auth Card */}
       <div
-        className={`auth-card ${mode === "register" ? "signup-mode" : ""} 
-          relative w-230 h-147.5 rounded-2xl overflow-hidden z-10`}
+        className={`auth-card ${
+          mode === "register" ? "signup-mode" : ""
+        } relative w-full max-w-[920px] min-h-[680px] lg:h-[590px] rounded-2xl overflow-hidden z-10`}
         style={{ animation: "cardIn 0.55s cubic-bezier(.76,0,.24,1) forwards" }}
       >
         {children}
       </div>
-
     </div>
   );
-}
+};
 
-export default AuthLayout
+export default AuthLayout;

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useInterview } from "../hook/useInterview";
 import GeneratePanel from "./Generatepanel";
 import InterviewHeader from "./Interviewheader";
@@ -18,21 +19,22 @@ const TABS = [
 ];
 
 const EmptyPracticeState = () => (
-  <div className="p-6">
-    <div className="bg-white border border-dashed border-neutral-border rounded-2xl p-10 text-center">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-3xl">work</span>
+  <div className="p-4 sm:p-6">
+    <div className="bg-white border border-dashed border-neutral-border rounded-2xl p-8 sm:p-10 text-center">
+      <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
+        <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">work</span>
       </div>
-      <h2 className="text-xl font-bold text-neutral-text mb-2">Select a job profile</h2>
+      <h2 className="text-lg sm:text-xl font-bold text-neutral-text mb-2">Select a job profile</h2>
       <p className="text-sm text-neutral-muted mb-6">
         Pick a saved application first, then generate tailored interview questions.
       </p>
-      
     </div>
   </div>
 );
 
 const Interview = () => {
+  const [showMobileStats, setShowMobileStats] = useState(false);
+
   const {
     selectedProfile,
     showProfileModal,
@@ -79,7 +81,7 @@ const Interview = () => {
     }
 
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         <GeneratePanel
           profile={selectedProfile}
           questionsCount={questions.length}
@@ -142,7 +144,6 @@ const Interview = () => {
             onReset={handleResetMock}
           />
         );
-     
       case 'answers':
         return <MyAnswers questions={questions} savedAnswers={savedAnswers} />;
       case 'practice':
@@ -152,7 +153,7 @@ const Interview = () => {
   };
 
   return (
-    <div className="flex-1 min-w-0 bg-background-light flex h-full overflow-hidden">
+    <div className="flex-1 min-w-0 bg-background-light flex h-full overflow-hidden relative">
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
         <InterviewHeader
           profile={selectedProfile}
@@ -164,31 +165,46 @@ const Interview = () => {
           onSetInterviewDate={handleSetInterviewDate}
         />
 
+        {/* Tab Bar */}
         <div className="bg-white border-b border-neutral-border sticky top-0 z-20">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <nav aria-label="Interview tabs" className="flex gap-6 overflow-x-auto">
+          <div className="px-3 sm:px-6 lg:px-8">
+            <nav aria-label="Interview tabs" className="flex items-center gap-0 sm:gap-4 overflow-x-auto">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => changeTab(tab.id)}
-                    className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap ${isActive
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-neutral-muted hover:text-neutral-text hover:border-neutral-300'
+                    className={`border-b-2 py-3 sm:py-4 px-2 sm:px-1 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 transition-colors whitespace-nowrap flex-shrink-0 ${isActive
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-neutral-muted hover:text-neutral-text hover:border-neutral-300'
                       }`}
                   >
-                    <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
-                    {tab.label}
+                    <span className="material-symbols-outlined text-[16px] sm:text-[18px]">{tab.icon}</span>
+                    {/* Full label on sm+, icon-only on xs */}
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    {/* Short label on xs only */}
+                    <span className="sm:hidden">
+                      {tab.id === 'practice' ? 'Practice' : tab.id === 'mock' ? 'Mock' : 'Answers'}
+                    </span>
                   </button>
                 );
               })}
+
+              {/* Stats toggle — visible only on mobile/tablet */}
+              <button
+                onClick={() => setShowMobileStats(true)}
+                className="ml-auto md:hidden flex items-center gap-1.5 py-3 px-2 text-xs font-medium text-neutral-muted hover:text-primary whitespace-nowrap border-b-2 border-transparent"
+              >
+                <span className="material-symbols-outlined text-[16px]">analytics</span>
+                <span className="hidden sm:inline">Stats</span>
+              </button>
             </nav>
           </div>
         </div>
 
         {error && (
-          <div className="mx-6 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mx-4 sm:mx-6 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -196,13 +212,39 @@ const Interview = () => {
         <div className="flex-1 overflow-y-auto custom-scrollbar">{renderMainContent()}</div>
       </div>
 
-      <SessionStats
-        stats={sessionStats}
-        questions={questions}
-        completedQuestions={completedQuestions}
-        bookmarkedQuestions={bookmarkedQuestions}
-        onAddCustomQuestion={handleAddCustomQuestion}
-      />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex shrink-0">
+        <SessionStats
+          stats={sessionStats}
+          questions={questions}
+          completedQuestions={completedQuestions}
+          bookmarkedQuestions={bookmarkedQuestions}
+          onAddCustomQuestion={handleAddCustomQuestion}
+        />
+      </div>
+
+      {/* Mobile Stats Drawer Backdrop */}
+      {showMobileStats && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setShowMobileStats(false)}
+        />
+      )}
+
+      {/* Mobile Stats Drawer (slides in from right) */}
+      <div
+        className={`fixed top-0 right-0 h-full z-50 transform transition-transform duration-300 ease-in-out md:hidden ${showMobileStats ? 'translate-x-0' : 'translate-x-full'
+          }`}
+      >
+        <SessionStats
+          stats={sessionStats}
+          questions={questions}
+          completedQuestions={completedQuestions}
+          bookmarkedQuestions={bookmarkedQuestions}
+          onAddCustomQuestion={handleAddCustomQuestion}
+          onClose={() => setShowMobileStats(false)}
+        />
+      </div>
 
       {showProfileModal && (
         <ProfileSelectorModal

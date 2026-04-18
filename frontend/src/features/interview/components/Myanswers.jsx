@@ -28,8 +28,22 @@ const TYPE_COLOR = {
   default: 'bg-neutral-100 text-neutral-600',
 };
 
-const AnswerCard = ({ question, answer }) => {
+const AnswerCard = ({ question, answer, onSave }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(!answer?.text);
+  const [answerText, setAnswerText] = useState(answer?.text || '');
+  const [notes, setNotes] = useState(answer?.notes || '');
+  const [rating, setRating] = useState(answer?.rating || null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync state if answer changes
+  useEffect(() => {
+    setAnswerText(answer?.text || '');
+    setNotes(answer?.notes || '');
+    setRating(answer?.rating || null);
+    setIsEditing(!answer?.text);
+  }, [answer]);
+
   const typeClass =
     TYPE_COLOR[question.type?.toLowerCase()] || TYPE_COLOR.default;
   const ratingInfo = answer?.rating ? RATING_MAP[answer.rating] : null;
@@ -42,18 +56,38 @@ const AnswerCard = ({ question, answer }) => {
     })
     : null;
 
+  const handleSave = async (e) => {
+    e.stopPropagation();
+    if (!answerText.trim()) return;
+
+    setIsSaving(true);
+    try {
+      await onSave(question.id, {
+        text: answerText,
+        notes,
+        rating,
+        jobId: question.sessionProfileId
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to save answer:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className={`bg-white border rounded-xl overflow-hidden shadow-sm transition-all ${isExpanded ? 'ring-1 ring-primary/20 shadow-md' : 'border-neutral-border hover:shadow-md'}`}>
       {/* Header */}
-      <button
+      <div
+        className="w-full text-left p-4 sm:p-5 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full text-left p-5"
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 flex-wrap">
               <span
-                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${typeClass}`}
+                className={`text-xs font-semibold px-2 sm:px-2.5 py-0.5 rounded-full ${typeClass}`}
               >
                 {question.type || 'General'}
               </span>
@@ -72,7 +106,7 @@ const AnswerCard = ({ question, answer }) => {
                 </span>
               )}
               {savedDate && (
-                <span className="text-xs text-neutral-muted">{savedDate}</span>
+                <span className="text-xs text-neutral-muted hidden sm:inline">{savedDate}</span>
               )}
             </div>
             <p className="text-sm font-semibold text-neutral-text">
@@ -85,56 +119,146 @@ const AnswerCard = ({ question, answer }) => {
         </div>
 
         {/* Answer preview (collapsed) */}
-        {!isExpanded && answer?.text && (
+        {!isExpanded && answer?.text && !isEditing && (
           <p className="text-xs text-neutral-muted mt-2 line-clamp-2">
             {answer.text}
           </p>
         )}
-      </button>
+      </div>
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="border-t border-neutral-border p-5 space-y-4 bg-neutral-50">
-          {answer?.text ? (
-            <div>
-              <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider mb-2">
-                Your Answer
-              </p>
-              <div className="bg-white border border-neutral-border rounded-lg p-4 shadow-sm">
-                <p className="text-sm text-neutral-text leading-relaxed whitespace-pre-wrap">
-                  {answer.text}
-                </p>
+        <div className="border-t border-neutral-border p-4 sm:p-5 space-y-4 bg-neutral-50">
+          {isEditing ? (
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-neutral-text mb-2 uppercase tracking-wider">
+                  Your Answer
+                </label>
+                <textarea
+                  rows={4}
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                  placeholder="Write your answer here..."
+                  className="w-full border border-neutral-border rounded-xl p-3 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-neutral-text mb-2 uppercase tracking-wider">
+                  Notes
+                </label>
+                <textarea
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Key points to remember..."
+                  className="w-full border border-neutral-border rounded-xl p-3 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-neutral-text mb-2 uppercase tracking-wider">
+                  Confidence Level
+                </label>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                  {Object.entries(RATING_MAP).map(([val, info]) => (
+                    <button
+                      key={val}
+                      onClick={() => setRating(rating === val ? null : val)}
+                      className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 rounded-lg border text-xs font-medium transition-all ${rating === val
+                          ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                          : 'bg-white border-neutral-border text-neutral-600 hover:bg-white'
+                        }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        {info.icon}
+                      </span>
+                      <span className="text-[10px] sm:text-xs">{info.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 sm:gap-3 pt-2">
+                <button
+                  onClick={handleSave}
+                  disabled={!answerText.trim() || isSaving}
+                  className="flex-1 bg-primary hover:bg-primary-dark disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm"
+                >
+                  {isSaving ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : 'Save Answer'}
+                </button>
+                {answer?.text && (
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="px-3 sm:px-4 py-2 border border-neutral-border text-neutral-600 rounded-lg hover:bg-white text-xs sm:text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                )}
               </div>
             </div>
           ) : (
-            <div className="bg-amber-50 border border-amber-100 rounded-lg p-4 text-center">
-              <p className="text-xs font-medium text-amber-700">You haven't practiced this question yet.</p>
-            </div>
-          )}
+            <>
+              {answer?.text ? (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider">
+                      Your Answer
+                    </p>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">edit</span>
+                      Edit
+                    </button>
+                  </div>
+                  <div className="bg-white border border-neutral-border rounded-lg p-3 sm:p-4 shadow-sm">
+                    <p className="text-sm text-neutral-text leading-relaxed whitespace-pre-wrap">
+                      {answer.text}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-100 rounded-lg p-5 sm:p-6 text-center">
+                  <p className="text-sm font-medium text-amber-700 mb-4">You haven't practiced this question yet.</p>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-primary text-white text-xs font-bold py-2 px-6 rounded-lg hover:bg-primary-dark transition-colors"
+                  >
+                    Answer Now
+                  </button>
+                </div>
+              )}
 
-          {answer?.notes && (
-            <div>
-              <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider mb-2">
-                Notes
-              </p>
-              <div className="bg-amber-50 border border-amber-100 rounded-lg p-3">
-                <p className="text-sm text-amber-800 whitespace-pre-wrap">
-                  {answer.notes}
-                </p>
-              </div>
-            </div>
-          )}
+              {answer?.notes && !isEditing && (
+                <div>
+                  <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider mb-2">
+                    Notes
+                  </p>
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg p-3">
+                    <p className="text-sm text-amber-800 whitespace-pre-wrap">
+                      {answer.notes}
+                    </p>
+                  </div>
+                </div>
+              )}
 
-          {question.hint && (
-            <div>
-              <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider mb-2">
-                Preparation Tip
-              </p>
-              <div className="flex gap-2">
-                <span className="material-symbols-outlined text-[16px] text-primary shrink-0">lightbulb</span>
-                <p className="text-xs text-neutral-muted leading-relaxed">{question.hint}</p>
-              </div>
-            </div>
+              {question.hint && !isEditing && (
+                <div>
+                  <p className="text-xs font-semibold text-neutral-text uppercase tracking-wider mb-2">
+                    Preparation Tip
+                  </p>
+                  <div className="flex gap-2">
+                    <span className="material-symbols-outlined text-[16px] text-primary shrink-0">lightbulb</span>
+                    <p className="text-xs text-neutral-muted leading-relaxed">{question.hint}</p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -143,7 +267,7 @@ const AnswerCard = ({ question, answer }) => {
 };
 
 const MyAnswers = () => {
-  const { history, historyLoading, loadHistory } = useInterview();
+  const { history, historyLoading, loadHistory, handleSaveAnswer } = useInterview();
   const [filterRating, setFilterRating] = useState('all');
   const [profileIdFilter, setProfileIdFilter] = useState('all');
 
@@ -160,7 +284,6 @@ const MyAnswers = () => {
       return { id, title, company };
     });
 
-    // Remove duplicates
     const seen = new Set();
     return profiles.filter(p => {
       const duplicate = seen.has(p.id);
@@ -232,27 +355,27 @@ const MyAnswers = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header and Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-bold text-neutral-text">Saved Question Gallery</h2>
+          <h2 className="text-base sm:text-lg font-bold text-neutral-text">Saved Question Gallery</h2>
           <p className="text-xs text-neutral-muted">All your generated questions across all roles</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={profileIdFilter}
               onChange={(e) => setProfileIdFilter(e.target.value)}
-              className="appearance-none bg-white border border-neutral-border rounded-lg pl-3 pr-10 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all min-w-[200px]"
+              className="w-full appearance-none bg-white border border-neutral-border rounded-lg pl-3 pr-8 py-2 text-xs sm:text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all sm:min-w-[180px]"
             >
               <option value="all">All Job Profiles</option>
               {historyProfiles.map(p => (
                 <option key={p.id} value={p.id}>{p.title} ({p.company})</option>
               ))}
             </select>
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-neutral-muted pointer-events-none text-[20px]">
+            <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-neutral-muted pointer-events-none text-[18px]">
               expand_more
             </span>
           </div>
@@ -260,11 +383,11 @@ const MyAnswers = () => {
       </div>
 
       {/* Summary bar */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {[
           {
             id: 'all',
-            label: 'Total Answered',
+            label: 'Answered',
             count: stats.answered,
             icon: 'edit_note',
             color: 'text-primary bg-primary/10',
@@ -287,18 +410,18 @@ const MyAnswers = () => {
           <button
             key={item.id}
             onClick={() => setFilterRating(item.id)}
-            className={`p-3.5 rounded-xl border text-center transition-all ${filterRating === item.id
+            className={`p-2.5 sm:p-3.5 rounded-xl border text-center transition-all ${filterRating === item.id
                 ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
                 : 'bg-white border-neutral-border hover:bg-neutral-50'
               }`}
           >
             <span
-              className={`material-symbols-outlined text-[22px] ${item.color} rounded-full p-1 inline-block mb-1`}
+              className={`material-symbols-outlined text-[18px] sm:text-[22px] ${item.color} rounded-full p-0.5 sm:p-1 inline-block mb-1`}
             >
               {item.icon}
             </span>
-            <p className="text-xl font-bold text-neutral-text">{item.count}</p>
-            <p className="text-xs text-neutral-muted">{item.label}</p>
+            <p className="text-lg sm:text-xl font-bold text-neutral-text">{item.count}</p>
+            <p className="text-[10px] sm:text-xs text-neutral-muted">{item.label}</p>
           </button>
         ))}
       </div>
@@ -306,14 +429,19 @@ const MyAnswers = () => {
       {/* Answer Cards */}
       <div className="space-y-3">
         {filteredData.length === 0 ? (
-          <div className="bg-white border border-dashed border-neutral-border rounded-2xl py-12 text-center">
+          <div className="bg-white border border-dashed border-neutral-border rounded-2xl py-10 sm:py-12 text-center">
             <p className="text-neutral-muted text-sm italic">
               No questions match your current filters.
             </p>
           </div>
         ) : (
           filteredData.map((item, idx) => (
-            <AnswerCard key={`${item.sessionProfileId}-${item.id}-${idx}`} question={item} answer={item.answer} />
+            <AnswerCard
+              key={`${item.sessionProfileId}-${item.id}-${idx}`}
+              question={item}
+              answer={item.answer}
+              onSave={handleSaveAnswer}
+            />
           ))
         )}
       </div>

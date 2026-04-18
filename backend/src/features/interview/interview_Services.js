@@ -1,6 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+import genAI from "../../config/gemini.js";
 
 const TYPE_DESCRIPTIONS = {
   behavioral:
@@ -15,7 +13,11 @@ const TYPE_DESCRIPTIONS = {
     "situational / hypothetical scenario questions that test decision-making and judgment",
 };
 
-const MODEL_CANDIDATES = ["gemini-1.5-flash", "gemini-1.5-flash-lite", "gemini-3.1-flash-lite-preview"];
+const MODEL_CANDIDATES = [
+  process.env.GEMINI_MODEL || "gemini-3.1-flash-lite-preview",
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-lite",
+];
 
 const stripCodeFences = (text = "") =>
   String(text).replace(/```json/gi, "").replace(/```/g, "").trim();

@@ -59,22 +59,21 @@ const QuestionCard = ({
 
   return (
     <div
-      className={`bg-white rounded-xl border transition-all shadow-sm ${
-        isCompleted
+      className={`bg-white rounded-xl border transition-all shadow-sm ${isCompleted
           ? 'border-success/30 bg-success/5'
           : 'border-neutral-border hover:shadow-md'
-      } ${isExpanded ? 'ring-2 ring-primary/15' : ''}`}
+        } ${isExpanded ? 'ring-2 ring-primary/15' : ''}`}
     >
       {/* Card Header (always visible) */}
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-3 mb-3">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3">
           {/* Left meta */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-neutral-100 text-neutral-500 font-mono text-xs px-2 py-1 rounded">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span className="bg-neutral-100 text-neutral-500 font-mono text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
               #{String(index + 1).padStart(2, '0')}
             </span>
             <span
-              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${typeClass}`}
+              className={`text-xs font-semibold px-2 sm:px-2.5 py-0.5 rounded-full ${typeClass}`}
             >
               {typeLabel}
             </span>
@@ -86,11 +85,9 @@ const QuestionCard = ({
           </div>
 
           {/* Right: difficulty + actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1.5">
-              <span
-                className={`block w-2 h-2 rounded-full ${diffStyle.dot}`}
-              />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="hidden sm:flex items-center gap-1.5">
+              <span className={`block w-2 h-2 rounded-full ${diffStyle.dot}`} />
               <span className={`text-xs font-medium ${diffStyle.text}`}>
                 {diffStyle.label}
               </span>
@@ -102,11 +99,10 @@ const QuestionCard = ({
                 e.stopPropagation();
                 onBookmark(question.id);
               }}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                isBookmarked
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${isBookmarked
                   ? 'text-yellow-500 bg-yellow-50'
                   : 'text-neutral-300 hover:text-yellow-400 hover:bg-yellow-50'
-              }`}
+                }`}
               title={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
             >
               <span className="material-symbols-outlined text-[17px]">
@@ -120,11 +116,10 @@ const QuestionCard = ({
                 e.stopPropagation();
                 onMarkComplete(question.id);
               }}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                isCompleted
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${isCompleted
                   ? 'text-success bg-success/10'
                   : 'text-neutral-300 hover:text-success hover:bg-success/10'
-              }`}
+                }`}
               title={isCompleted ? 'Mark as not done' : 'Mark as done'}
             >
               <span className="material-symbols-outlined text-[17px]">
@@ -136,7 +131,7 @@ const QuestionCard = ({
 
         {/* Question text */}
         <h3
-          className="text-base font-semibold text-neutral-text leading-snug cursor-pointer"
+          className="text-sm sm:text-base font-semibold text-neutral-text leading-snug cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {question.question}
@@ -144,10 +139,17 @@ const QuestionCard = ({
 
         {/* Collapsed footer */}
         {!isExpanded && (
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-4 text-xs text-neutral-muted">
+          <div className="flex items-center justify-between mt-3 sm:mt-4">
+            <div className="flex items-center gap-2 sm:gap-4 text-xs text-neutral-muted">
+              {/* Difficulty badge on mobile */}
+              <div className="flex sm:hidden items-center gap-1">
+                <span className={`block w-1.5 h-1.5 rounded-full ${diffStyle.dot}`} />
+                <span className={`text-xs font-medium ${diffStyle.text}`}>
+                  {diffStyle.label}
+                </span>
+              </div>
               {question.prepTimeMinutes && (
-                <span className="flex items-center gap-1">
+                <span className="hidden sm:flex items-center gap-1">
                   <span className="material-symbols-outlined text-[14px]">
                     schedule
                   </span>
@@ -159,16 +161,17 @@ const QuestionCard = ({
                   <span className="material-symbols-outlined text-[14px]">
                     check_circle
                   </span>
-                  Answer saved
+                  <span className="hidden sm:inline">Answer saved</span>
+                  <span className="sm:hidden">Saved</span>
                 </span>
               )}
             </div>
 
             <button
               onClick={() => setIsExpanded(true)}
-              className="bg-primary hover:bg-primary-dark text-white text-xs font-semibold py-1.5 px-3.5 rounded-lg transition-colors flex items-center gap-1.5"
+              className="bg-primary hover:bg-primary-dark text-white text-xs font-semibold py-1.5 px-3 sm:px-3.5 rounded-lg transition-colors flex items-center gap-1 sm:gap-1.5"
             >
-              <span className="material-symbols-outlined text-[15px]">
+              <span className="material-symbols-outlined text-[14px] sm:text-[15px]">
                 play_arrow
               </span>
               Practice
@@ -182,11 +185,11 @@ const QuestionCard = ({
         <div className="border-t border-neutral-border">
           {/* Hint */}
           {question.hint && (
-            <div className="mx-5 mt-4 p-3.5 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
-              <span className="material-symbols-outlined text-amber-500 text-[18px] shrink-0 mt-0.5">
+            <div className="mx-4 sm:mx-5 mt-4 p-3 sm:p-3.5 bg-amber-50 border border-amber-100 rounded-lg flex gap-2 sm:gap-3">
+              <span className="material-symbols-outlined text-amber-500 text-[16px] sm:text-[18px] shrink-0 mt-0.5">
                 tips_and_updates
               </span>
-              <p className="text-sm text-amber-800 leading-relaxed">
+              <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
                 {question.hint}
               </p>
             </div>
@@ -194,7 +197,7 @@ const QuestionCard = ({
 
           {/* Tags */}
           {question.tags?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 px-5 mt-3">
+            <div className="flex flex-wrap gap-1.5 px-4 sm:px-5 mt-3">
               {question.tags.map((tag) => (
                 <span
                   key={tag}
@@ -207,17 +210,17 @@ const QuestionCard = ({
           )}
 
           {/* Answer Input */}
-          <div className="p-5 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
             <div>
               <label className="block text-xs font-semibold text-neutral-text mb-2 uppercase tracking-wider">
                 Your Answer
               </label>
               <textarea
-                rows={5}
+                rows={4}
                 value={answerText}
                 onChange={(e) => setAnswerText(e.target.value)}
                 placeholder="Write your answer here using the STAR method (Situation, Task, Action, Result)..."
-                className="w-full border border-neutral-border rounded-xl p-3.5 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none leading-relaxed"
+                className="w-full border border-neutral-border rounded-xl p-3 sm:p-3.5 text-sm text-neutral-text placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none leading-relaxed"
               />
             </div>
 
@@ -239,36 +242,37 @@ const QuestionCard = ({
               <label className="block text-xs font-semibold text-neutral-text mb-2 uppercase tracking-wider">
                 How did you do?
               </label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 {RATING_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() =>
                       setRating(rating === opt.value ? null : opt.value)
                     }
-                    className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border text-xs font-medium transition-all ${
-                      rating === opt.value
+                    className={`flex flex-col items-center gap-1 py-2 sm:py-2.5 rounded-xl border text-xs font-medium transition-all ${rating === opt.value
                         ? 'border-neutral-300 bg-neutral-50 shadow-sm'
                         : 'border-neutral-border hover:bg-neutral-50'
-                    }`}
+                      }`}
                   >
                     <span
-                      className={`material-symbols-outlined text-[22px] ${opt.color}`}
+                      className={`material-symbols-outlined text-[20px] sm:text-[22px] ${opt.color}`}
                     >
                       {opt.icon}
                     </span>
-                    <span className="text-neutral-600">{opt.label}</span>
+                    <span className="text-neutral-600 text-[10px] sm:text-xs leading-tight text-center">
+                      {opt.label}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-2 sm:gap-3 pt-1">
               <button
                 onClick={handleSave}
                 disabled={!answerText.trim() || isSaving}
-                className="flex-1 bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+                className="flex-1 bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2 sm:py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm"
               >
                 {isSaving ? (
                   <>
@@ -277,16 +281,12 @@ const QuestionCard = ({
                   </>
                 ) : saved ? (
                   <>
-                    <span className="material-symbols-outlined text-[16px]">
-                      check
-                    </span>
+                    <span className="material-symbols-outlined text-[16px]">check</span>
                     Saved!
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[16px]">
-                      save
-                    </span>
+                    <span className="material-symbols-outlined text-[16px]">save</span>
                     Save Answer
                   </>
                 )}
@@ -294,7 +294,7 @@ const QuestionCard = ({
 
               <button
                 onClick={() => setIsExpanded(false)}
-                className="px-4 py-2.5 border border-neutral-border text-neutral-600 rounded-xl hover:bg-neutral-50 text-sm font-medium transition-colors"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 border border-neutral-border text-neutral-600 rounded-xl hover:bg-neutral-50 text-xs sm:text-sm font-medium transition-colors"
               >
                 Collapse
               </button>

@@ -120,15 +120,19 @@ export const useInterview = () => {
     async (jobId) => {
       if (!jobId) {
         dispatch(setSavedAnswers({}));
+        dispatch(setQuestions([]));
         return;
       }
 
       try {
-        const data = await interviewService.getAnswers(jobId);
+        const response = await interviewService.getAnswers(jobId);
+        const data = response?.data;
         dispatch(setSavedAnswers(normalizeAnswers(data)));
+        dispatch(setQuestions(data?.questions || []));
       } catch (error) {
         console.error('Failed to load saved answers:', error);
         dispatch(setSavedAnswers({}));
+        dispatch(setQuestions([]));
       }
     },
     [dispatch]
@@ -192,7 +196,7 @@ export const useInterview = () => {
         count,
       });
 
-      dispatch(setQuestions(data?.questions || []));
+      dispatch(setQuestions(data?.data?.questions || []));
     } catch (error) {
       dispatch(setError(error.message || 'Failed to generate questions'));
     } finally {
@@ -225,7 +229,7 @@ export const useInterview = () => {
         };
 
         dispatch(setSelectedProfile(manualProfile));
-        dispatch(setQuestions(data?.questions || []));
+        dispatch(setQuestions(data?.data?.questions || []));
         dispatch(setShowManualModal(false));
       } catch (error) {
         dispatch(setError(error.message || 'Failed to generate manual questions'));
@@ -274,19 +278,23 @@ export const useInterview = () => {
       dispatch(saveAnswer({ questionId, ...answerData }));
       dispatch(markQuestionComplete(questionId));
 
-      if (!interview.selectedProfile?._id) return;
+      const jobId = answerData?.jobId || interview.selectedProfile?._id;
+      if (!jobId) return;
 
       try {
         await interviewService.saveAnswer({
-          jobId: interview.selectedProfile._id,
+          jobId,
           questionId,
           ...answerData,
         });
+        
+        // Refresh history to reflect changes in gallery
+        loadHistory();
       } catch (error) {
         console.error('Answer sync failed:', error);
       }
     },
-    [dispatch, interview.selectedProfile]
+    [dispatch, interview.selectedProfile, loadHistory]
   );
 
   const handleBookmark = useCallback((id) => dispatch(toggleBookmark(id)), [dispatch]);

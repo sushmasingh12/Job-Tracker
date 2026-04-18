@@ -1,8 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import applicationService from "../../applications/services/applicationService";
+import { useDispatch } from "react-redux";
 import { saveApplicationResumeThunk } from "../../applications/store/applicationsSlice";
 
 import {
@@ -49,7 +48,7 @@ const ScoreRing = ({ score }) => {
         ATS Match Score
       </span>
       <div className="relative w-36 h-36 flex items-center justify-center">
-        <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
+        <svg height={radius * 2} width={radius * 2} className="-rotate-90">
           <circle
             cx={radius}
             cy={radius}
@@ -95,7 +94,7 @@ const ScoreBar = ({ label, value }) => (
     </div>
     <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
       <div
-        className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-700"
+        className="h-full bg-linear-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-700"
         style={{ width: `${value}%` }}
       />
     </div>
@@ -124,7 +123,7 @@ const ATS = ({ score, suggestions }) => {
 
   return (
     <div
-      className={`bg-gradient-to-b ${gradientClass} to-white rounded-3xl shadow-sm border border-slate-200 w-full p-6 md:p-8`}
+      className={`bg-linear-to-b ${gradientClass} to-white rounded-3xl shadow-sm border border-slate-200 w-full p-6 md:p-8`}
     >
       <div className="flex items-center gap-4 mb-6">
         <div className="w-12 h-12 flex items-center justify-center">
@@ -275,6 +274,8 @@ const Details = ({ feedback }) => {
 
 // ─── Original PDF Viewer — fetches uploaded PDF via authenticated API ─────────
 const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(600);
   const [fileBlob, setFileBlob] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -303,13 +304,26 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
     };
   }, [resumeId, fileType]);
 
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.getBoundingClientRect().width;
+        setContainerWidth(width > 40 ? width - 40 : width);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+      <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-125">
         <span className="material-symbols-outlined text-4xl animate-spin text-primary">
           progress_activity
         </span>
@@ -320,7 +334,7 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
 
   if (fetchError) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 text-slate-500 min-h-[500px]">
+      <div className="flex flex-col items-center justify-center gap-3 text-slate-500 min-h-125">
         <span className="material-symbols-outlined text-4xl text-amber-500">
           warning
         </span>
@@ -331,7 +345,7 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
 
   if (fileType === "pdf" && fileBlob) {
     return (
-      <div className="w-full flex flex-col items-center bg-slate-100 rounded-xl p-4 overflow-auto max-h-[800px]">
+      <div ref={containerRef} className="w-full flex flex-col items-center bg-slate-100 rounded-xl p-4 overflow-auto max-h-200">
         <Document
           file={fileBlob}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -346,7 +360,7 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
             <div key={`page_${index + 1}`} className="mb-4 shadow-xl">
               <Page
                 pageNumber={index + 1}
-                width={600}
+                width={Math.min(containerWidth, 600)}
                 renderAnnotationLayer={false}
                 renderTextLayer={false}
               />
@@ -363,7 +377,7 @@ const OriginalPDFViewer = ({ resumeId, fileType, sections }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-125">
       <span className="material-symbols-outlined text-4xl text-amber-500">
         warning
       </span>
@@ -490,7 +504,7 @@ const OptimizeResume = () => {
 
   useEffect(() => {
     if (!analysisResult && !optimizeLoading) {
-      navigate("/ai/resume");
+      navigate("/resume");
     }
   }, [analysisResult, navigate, optimizeLoading]);
 
@@ -600,7 +614,7 @@ const OptimizeResume = () => {
         />
         <meta name="robots" content="index,follow" />
       </Helmet>
-      <div className="flex-1 h-full flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 overflow-visible">
         {error && (
           <div className="mx-6 mt-4 flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 shrink-0">
             <p className="text-sm text-red-400">{error}</p>
@@ -612,9 +626,9 @@ const OptimizeResume = () => {
           </div>
         )}
 
-        <div className="flex flex-1 min-h-0 items-start">
+        <div className="flex flex-col md:flex-row flex-1 min-h-0 items-start md:items-start overflow-visible">
           {/* ── Sidebar ── */}
-          <div className="w-80 shrink-0 p-5 space-y-5 sticky top-0 self-start max-h-screen overflow-y-auto">
+          <div className="w-full md:w-80 shrink-0 p-4 md:p-5 space-y-5 border-b md:border-b-0 md:border-r border-neutral-border custom-scrollbar md:sticky md:top-16 md:self-start md:max-h-[calc(100vh-4rem)] md:overflow-y-auto">
             <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-5 flex flex-col items-center gap-4">
               <ScoreRing
                 score={optimizedResult?.newAtsScore || analysisResult?.atsScore}
@@ -695,10 +709,10 @@ const OptimizeResume = () => {
           </div>
 
           {/* ── Main content ── */}
-          <div className="flex-1 min-w-0 h-full overflow-y-auto">
-            <div className="flex flex-col px-7 py-4 min-h-full">
+          <div className="flex-1 min-w-0 md:h-full md:overflow-y-auto custom-scrollbar">
+            <div className="flex flex-col px-4 md:px-7 py-4 min-h-full">
               {/* Toggle bar */}
-              <div className="flex items-center justify-between pb-4 shrink-0">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 shrink-0">
                 <div className="flex bg-neutral-surface rounded-lg border border-neutral-border overflow-hidden">
                   <button
                     onClick={() => handleToggleView("before")}
@@ -750,9 +764,9 @@ const OptimizeResume = () => {
 
               {/* Preview area */}
               <div className="space-y-8 pr-1 pb-6">
-                <div className="border border-neutral-border rounded-2xl p-8 flex justify-center bg-white min-h-[500px]">
+                <div className="border border-neutral-border rounded-2xl p-1 lg:p-8 md:p-6 flex justify-center bg-white min-h-125">
                   {listLoading || optimizeLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-[500px]">
+                    <div className="flex flex-col items-center justify-center gap-4 text-slate-500 min-h-125">
                       <span className="material-symbols-outlined text-4xl animate-spin text-primary">
                         progress_activity
                       </span>
@@ -792,92 +806,95 @@ const OptimizeResume = () => {
             </div>
           </div>
         </div>
-
-        {/* ── Footer action bar ── */}
-        <div className="flex items-center justify-between px-7 h-16 border-t border-blue-400/10 shrink-0">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <span className="material-symbols-outlined text-green-400 text-sm">
-              check_circle
-            </span>
-            {analysisResult
-              ? `Analysis complete • ${optimizedResult?.newAtsScore || analysisResult.atsScore
-              }/100 ATS Score`
-              : "Analyzing…"}
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={handleSaveToApplication}
-              disabled={!optimizedResult || saveLoading}
-              className={`px-2 py-1 text-sm rounded-lg font-semibold flex items-center gap-2 transition shadow-lg ${saveSuccess
-                ? "bg-green-600 text-white"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20"
-                } disabled:opacity-40 disabled:cursor-not-allowed`}
-              type="button"
-            >
-              {saveLoading ? (
-                <>
-                  <span className="material-symbols-outlined text-sm animate-spin">
-                    progress_activity
-                  </span>
-                  Saving...
-                </>
-              ) : saveSuccess ? (
-                <>
-                  <span className="material-symbols-outlined text-sm">check</span>
-                  Saved
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-sm">save</span>
-                  {applicationId ? "Save to App" : "Save Resume"}
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={handleDownloadPdf}
-              disabled={!optimizedResult || downloadLoading}
-              className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-              type="button"
-            >
-              {downloadLoading ? "Downloading…" : "Download PDF"}
-            </button>
-
-            <button
-              onClick={handleDownloadDocx}
-              disabled={!optimizedResult || downloadLoading}
-              className="px-2 py-1 text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-              type="button"
-            >
-              Download DOCX
-            </button>
-
-            <button
-              onClick={handleStartOptimize}
-              disabled={optimizeLoading}
-              className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
-              type="button"
-            >
-              {optimizeLoading ? (
-                <>
-                  <span className="material-symbols-outlined text-sm animate-spin">
-                    progress_activity
-                  </span>
-                  Optimizing...
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-sm">
-                    auto_awesome
-                  </span>
-                  Optimize Resume
-                </>
-              )}
-            </button>
-          </div>
-        </div>
       </div>
+      {/* ── Footer action bar ── */}
+     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-3 sm:px-4 md:px-7 py-3 md:h-16 border-t border-neutral-border shrink-0 sticky bottom-0 bg-neutral-surface z-50">
+  <div className="flex items-start sm:items-center gap-2 text-xs text-slate-500 w-full sm:w-auto">
+    <span className="material-symbols-outlined text-green-400 text-sm shrink-0">
+      check_circle
+    </span>
+    <span className="leading-relaxed wrap-break-word">
+      {analysisResult
+        ? `Analysis complete • ${
+            optimizedResult?.newAtsScore || analysisResult.atsScore
+          }/100 ATS Score`
+        : "Analyzing…"}
+    </span>
+  </div>
+
+  <div className="flex flex-wrap w-full sm:w-auto gap-2 sm:gap-3">
+    <button
+      onClick={handleSaveToApplication}
+      disabled={!optimizedResult || saveLoading}
+      className={`px-3 py-2 text-xs sm:text-sm rounded-lg font-semibold flex items-center justify-center gap-2 transition shadow-lg ${
+        saveSuccess
+          ? "bg-green-600 text-white"
+          : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20"
+      } disabled:opacity-40 disabled:cursor-not-allowed`}
+      type="button"
+    >
+      {saveLoading ? (
+        <>
+          <span className="material-symbols-outlined text-sm animate-spin">
+            progress_activity
+          </span>
+          Saving...
+        </>
+      ) : saveSuccess ? (
+        <>
+          <span className="material-symbols-outlined text-sm">check</span>
+          Saved
+        </>
+      ) : (
+        <>
+          <span className="material-symbols-outlined text-sm">save</span>
+          {applicationId ? "Save to App" : "Save Resume"}
+        </>
+      )}
+    </button>
+
+    <button
+      onClick={handleDownloadPdf}
+      disabled={!optimizedResult || downloadLoading}
+      className="px-3 py-2 text-xs sm:text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+      type="button"
+    >
+      {downloadLoading ? "Downloading…" : "Download PDF"}
+    </button>
+
+    <button
+      onClick={handleDownloadDocx}
+      disabled={!optimizedResult || downloadLoading}
+      className="px-3 py-2 text-xs sm:text-sm border rounded-lg text-blue-500 hover:text-white border-blue-500 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+      type="button"
+    >
+      Download DOCX
+    </button>
+
+    <button
+      onClick={handleStartOptimize}
+      disabled={optimizeLoading}
+      className="px-3 py-2 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-semibold flex items-center justify-center gap-2 transition shadow-lg shadow-blue-500/20 text-white"
+      type="button"
+    >
+      {optimizeLoading ? (
+        <>
+          <span className="material-symbols-outlined text-sm animate-spin">
+            progress_activity
+          </span>
+          Optimizing...
+        </>
+      ) : (
+        <>
+          <span className="material-symbols-outlined text-sm">
+            auto_awesome
+          </span>
+          Optimize Resume
+        </>
+      )}
+    </button>
+  </div>
+</div>
     </>
   );
 };

@@ -29,24 +29,24 @@ const ManualProfileModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col border border-neutral-border overflow-hidden">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md flex flex-col border-t sm:border border-neutral-border overflow-hidden max-h-[95vh] sm:max-h-none">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-border">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-neutral-border shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors text-neutral-text group"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors text-neutral-text group"
               title="Go Back"
             >
-              <span className="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">
+              <span className="material-symbols-outlined text-[20px] sm:text-[24px] group-hover:-translate-x-0.5 transition-transform">
                 arrow_back
               </span>
             </button>
             <div>
-              <h2 className="text-lg font-bold text-neutral-text leading-tight">Manual Practice</h2>
+              <h2 className="text-base sm:text-lg font-bold text-neutral-text leading-tight">Manual Practice</h2>
               <p className="text-xs text-neutral-muted mt-0.5">
                 Enter details for a custom mock interview
               </p>
@@ -60,8 +60,8 @@ const ManualProfileModal = ({
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Form — scrollable on mobile */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
           <div>
             <label className="block text-xs font-bold text-neutral-muted uppercase tracking-wider mb-1.5">
               Job Profile / Role
@@ -71,7 +71,7 @@ const ManualProfileModal = ({
               placeholder="e.g. Senior Frontend Engineer"
               value={formData.jobTitle}
               onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-neutral-50 border border-neutral-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               required
               autoFocus
             />
@@ -86,7 +86,7 @@ const ManualProfileModal = ({
               placeholder="e.g. React, Node.js, AWS, TypeScript"
               value={formData.techStack}
               onChange={(e) => setFormData({ ...formData, techStack: e.target.value })}
-              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-neutral-50 border border-neutral-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
 
@@ -94,17 +94,16 @@ const ManualProfileModal = ({
             <label className="block text-xs font-bold text-neutral-muted uppercase tracking-wider mb-2">
               Question Types
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {['behavioral', 'technical', 'leadership', 'product', 'situational'].map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => toggleType(type)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    formData.questionTypes.includes(type)
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-medium transition-all ${formData.questionTypes.includes(type)
                       ? 'bg-primary text-white shadow-sm'
                       : 'bg-neutral-100 text-neutral-muted hover:bg-neutral-200'
-                  }`}
+                    }`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
@@ -112,11 +111,11 @@ const ManualProfileModal = ({
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-1 sm:pt-2">
             <button
               type="submit"
               disabled={loading || !formData.jobTitle.trim() || formData.questionTypes.length === 0}
-              className="w-full py-3 bg-primary hover:bg-primary-dark disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-2.5 sm:py-3 bg-primary hover:bg-primary-dark disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-sm"
             >
               {loading ? (
                 <>
@@ -134,10 +133,10 @@ const ManualProfileModal = ({
         </form>
 
         {/* Info */}
-        <div className="px-6 py-4 bg-primary/5 border-t border-primary/10">
-          <div className="flex gap-3">
-            <span className="material-symbols-outlined text-primary text-[18px] shrink-0">info</span>
-            <p className="text-[11px] leading-relaxed text-neutral-text/70">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-primary/5 border-t border-primary/10 shrink-0">
+          <div className="flex gap-2 sm:gap-3">
+            <span className="material-symbols-outlined text-primary text-[16px] sm:text-[18px] shrink-0">info</span>
+            <p className="text-[10px] sm:text-[11px] leading-relaxed text-neutral-text/70">
               AI will generate tailored questions based on the role and tech stack you provided. This session will be saved for your practice.
             </p>
           </div>

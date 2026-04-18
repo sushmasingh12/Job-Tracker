@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../services/authService";
-import { setCredentials, setInitialized, selectIsInitialized } from "../store/authSlice";
+import {
+  setCredentials,
+  setInitialized,
+  selectIsInitialized,
+} from "../store/authSlice";
 
 const AuthInitializer = ({ children }) => {
   const dispatch = useDispatch();

@@ -1,11 +1,8 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useResume from "../hooks/useResume";
-import applicationService from "../../applications/services/applicationService";
 import { useDispatch } from "react-redux";
-import { 
-    clearOptimizeState 
-} from "../store/resumeSlice";
+
 
 const UploadedFilePreview = ({ file, onClear, onReplace }) => {
   const isPdf = file.name?.toLowerCase().endsWith(".pdf");
@@ -81,6 +78,7 @@ const CustomizeResume = () => {
     handleAnalyze,
     handleClearAnalysis,
     handleClearOptimize,
+    handleResetAnalyzeSuccess,
   } = useResume();
 
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -89,17 +87,37 @@ const CustomizeResume = () => {
 
   const applicationId = appState.applicationId || null;
 
+  // FIX: Track whether we've already triggered the navigation for this analysis.
+  // Without this, if analyzeSuccess stays true in Redux (from a previous session),
+  // every time CustomizeResume mounts it immediately navigates to OptimizeResume,
+  // creating an infinite redirect loop where the user can never use this page.
+  const hasNavigatedRef = useRef(false);
+
+
   useEffect(() => {
     if (appState.jobDescription && !jobDescription) {
       setJobDescription(appState.jobDescription);
     }
   }, [appState.jobDescription]);
 
+  // FIX: Use ref guard to navigate exactly once per analysis.
+  // Old code had no guard — analyzeSuccess stayed true in Redux, so every
+  // remount immediately triggered navigate(), trapping the user in a loop.
   useEffect(() => {
-    if (analyzeSuccess) {
-      navigate("/ai/resume/optimizeResume", { state: { applicationId } });
+    if (analyzeSuccess && !hasNavigatedRef.current) {
+      hasNavigatedRef.current = true;
+      // Reset the flag in Redux so returning to this page doesn't re-trigger navigation
+      handleResetAnalyzeSuccess();
+      navigate("/resume/optimizeResume", { state: { applicationId } });
     }
-  }, [analyzeSuccess, navigate, applicationId]);
+  }, [analyzeSuccess, navigate, applicationId, handleResetAnalyzeSuccess]);
+
+  // Reset the navigation guard when user starts a new analysis
+  useEffect(() => {
+    if (analyzeLoading) {
+      hasNavigatedRef.current = false;
+    }
+  }, [analyzeLoading]);
 
   useEffect(() => {
     if (uploadSuccess) {
@@ -107,18 +125,10 @@ const CustomizeResume = () => {
     }
   }, [uploadSuccess, handleResetUpload]);
 
+  // Ensure activeResumeId is cleared on mount so the user starts fresh
   useEffect(() => {
-    if (!uploadedFile && activeResumeId && resumes?.length) {
-      const activeResume = resumes.find((item) => item._id === activeResumeId);
-
-      if (activeResume) {
-        setUploadedFile({
-          name: activeResume.originalName,
-          size: activeResume.fileSize,
-        });
-      }
-    }
-  }, [uploadedFile, activeResumeId, resumes]);
+    handleSetActiveResumeId(null);
+  }, [handleSetActiveResumeId]);
 
   const errorMessage = localError || uploadError || analyzeError || "";
   const hasResumeSelected = Boolean(activeResumeId);
@@ -160,10 +170,7 @@ const CustomizeResume = () => {
 
     const action = await handleUpload(file);
 
-    if (action?.type?.endsWith("/fulfilled")) {
-      const uploadedResume = action.payload;
-      handleSetActiveResumeId(uploadedResume?._id || null);
-    } else {
+    if (!action?.type?.endsWith("/fulfilled")) {
       setUploadedFile(null);
     }
 
@@ -177,6 +184,7 @@ const CustomizeResume = () => {
     handleClearOptimize();
     setLocalError("");
   };
+
 
   const dispatch = useDispatch();
 
@@ -275,14 +283,7 @@ const CustomizeResume = () => {
               </label>
             )}
 
-            {listLoading ? (
-              <div className="flex items-center gap-2 text-sm text-gray-400 py-4">
-                <span className="material-symbols-outlined animate-spin text-base">
-                  progress_activity
-                </span>
-                Loading your resume...
-              </div>
-            ) : null}
+
           </section>
 
           <section className="space-y-5">

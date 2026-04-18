@@ -11,10 +11,11 @@ import {
   setActiveResumeId,
   clearAnalysis,
   clearOptimizeState,
+  resetAnalyzeSuccess,
   selectAllResumes,
   selectListLoading,
   selectListError,
- 
+
   selectUploadLoading,
   selectUploadError,
   selectUploadSuccess,
@@ -69,7 +70,7 @@ const useResume = () => {
     }
   }, [dispatch, resumes?.length]);
 
- 
+
 
   const handleUpload = useCallback(
     (file) => {
@@ -98,7 +99,7 @@ const useResume = () => {
   );
 
   const handleOptimize = useCallback(
-    (resumeId, jobDescription, ) => {
+    (resumeId, jobDescription,) => {
       return dispatch(optimizeResume({ resumeId, jobDescription, }));
     },
     [dispatch]
@@ -117,6 +118,10 @@ const useResume = () => {
 
   const handleClearOptimize = useCallback(() => {
     dispatch(clearOptimizeState());
+  }, [dispatch]);
+
+  const handleResetAnalyzeSuccess = useCallback(() => {
+    dispatch(resetAnalyzeSuccess());
   }, [dispatch]);
 
   return {
@@ -154,6 +159,7 @@ const useResume = () => {
     handleDownload,
     handleClearAnalysis,
     handleClearOptimize,
+    handleResetAnalyzeSuccess,
   };
 };
 

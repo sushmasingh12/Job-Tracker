@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+
 import { Helmet } from "react-helmet-async";
 import CustomizeResume from '../components/CustomizeResume'
 

@@ -45,57 +45,57 @@ const ResumePreviewView = ({ sections, template = 'modern' }) => {
   const styles = {
     modern: {
       container: "font-sans text-slate-900 mx-auto",
-      header: "pb-5 border-b-2 border-slate-800",
-      name: "text-2xl font-bold tracking-tight text-slate-900",
-      jobTitle: "mt-1 text-sm text-slate-600 font-medium",
-      contactWrap: "mt-2 text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1",
-      sectionWrap: "pt-6",
-      sectionHeadingWrap: "flex items-center gap-3 mb-3",
-      sectionHeadingText: "text-xs font-black tracking-[0.18em] text-slate-700 uppercase whitespace-nowrap",
+      header: "pb-4 sm:pb-5 border-b-2 border-slate-800",
+      name: "text-xl sm:text-2xl font-bold tracking-tight text-slate-900",
+      jobTitle: "mt-1 text-xs sm:text-sm text-slate-600 font-medium",
+      contactWrap: "mt-2 text-[10px] sm:text-xs text-slate-500 flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-1",
+      sectionWrap: "pt-4 sm:pt-6",
+      sectionHeadingWrap: "flex items-center gap-3 mb-2 sm:mb-3",
+      sectionHeadingText: "text-[9px] sm:text-xs font-black tracking-[0.18em] text-slate-700 uppercase whitespace-nowrap",
       sectionHeadingLine: "flex-1 h-[1.5px] bg-slate-300",
-      itemContainer: "pt-4 border-t border-dashed border-slate-200",
-      itemTitle: "text-sm font-semibold text-slate-900",
-      itemSubtitle: "text-xs text-slate-500 mt-0.5",
-      textParagraph: "text-sm leading-7 text-slate-700",
+      itemContainer: "pt-3 sm:pt-4 border-t border-dashed border-slate-200",
+      itemTitle: "text-xs sm:text-sm font-semibold text-slate-900",
+      itemSubtitle: "text-[10px] sm:text-xs text-slate-500 mt-0.5",
+      textParagraph: "text-xs sm:text-sm leading-5 sm:leading-7 text-slate-700",
       bulletIcon: "◆",
       bulletIconClass: "text-slate-400 shrink-0 mt-[5px] text-[8px]",
-      tagWrap: "px-2 py-0.5 text-xs rounded-md border border-slate-200 bg-slate-50 text-slate-600"
+      tagWrap: "px-2 py-0.5 text-[10px] sm:text-xs rounded-md border border-slate-200 bg-slate-50 text-slate-600"
     },
     professional: {
       container: "font-serif text-neutral-900 mx-auto",
       header: "pb-4 border-b-[1.5px] border-neutral-400 text-center flex flex-col items-center",
-      name: "text-3xl font-bold text-black uppercase tracking-wide",
-      jobTitle: "mt-1 text-sm text-neutral-700 italic",
-      contactWrap: "mt-2 text-xs text-neutral-800 flex flex-wrap justify-center gap-x-4 gap-y-1",
-      sectionWrap: "pt-5",
-      sectionHeadingWrap: "border-b-[1.5px] border-neutral-400 mb-3 pb-1",
-      sectionHeadingText: "text-sm font-bold tracking-widest text-black uppercase",
+      name: "text-xl sm:text-3xl font-bold text-black uppercase tracking-wide",
+      jobTitle: "mt-1 text-[10px] sm:text-sm text-neutral-700 italic",
+      contactWrap: "mt-2 text-[9px] sm:text-xs text-neutral-800 flex flex-wrap justify-center gap-x-3 sm:gap-x-4 gap-y-1",
+      sectionWrap: "pt-4 sm:pt-5",
+      sectionHeadingWrap: "border-b-[1.5px] border-neutral-400 mb-2 sm:mb-3 pb-1",
+      sectionHeadingText: "text-[11px] sm:text-sm font-bold tracking-widest text-black uppercase",
       sectionHeadingLine: "hidden",
-      itemContainer: "pt-3 mt-3 border-t border-neutral-200",
-      itemTitle: "text-sm font-bold text-black",
-      itemSubtitle: "text-[13px] text-neutral-700 mt-0.5 italic",
-      textParagraph: "text-sm leading-6 text-neutral-800",
+      itemContainer: "pt-3 mt-2 sm:mt-3 border-t border-neutral-200",
+      itemTitle: "text-xs sm:text-sm font-bold text-black",
+      itemSubtitle: "text-[10px] sm:text-[13px] text-neutral-700 mt-0.5 italic",
+      textParagraph: "text-xs sm:text-sm leading-5 sm:leading-6 text-neutral-800",
       bulletIcon: "•",
       bulletIconClass: "text-black shrink-0 mt-[4px] text-sm font-bold",
-      tagWrap: "px-2 py-0.5 text-xs border border-neutral-300 bg-white text-neutral-700 font-sans"
+      tagWrap: "px-2 py-0.5 text-[10px] sm:text-xs border border-neutral-300 bg-white text-neutral-700 font-sans"
     },
     minimal: {
       container: "font-sans font-light text-gray-800 mx-auto",
-      header: "pb-6 text-left",
-      name: "text-4xl font-light tracking-tight text-gray-900",
-      jobTitle: "mt-1 text-sm text-gray-500 font-normal",
-      contactWrap: "mt-3 text-[13px] text-gray-400 flex flex-wrap gap-x-4 gap-y-1",
-      sectionWrap: "pt-8",
-      sectionHeadingWrap: "mb-4",
-      sectionHeadingText: "text-lg font-medium text-gray-900 capitalize",
+      header: "pb-4 sm:pb-6 text-left",
+      name: "text-2xl sm:text-4xl font-light tracking-tight text-gray-900",
+      jobTitle: "mt-1 text-[10px] sm:text-sm text-gray-500 font-normal",
+      contactWrap: "mt-2 sm:mt-3 text-[10px] sm:text-[13px] text-gray-400 flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-1",
+      sectionWrap: "pt-4 sm:pt-8",
+      sectionHeadingWrap: "mb-3 sm:mb-4",
+      sectionHeadingText: "text-sm sm:text-lg font-medium text-gray-900 capitalize",
       sectionHeadingLine: "hidden",
-      itemContainer: "pt-4 mt-4 border-t border-gray-100",
-      itemTitle: "text-sm font-medium text-gray-900",
-      itemSubtitle: "text-[13px] text-gray-400 mt-0.5",
-      textParagraph: "text-[13px] leading-relaxed text-gray-600",
+      itemContainer: "pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-100",
+      itemTitle: "text-[11px] sm:text-sm font-medium text-gray-900",
+      itemSubtitle: "text-[10px] sm:text-[13px] text-gray-400 mt-0.5",
+      textParagraph: "text-[10px] sm:text-[13px] leading-relaxed text-gray-600",
       bulletIcon: "—",
       bulletIconClass: "text-gray-300 shrink-0 mt-[2px] text-[10px]",
-      tagWrap: "px-2 py-0.5 text-xs bg-gray-100 text-gray-500 rounded-sm"
+      tagWrap: "px-2 py-0.5 text-[10px] sm:text-xs bg-gray-100 text-gray-500 rounded-sm"
     }
   };
 
@@ -188,7 +188,7 @@ const ResumePreviewView = ({ sections, template = 'modern' }) => {
 
               return (
                 <div key={index} className={index > 0 ? t.itemContainer : ""}>
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-1 sm:gap-4 w-full">
                     <div>
                       {title && (
                         <h3 className={t.itemTitle}>
@@ -213,7 +213,7 @@ const ResumePreviewView = ({ sections, template = 'modern' }) => {
                       )}
                     </div>
                     {date && (
-                      <span className="text-[11px] text-slate-500 whitespace-nowrap font-medium mt-1">
+                      <span className="text-[10px] sm:text-[11px] text-slate-500 whitespace-nowrap font-medium sm:mt-1">
                         {date}
                       </span>
                     )}
@@ -252,7 +252,7 @@ const ResumePreviewView = ({ sections, template = 'modern' }) => {
 
   return (
     <div className={`w-full max-w-3xl bg-white ${t.container}`}>
-      <div className="border border-slate-200 rounded-2xl shadow-sm p-10">
+      <div className="border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-6 md:p-10">
         {/* ── Header ── */}
         <header className={t.header}>
           <h1 className={t.name}>

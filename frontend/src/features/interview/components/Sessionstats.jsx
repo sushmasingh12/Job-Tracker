@@ -5,7 +5,7 @@ const ConfidenceMeter = ({ score }) => {
 
   let label = 'Low';
   let color = 'text-danger';
-  if (score >= 60)      { label = 'High';     color = 'text-success'; }
+  if (score >= 60) { label = 'High'; color = 'text-success'; }
   else if (score >= 30) { label = 'Moderate'; color = 'text-warning'; }
 
   return (
@@ -19,8 +19,6 @@ const ConfidenceMeter = ({ score }) => {
           help
         </span>
       </h3>
-      {/* FIX: h-22 is not a valid Tailwind utility (skips 22 in the default scale).
-          Replaced with h-[88px] which is the closest equivalent (22 × 4px = 88px). */}
       <div className="relative flex justify-center pt-4 pb-2">
         <div className="w-44 h-[88px] relative">
           <svg viewBox="0 0 180 100" className="w-full">
@@ -81,8 +79,8 @@ const ConfidenceMeter = ({ score }) => {
         {score < 30
           ? 'Just getting started! Keep practicing.'
           : score < 60
-          ? "You're gaining momentum! Try harder questions."
-          : 'Great progress! Almost interview-ready.'}
+            ? "You're gaining momentum! Try harder questions."
+            : 'Great progress! Almost interview-ready.'}
       </p>
     </div>
   );
@@ -94,6 +92,7 @@ const SessionStats = ({
   completedQuestions,
   bookmarkedQuestions,
   onAddCustomQuestion,
+  onClose, // provided on mobile drawer mode
 }) => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customText, setCustomText] = useState('');
@@ -117,16 +116,27 @@ const SessionStats = ({
     .filter(Boolean);
 
   return (
-    <div className="w-72 xl:w-80 bg-neutral-surface border-l border-neutral-border flex flex-col shrink-0 h-full overflow-y-auto custom-scrollbar">
+    <div className="w-[280px] sm:w-72 xl:w-80 bg-neutral-surface border-l border-neutral-border flex flex-col shrink-0 h-full overflow-y-auto custom-scrollbar">
       {/* Header */}
-      <div className="p-5 border-b border-neutral-border">
-        <h2 className="text-base font-bold text-neutral-text">Session Stats</h2>
-        <p className="text-xs text-neutral-muted mt-0.5">
-          Track your preparation progress
-        </p>
+      <div className="p-4 sm:p-5 border-b border-neutral-border flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-bold text-neutral-text">Session Stats</h2>
+          <p className="text-xs text-neutral-muted mt-0.5">
+            Track your preparation progress
+          </p>
+        </div>
+        {/* Close button — only shown in mobile drawer mode */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg hover:bg-neutral-200 flex items-center justify-center transition-colors text-neutral-muted"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        )}
       </div>
 
-      <div className="p-5 space-y-6 flex-1">
+      <div className="p-4 sm:p-5 space-y-6 flex-1">
         {/* Progress */}
         <div>
           <div className="flex justify-between items-end mb-1.5">

@@ -77,13 +77,13 @@ export const fillPDFDoc = (doc, sections) => {
             checkY(14);
             doc.setFont("helvetica", "bold");
             doc.text(category, margin, y);
-            
+
             const categoryWidth = doc.getTextWidth(category) + 4;
             doc.setFont("helvetica", "normal");
-            
+
             const availableWidth = contentWidth - categoryWidth;
             const valueLines = doc.splitTextToSize(values, availableWidth);
-            
+
             doc.text(valueLines, margin + categoryWidth, y);
             y += valueLines.length * 12;
           } else {
