@@ -10,7 +10,7 @@ import authRouter from "./features/auth/auth_Routes.js";
 import coverLetterRouter from "./features/coverLetter/coverLetter_Routes.js";
 import appRouter from "./features/applications/app_Routes.js";
 import resumeRouter from "./features/resume/resume_Routes.js";
-import interviewRouter from "./features/interview/interview_routes.js"
+import interviewRouter from "./features/interview/interview_Routes.js"
 import settingsRouter from "./features/settings/settings_Routes.js";
 import dashboardRouter from "./features/dashboard/dashboard_Routes.js";
 import notFound from "./shared/middleware/notFound.js";
