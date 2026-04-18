@@ -1,6 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import useGoogleAuth from "../hooks/useGoogleAuth";
 
+
 // Usage: <GoogleButton onSuccess={(user) => console.log(user)} />
 const GoogleButton = ({ onSuccess }) => {
   const { handleGoogleSuccess, handleGoogleError, loading, error } = useGoogleAuth();
