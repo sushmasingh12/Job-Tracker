@@ -19,6 +19,7 @@ import errorHandler from "./shared/middleware/errorHandler.js";
 const app = express();
 
 // Security & Utility Middleware
+app.set("trust proxy", 1);
 app.use(helmet());
 app.use(compression());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
