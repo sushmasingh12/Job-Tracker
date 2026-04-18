@@ -1,4 +1,4 @@
-import GoogleButton from "./Googlebutton";
+import GoogleButton from "./GoogleButton";
 
 export function SocialButtons() {
   return (
