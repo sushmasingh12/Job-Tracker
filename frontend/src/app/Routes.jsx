@@ -10,6 +10,8 @@ import AppLayouts from "./layouts/AppLayouts";
 import ProtectedRoute from "./ProtectedRoute";
 import AuthInitializer from "../features/auth/components/AuthInitializer";
 import { Outlet } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 // Lazy loaded pages
 const Landing = lazy(() => import("../pages/landingPages/Landing"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -49,7 +51,15 @@ const withSuspense = (Component) => (
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<AuthInitializer><Outlet /></AuthInitializer>}>
+    <Route
+  element={
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthInitializer>
+        <Outlet />
+      </AuthInitializer>
+    </GoogleOAuthProvider>
+  }
+>
       {/* Public Routes */}
       <Route path="/" element={withSuspense(Landing)} />
       <Route path="/signin" element={withSuspense(LoginPage)} />

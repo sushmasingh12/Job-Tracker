@@ -148,7 +148,7 @@ const ApplicationDetails = () => {
       try {
         const { jsPDF } = await import("jspdf");
         const doc = new jsPDF({ unit: "pt", format: "a4" });
-        fillPDFDoc(doc, app.optimizedResume.content);
+        fillPDFDoc(doc, app.optimizedResume.content, "modern");
         doc.save(`${app.company || "resume"}_optimized.pdf`);
         return;
       } catch (err) {

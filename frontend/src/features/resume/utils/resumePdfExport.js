@@ -5,10 +5,47 @@
  * 
  * @param {jsPDF} doc - jsPDF instance
  * @param {Object} sections - Resume sections object
+ * @param {string} template - Template name ('modern', 'professional', 'minimal')
  */
-export const fillPDFDoc = (doc, sections) => {
+export const fillPDFDoc = (doc, sections, template = "modern") => {
   if (!sections) return;
 
+  const configs = {
+    modern: {
+      font: "helvetica",
+      nameSize: 20,
+      headerAlign: "left",
+      headingLine: true,
+      bullet: "•",
+      primaryColor: [20, 20, 20],
+      secondaryColor: [100, 100, 100],
+      headingSize: 8,
+    },
+    professional: {
+      font: "times",
+      nameSize: 22,
+      headerAlign: "center",
+      headingLine: true,
+      bullet: "•",
+      uppercaseName: true,
+      primaryColor: [0, 0, 0],
+      secondaryColor: [80, 80, 80],
+      headingSize: 10,
+    },
+    minimal: {
+      font: "helvetica",
+      nameSize: 24,
+      headerAlign: "left",
+      headingLine: false,
+      bullet: "—",
+      primaryColor: [30, 30, 30],
+      secondaryColor: [120, 120, 120],
+      headingSize: 11,
+    }
+  };
+
+  const cfg = configs[template] || configs.modern;
+  
   const basics = sections?.basics || {};
   const dynamicSections = sections?.sections || {};
   const sectionOrder =
@@ -22,28 +59,39 @@ export const fillPDFDoc = (doc, sections) => {
   const contentWidth = pageWidth - margin * 2;
   let y = margin;
 
+  doc.setFont(cfg.font);
+
   const checkY = (needed = 30) => {
     if (y + needed > pageHeight - margin) {
       doc.addPage();
       y = margin;
+      doc.setFont(cfg.font);
     }
   };
 
   const addSectionHeading = (heading) => {
-    y += 8;
+    y += 12;
     checkY(28);
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(cfg.headingSize);
+    doc.setFont(cfg.font, "bold");
+    doc.setTextColor(...cfg.secondaryColor);
+    
     const text = heading
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (str) => str.toUpperCase());
-    doc.text(text.toUpperCase(), margin, y);
-    y += 4;
-    doc.setDrawColor(220, 220, 220);
-    doc.line(margin, y, margin + contentWidth, y);
-    y += 13;
-    doc.setTextColor(20, 20, 20);
+    
+    const headingText = template === "professional" ? text.toUpperCase() : text;
+    doc.text(headingText, margin, y);
+    
+    if (cfg.headingLine) {
+      y += 4;
+      doc.setDrawColor(220, 220, 220);
+      doc.line(margin, y, margin + contentWidth, y);
+      y += 13;
+    } else {
+      y += 10;
+    }
+    doc.setTextColor(...cfg.primaryColor);
   };
 
   const renderSection = (key) => {
@@ -53,7 +101,7 @@ export const fillPDFDoc = (doc, sections) => {
     if (typeof data === "string") {
       addSectionHeading(key);
       doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
+      doc.setFont(cfg.font, "normal");
       doc.setTextColor(50, 50, 50);
       const lines = doc.splitTextToSize(data, contentWidth);
       checkY(lines.length * 14);
@@ -75,11 +123,11 @@ export const fillPDFDoc = (doc, sections) => {
             const values = item.substring(colonIdx + 1).trim();
 
             checkY(14);
-            doc.setFont("helvetica", "bold");
+            doc.setFont(cfg.font, "bold");
             doc.text(category, margin, y);
 
             const categoryWidth = doc.getTextWidth(category) + 4;
-            doc.setFont("helvetica", "normal");
+            doc.setFont(cfg.font, "normal");
 
             const availableWidth = contentWidth - categoryWidth;
             const valueLines = doc.splitTextToSize(values, availableWidth);
@@ -87,9 +135,9 @@ export const fillPDFDoc = (doc, sections) => {
             doc.text(valueLines, margin + categoryWidth, y);
             y += valueLines.length * 12;
           } else {
-            const lines = doc.splitTextToSize(`• ${item}`, contentWidth);
+            const lines = doc.splitTextToSize(`${cfg.bullet} ${item}`, contentWidth);
             checkY(lines.length * 12);
-            doc.setFont("helvetica", "normal");
+            doc.setFont(cfg.font, "normal");
             doc.text(lines, margin, y);
             y += lines.length * 12;
           }
@@ -102,8 +150,8 @@ export const fillPDFDoc = (doc, sections) => {
       data.forEach((item) => {
         checkY(40);
         doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(20, 20, 20);
+        doc.setFont(cfg.font, "bold");
+        doc.setTextColor(...cfg.primaryColor);
 
         const title =
           item.role ||
@@ -118,7 +166,7 @@ export const fillPDFDoc = (doc, sections) => {
 
         const date = item.duration || item.year || item.date || "";
         if (date) {
-          doc.setFont("helvetica", "normal");
+          doc.setFont(cfg.font, "normal");
           doc.setFontSize(9);
           doc.setTextColor(120, 120, 120);
           doc.text(String(date), pageWidth - margin, y, { align: "right" });
@@ -140,7 +188,7 @@ export const fillPDFDoc = (doc, sections) => {
         const combinedSub = [subtitle, desc].filter(Boolean).join(" - ");
 
         if (combinedSub) {
-          doc.setFont("helvetica", "normal");
+          doc.setFont(cfg.font, "normal");
           doc.setFontSize(9);
           doc.setTextColor(100, 100, 100);
 
@@ -158,7 +206,7 @@ export const fillPDFDoc = (doc, sections) => {
           doc.setTextColor(50, 50, 50);
           bullets.forEach((bullet) => {
             const bLines = doc.splitTextToSize(
-              `•  ${bullet}`,
+              `${cfg.bullet}  ${bullet}`,
               contentWidth - 10,
             );
             checkY(bLines.length * 12);
@@ -188,17 +236,30 @@ export const fillPDFDoc = (doc, sections) => {
     }
   };
 
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(20, 20, 20);
-  doc.text(basics.name || "Your Name", margin, y);
+  // Header Rendering
+  doc.setFontSize(cfg.nameSize);
+  doc.setFont(cfg.font, "bold");
+  doc.setTextColor(...cfg.primaryColor);
+  
+  const name = basics.name || "Your Name";
+  const displayName = cfg.uppercaseName ? name.toUpperCase() : name;
+  
+  if (cfg.headerAlign === "center") {
+    doc.text(displayName, pageWidth / 2, y, { align: "center" });
+  } else {
+    doc.text(displayName, margin, y);
+  }
   y += 24;
 
   doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(80, 80, 80);
+  doc.setFont(cfg.font, template === "professional" ? "italic" : "normal");
+  doc.setTextColor(...cfg.secondaryColor);
   if (basics.title) {
-    doc.text(basics.title, margin, y);
+    if (cfg.headerAlign === "center") {
+      doc.text(basics.title, pageWidth / 2, y, { align: "center" });
+    } else {
+      doc.text(basics.title, margin, y);
+    }
     y += 16;
   }
 
@@ -208,9 +269,22 @@ export const fillPDFDoc = (doc, sections) => {
   if (contact) {
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text(contact, margin, y);
+    doc.setFont(cfg.font, "normal");
+    if (cfg.headerAlign === "center") {
+      doc.text(contact, pageWidth / 2, y, { align: "center" });
+    } else {
+      doc.text(contact, margin, y);
+    }
     y += 20;
+  }
+
+  // Draw line for Professional header
+  if (template === "professional") {
+    doc.setDrawColor(180, 180, 180);
+    doc.line(margin, y - 5, pageWidth - margin, y - 5);
+    y += 10;
   }
 
   sectionOrder.forEach((key) => renderSection(key));
 };
+

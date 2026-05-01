@@ -589,7 +589,7 @@ const OptimizeResume = () => {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "pt", format: "a4" });
-      fillPDFDoc(doc, optimizedSections);
+      fillPDFDoc(doc, optimizedSections, activeTemplate);
       doc.save(`${optimizedSections.name || "resume"}_optimized.pdf`);
     } catch (e) {
       setError("PDF generation failed. Make sure jspdf is installed.");

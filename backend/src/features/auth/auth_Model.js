@@ -27,13 +27,13 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: false,           // Google users ka password nahi hoga
+            required: false,
             minlength: [6, "Password must be at least 6 characters"],
             select: false,
         },
         googleId: {
             type: String,
-            sparse: true,              // null values allowed (email/password users ke liye)
+            sparse: true,
         },
         isVerified: {
             type: Boolean,
@@ -45,10 +45,9 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-    // Agar password nahi hai ya modify nahi hua toh skip karo
+userSchema.pre("save", async function () {
     if (!this.password || !this.isModified("password")) {
-        return next();
+        return;
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -59,5 +58,4 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 const User = mongoose.model("User", userSchema);
-
 export default User;
